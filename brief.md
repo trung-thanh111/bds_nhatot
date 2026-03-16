@@ -200,7 +200,7 @@ ENABLED_CATEGORIES="can-ho,nha-o,dat-nen,mat-bang"
 **Chức năng chính:**
 
 - Full-text search (Mysql `tsvector` + `tsquery`)
-- Bộ lọc cơ bản: danh mục (mua bán, cho thuê,.. và còn loại dự án nhà ở, đất hay dự án... nhé ), tỉnh/huyện (trước và sau sáp nhập tại việt nam ), giá (từ - đến), diện tích (từ - đến), loại GD (căn hộ, nhà phố, đất nền, dự án), hướng nhà, hướng ban công (fix cứng lọc các hướng vd: Đông, Tây, Nam, Bắc, Đông Nam, Đông Bắc, Tây Nam, Tây Bắc), pháp lý (sổ hồng, sổ đỏ, chung cư, đất nền, dự án,.. ), nội thất nữa nhé (đồ cơ bản, full nội thất, không nội thất -> tùy theo dự án nhé)
+- Bộ lọc cơ bản: danh mục (mua bán, cho thuê,.. và còn loại dự án nhà ở, đất hay dự án... nhé ), tỉnh/huyện (trước và sau sáp nhập tại việt nam ), giá (từ - đến), diện tích (từ - đến), loại GD (căn hộ, nhà phố, đất nền, dự án), hướng nhà, hướng ban công (fix cứng lọc các hướng vd: Đông, Tây, Nam, Bắc, Đông Nam, Đông Bắc, Tây Nam, Tây Bắc), pháp lý (sổ hồng, sổ đỏ, chung cư, đất nền, dự án,.. ), nội thất nữa nhé (đồ cơ bản, full nội thất, không nội thất -> tùy theo dự án nhé), nổi bật, ...
 
 **Các tình huống có thể xảy ra:**
 
