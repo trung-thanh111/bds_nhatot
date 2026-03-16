@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import sass from 'sass';
 
 export default defineConfig({
     plugins: [
@@ -10,8 +9,6 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/css/app_backend.scss',
                 'resources/js/app.backend.js',
-                'resources/css/homely.scss',
-                'resources/js/homely.js'
             ],
             refresh: true,
         }),
