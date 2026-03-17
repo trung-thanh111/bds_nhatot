@@ -86,7 +86,8 @@
                                                         {{ $province->name }}</option>
                                                 @endforeach
                                             </select>
-                                            <input type="hidden" name="province_name" value="{{ old('province_name', $project->province_name ?? '') }}">
+                                            <input type="hidden" name="province_name"
+                                                value="{{ old('province_name', $project->province_name ?? '') }}">
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
@@ -98,17 +99,20 @@
                                                 data-target="wards-old" data-source="before">
                                                 <option value="0">[Chọn Quận/Huyện]</option>
                                             </select>
-                                            <input type="hidden" name="district_name" value="{{ old('district_name', $project->district_name ?? '') }}">
+                                            <input type="hidden" name="district_name"
+                                                value="{{ old('district_name', $project->district_name ?? '') }}">
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="form-row">
                                             <label class="control-label">Phường / Xã <span
                                                     class="text-danger">(*)</span></label>
-                                            <select name="ward_code" class="form-control setupSelect2 wards-old location">
+                                            <select name="ward_code"
+                                                class="form-control setupSelect2 wards-old location">
                                                 <option value="0">[Chọn Phường/Xã]</option>
                                             </select>
-                                            <input type="hidden" name="ward_name" value="{{ old('ward_name', $project->ward_name ?? '') }}">
+                                            <input type="hidden" name="ward_name"
+                                                value="{{ old('ward_name', $project->ward_name ?? '') }}">
                                         </div>
                                     </div>
                                 </div>
@@ -134,17 +138,20 @@
                                                         {{ $province->name }}</option>
                                                 @endforeach
                                             </select>
-                                            <input type="hidden" name="province_new_name" value="{{ old('province_new_name', $project->province_new_name ?? '') }}">
+                                            <input type="hidden" name="province_new_name"
+                                                value="{{ old('province_new_name', $project->province_new_name ?? '') }}">
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="form-row">
                                             <label class="control-label">Phường / Xã <span
                                                     class="text-danger">(*)</span></label>
-                                            <select name="ward_new_code" class="form-control setupSelect2 wards-new location">
+                                            <select name="ward_new_code"
+                                                class="form-control setupSelect2 wards-new location">
                                                 <option value="0">[Chọn Phường/Xã]</option>
                                             </select>
-                                            <input type="hidden" name="ward_new_name" value="{{ old('ward_new_name', $project->ward_new_name ?? '') }}">
+                                            <input type="hidden" name="ward_new_name"
+                                                value="{{ old('ward_new_name', $project->ward_new_name ?? '') }}">
                                         </div>
                                     </div>
                                 </div>
@@ -229,6 +236,34 @@
                                 </div>
                             </div>
 
+                            {{-- Extra Fields cho Apartment --}}
+                            <div class="row mb15 attr-group apartment-group" style="display:none;">
+                                <div class="col-lg-4">
+                                    <div class="form-row">
+                                        <label class="control-label">Block / Tòa nhà</label>
+                                        <input type="text" name="extra_fields[block_name]"
+                                            value="{{ old('extra_fields.block_name', $project->extra_fields['block_name'] ?? '') }}"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-row">
+                                        <label class="control-label">Mã căn hộ</label>
+                                        <input type="text" name="extra_fields[apartment_code]"
+                                            value="{{ old('extra_fields.apartment_code', $project->extra_fields['apartment_code'] ?? '') }}"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-row">
+                                        <label class="control-label">Phí quản lý</label>
+                                        <input type="text" name="extra_fields[management_fee]"
+                                            value="{{ old('extra_fields.management_fee', $project->extra_fields['management_fee'] ?? '') }}"
+                                            class="form-control int">
+                                    </div>
+                                </div>
+                            </div>
+
                             {{-- Row 2: Length & Width --}}
                             <div class="row mb15 attr-group house-group land-group commercial-group project-group"
                                 style="display:none;">
@@ -246,6 +281,34 @@
                                         <input type="text" name="width"
                                             value="{{ old('width', $project->width ?? '') }}" class="form-control"
                                             placeholder="0">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb15 attr-group house-group land-group" style="display:none;">
+                                <div class="col-lg-6">
+                                    <div class="form-row">
+                                        <label class="control-label">Loại đường</label>
+                                        <select name="extra_fields[road_type]" class="form-control setupSelect2">
+                                            <option value="">[Chọn loại đường]</option>
+                                            <option value="nhua"
+                                                {{ old('extra_fields.road_type', $project->extra_fields['road_type'] ?? '') == 'nhua' ? 'selected' : '' }}>
+                                                Đường nhựa</option>
+                                            <option value="be_tong"
+                                                {{ old('extra_fields.road_type', $project->extra_fields['road_type'] ?? '') == 'be_tong' ? 'selected' : '' }}>
+                                                Bê tông</option>
+                                            <option value="dat"
+                                                {{ old('extra_fields.road_type', $project->extra_fields['road_type'] ?? '') == 'dat' ? 'selected' : '' }}>
+                                                Đường đất</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-row">
+                                        <label class="control-label">Độ rộng đường (m)</label>
+                                        <input type="text" name="extra_fields[road_width]"
+                                            value="{{ old('extra_fields.road_width', $project->extra_fields['road_width'] ?? '') }}"
+                                            class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -287,6 +350,60 @@
                                         <label class="control-label">Tầng số mấy</label>
                                         <input type="number" name="floor_number"
                                             value="{{ old('floor_number', $project->floor_number ?? '') }}"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb15 attr-group commercial-group" style="display:none;">
+                                <div class="col-lg-4">
+                                    <div class="form-row">
+                                        <label class="control-label">Loại không gian</label>
+                                        <input type="text" name="extra_fields[space_type]"
+                                            value="{{ old('extra_fields.space_type', $project->extra_fields['space_type'] ?? '') }}"
+                                            class="form-control" placeholder="VP, Shop, Kho...">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-row">
+                                        <label class="control-label">Chiều cao trần (m)</label>
+                                        <input type="text" name="extra_fields[height_clear]"
+                                            value="{{ old('extra_fields.height_clear', $project->extra_fields['height_clear'] ?? '') }}"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-row">
+                                        <label class="control-label">Tiền cọc (tháng)</label>
+                                        <input type="number" name="extra_fields[security_deposit]"
+                                            value="{{ old('extra_fields.security_deposit', $project->extra_fields['security_deposit'] ?? '') }}"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb15 attr-group room-group" style="display:none;">
+                                <div class="col-lg-4">
+                                    <div class="form-row">
+                                        <label class="control-label">Giá điện</label>
+                                        <input type="text" name="extra_fields[electricity_price]"
+                                            value="{{ old('extra_fields.electricity_price', $project->extra_fields['electricity_price'] ?? '') }}"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-row">
+                                        <label class="control-label">Giá nước</label>
+                                        <input type="text" name="extra_fields[water_price]"
+                                            value="{{ old('extra_fields.water_price', $project->extra_fields['water_price'] ?? '') }}"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-row">
+                                        <label class="control-label">Đặt cọc (tháng)</label>
+                                        <input type="number" name="extra_fields[deposit_months]"
+                                            value="{{ old('extra_fields.deposit_months', $project->extra_fields['deposit_months'] ?? '') }}"
                                             class="form-control">
                                     </div>
                                 </div>
@@ -398,6 +515,7 @@
                         </div>
                     </div>
                 </div>
+                @include('backend.dashboard.component.seo', ['model' => $project ?? null])
             </div>
             <div class="col-lg-3">
                 <div class="ibox">
@@ -420,8 +538,11 @@
                                 </div>
                             </div>
                         </div>
-                        <input type="hidden" name="transaction_type" id="transaction_type" value="{{ old('transaction_type', $project->transaction_type->value ?? 'sale') }}" readonly>
-                        <input type="hidden" name="type_code" id="type_code" value="{{ old('type_code', $project->type_code ?? '') }}" readonly>
+                        <input type="hidden" name="transaction_type" id="transaction_type"
+                            value="{{ old('transaction_type', $project->transaction_type->value ?? 'sale') }}"
+                            readonly>
+                        <input type="hidden" name="type_code" id="type_code"
+                            value="{{ old('type_code', $project->type_code ?? '') }}" readonly>
                     </div>
                 </div>
 
@@ -519,8 +640,8 @@
                                 <div class="form-row">
                                     <label class="control-label">URL Video (Youtube)</label>
                                     <input type="text" name="video_url"
-                                        value="{{ old('video_url', $project->video_url ?? '') }}" class="form-control"
-                                        placeholder="https://www.youtube.com/watch?v=...">
+                                        value="{{ old('video_url', $project->video_url ?? '') }}"
+                                        class="form-control" placeholder="https://www.youtube.com/watch?v=...">
                                 </div>
                             </div>
                         </div>
@@ -559,6 +680,7 @@
 
     var province_new_id =
         '{{ isset($project->province_new_code) ? $project->province_new_code : old('province_new_code') }}'
-    var district_new_id = '{{ isset($project->district_new_code) ? $project->district_new_code : old('district_new_code') }}'
+    var district_new_id =
+        '{{ isset($project->district_new_code) ? $project->district_new_code : old('district_new_code') }}'
     var ward_new_id = '{{ isset($project->ward_new_code) ? $project->ward_new_code : old('ward_new_code') }}'
 </script>

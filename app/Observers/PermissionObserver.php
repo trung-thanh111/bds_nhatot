@@ -20,10 +20,6 @@ class PermissionObserver
                 [
                     'user_catalogue_id' => $adminCatalogue->id,
                     'permission_id' => $permission->id,
-                ],
-                [
-                    'created_at' => now(),
-                    'updated_at' => now(),
                 ]
             );
         }

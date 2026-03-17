@@ -13,13 +13,13 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $modules = [
-            'realestate.property_group' => 'Nhóm BĐS',
-            'realestate.project_type' => 'Loại hình BĐS',
-            'realestate.project_catalogue' => 'Danh mục BĐS',
-            'realestate.project' => 'Dự án / Tin đăng',
+            'realestate.property_group' => 'Nhóm bất động sản',
+            'realestate.project_type' => 'Loại hình bất động sản',
+            'realestate.project_catalogue' => 'Danh mục bất động sản',
+            'realestate.project' => 'Danh sách dự án',
             'realestate.project_item' => 'Sản phẩm dự án',
-            'realestate.contact_request' => 'Liên hệ BĐS',
-            'realestate.project_view' => 'Lượt xem BĐS',
+            'realestate.contact_request' => 'Liên hệ bất động sản',
+            'realestate.project_view' => 'Lượt xem bất động sản',
         ];
 
         $permissions = [
@@ -34,13 +34,11 @@ class PermissionSeeder extends Seeder
                 $canonical = $moduleCanonical . '.' . $permissionCanonical;
                 $name = $permissionName . ' ' . $moduleName;
 
-                DB::table('permissions')->updateOrInsert(
+                \App\Models\Permission::updateOrCreate(
                     ['canonical' => $canonical],
                     [
                         'name' => $name,
                         'canonical' => $canonical,
-                        'created_at' => now(),
-                        'updated_at' => now(),
                     ]
                 );
             }
