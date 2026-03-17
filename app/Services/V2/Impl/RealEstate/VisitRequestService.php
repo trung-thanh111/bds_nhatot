@@ -13,7 +13,7 @@ class VisitRequestService extends BaseService
 
     protected $fillable;
 
-    protected $with = ['users', 'properties', 'agents'];
+    protected $with = ['users', 'project', 'agents'];
 
     public function __construct(
         VisitRequestRepo $repository,

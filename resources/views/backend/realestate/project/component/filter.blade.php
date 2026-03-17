@@ -139,7 +139,7 @@
                                 placeholder="Tên, mã tin..." class="form-control">
                             <span class="input-group-btn">
                                 <button type="submit" name="search" value="search"
-                                    class="btn btn-primary mb0 btn-sm">Tìm</button>
+                                    class="btn btn-primary mb0">Tìm</button>
                             </span>
                         </div>
                     </div>

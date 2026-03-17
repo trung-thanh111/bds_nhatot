@@ -7,25 +7,26 @@ use Illuminate\Http\Request;
 use App\Http\Requests\RealEstate\VisitRequest\StoreRequest;
 use App\Http\Requests\RealEstate\VisitRequest\UpdateRequest;
 use App\Services\V2\Impl\RealEstate\VisitRequestService;
-use App\Services\V2\Impl\RealEstate\PropertyService;
+use App\Services\V1\RealEstate\ProjectService;
 use App\Services\V2\Impl\RealEstate\AgentService;
 use App\Models\Language;
+use App\Models\Project;
 
 class VisitRequestController extends Controller
 {
 
     private $service;
-    protected $propertyService;
+    protected $projectService;
     protected $agentService;
     protected $language;
 
     public function __construct(
         VisitRequestService $service,
-        PropertyService $propertyService,
+        ProjectService $projectService,
         AgentService $agentService
     ) {
         $this->service = $service;
-        $this->propertyService = $propertyService;
+        $this->projectService = $projectService;
         $this->agentService = $agentService;
         $this->middleware(function ($request, $next) {
             $locale = app()->getLocale();
@@ -59,13 +60,13 @@ class VisitRequestController extends Controller
             'method' => 'create',
             'extendJs' => true
         ];
-        $properties = $this->propertyService->all();
+        $projects = Project::all();
         $agents = $this->agentService->all();
         $template = 'backend.visit_request.store';
         return view('backend.dashboard.layout', compact(
             'template',
             'config',
-            'properties',
+            'projects',
             'agents'
         ));
     }
@@ -81,14 +82,14 @@ class VisitRequestController extends Controller
             'method' => 'edit',
             'extendJs' => true
         ];
-        $properties = $this->propertyService->all();
+        $projects = Project::all();
         $agents = $this->agentService->all();
         $template = 'backend.visit_request.store';
         return view('backend.dashboard.layout', compact(
             'template',
             'config',
             'record',
-            'properties',
+            'projects',
             'agents'
         ));
     }
@@ -115,7 +116,7 @@ class VisitRequestController extends Controller
         $this->checkExists($record);
         $config = [
             ...$this->config(),
-            'method' => 'edit'
+            'method' => 'delete'
         ];
         $template = 'backend.visit_request.delete';
         return view('backend.dashboard.layout', compact(
@@ -150,7 +151,7 @@ class VisitRequestController extends Controller
             'create' => [
                 'title' => 'Thêm mới Liên Hệ'
             ],
-            'update' => [
+            'edit' => [
                 'title' => 'Cập nhật Liên Hệ'
             ],
             'delete' => [

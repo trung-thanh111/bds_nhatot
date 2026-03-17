@@ -22,6 +22,7 @@ class Project extends Model
         'name',
         'slug',
         'catalogue_id',
+        'agent_id',
         'type_code',
         'property_group',
         'transaction_type',
@@ -116,6 +117,11 @@ class Project extends Model
         return $this->belongsTo(ProjectCatalogue::class, 'catalogue_id');
     }
 
+    public function agent()
+    {
+        return $this->belongsTo(Agent::class, 'agent_id');
+    }
+
     public function propertyGroup()
     {
         return $this->belongsTo(ProjectPropertyGroup::class, 'property_group', 'code');
@@ -124,6 +130,11 @@ class Project extends Model
     public function projectType()
     {
         return $this->belongsTo(ProjectType::class, 'type_code', 'code');
+    }
+
+    public function visitRequests()
+    {
+        return $this->hasMany(VisitRequest::class, 'project_id');
     }
 
     // public function items()

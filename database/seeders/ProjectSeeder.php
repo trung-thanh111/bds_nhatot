@@ -123,7 +123,7 @@ class ProjectSeeder extends Seeder
                 'address' => 'Lô A1, KDC Long Hậu',
                 'price' => 25,
                 'price_unit' => PriceUnitEnum::PER_M2->value,
-                'price_vnd' => 2500000, 
+                'price_vnd' => 2500000,
                 'area' => 100,
                 'legal_status' => LegalStatusEnum::SO_DO->value,
                 'extra_fields' => [
@@ -397,12 +397,12 @@ class ProjectSeeder extends Seeder
 
         foreach ($projects as $project) {
             $slug = Str::slug($project['name']);
-            
+
             Project::updateOrCreate(
                 ['slug' => $slug],
                 array_merge($project, [
                     'slug' => $slug,
-                    'status' => $project['status'] ?? ProjectStatusEnum::PUBLISHED->value,
+                    'status' => $project['status'] ?? ProjectStatusEnum::ACTIVE->value,
                     'publish' => $project['publish'] ?? 2,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),

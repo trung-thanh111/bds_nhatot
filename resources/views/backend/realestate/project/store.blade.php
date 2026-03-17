@@ -569,6 +569,26 @@
                         <div class="row mb15">
                             <div class="col-lg-12">
                                 <div class="form-row">
+                                    <label class="control-label">Môi giới</label>
+                                    <select name="agent_id" class="form-control setupSelect2">
+                                        <option value="0">[Chọn Môi giới]</option>
+                                        @foreach ($agents as $agent)
+                                            <option
+                                                {{ old('agent_id', $project->agent_id ?? '') == $agent->id ? 'selected' : '' }}
+                                                value="{{ $agent->id }}">
+                                                {{ $agent->full_name }} ({{ $agent->phone }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="mt5">
+                                        <small class="text-navy">(*) Chọn nhân viên môi giới chịu trách nhiệm cho dự án này. Có thể để trống nếu chưa xác định.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb15">
+                            <div class="col-lg-12">
+                                <div class="form-row">
                                     <label class="control-label">Mã tin (Tự động nếu trống)</label>
                                     <input type="text" name="code"
                                         value="{{ old('code', $project->code ?? '') }}" class="form-control">

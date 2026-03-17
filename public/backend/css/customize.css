@@ -96,8 +96,16 @@ table strong {
     box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
 }
 
+.filter-wrapper .btn {
+    height: 39px !important;
+    padding: 0 15px;
+    line-height: 39px;
+    display: inline-flex;
+    align-items: center;
+}
+
 .filter-wrapper .form-control {
-    height: 32px;
+    height: 40px;
     max-width: 200px;
     font-size: 13px;
 }
@@ -1821,22 +1829,31 @@ div.edit {
     display: inline-block;
     vertical-align: middle;
     margin-right: 15px;
-    min-width: 160px; /* Tăng độ rộng cơ bản */
+    min-width: 160px;
+    /* Tăng độ rộng cơ bản */
 }
 
 .filter-item .select2-container {
     width: 100% !important;
 }
 
-.filter-item select, 
+.filter-item select,
 .filter-item input {
-    height: 38px !important;
+    height: 40px !important;
 }
 
 /* Các ô rộng hơn */
-.filter-item.w180 { min-width: 180px; }
-.filter-item.w200 { min-width: 200px; }
-.filter-item.w250 { min-width: 250px; }
+.filter-item.w180 {
+    min-width: 180px;
+}
+
+.filter-item.w200 {
+    min-width: 200px;
+}
+
+.filter-item.w250 {
+    min-width: 250px;
+}
 
 .filter-range {
     width: 90px !important;
@@ -1863,7 +1880,8 @@ div.edit {
 }
 
 .border-input .select2-container {
-    flex: 1; /* Cho phép select2 chiếm hết không gian còn lại */
+    flex: 1;
+    /* Cho phép select2 chiếm hết không gian còn lại */
     min-width: 150px;
 }
 
@@ -1912,7 +1930,7 @@ div.edit {
     z-index: 9999;
     background: #fff;
     border: 1px solid #e1e1e1;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     border-radius: 8px;
     width: 320px;
     margin-top: 10px;
@@ -2024,5 +2042,3 @@ div.edit {
     border-radius: 4px;
     font-weight: 600;
 }
-
-

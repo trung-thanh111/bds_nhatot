@@ -20,9 +20,9 @@
                                 e($item->email) .
                                 '</small>',
                         ],
-                        'property' => [
-                            'label' => 'Bất động sản',
-                            'render' => fn($item) => $item->properties?->title ?? 'N/A',
+                        'project' => [
+                            'label' => 'Dự án',
+                            'render' => fn($item) => $item->project?->name ?? 'N/A',
                         ],
                         'status' => [
                             'label' => 'Trang thái',

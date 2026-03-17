@@ -1,15 +1,15 @@
 @include('backend.dashboard.component.breadcrumb', ['title' => $config['seo'][$config['method']]['title']])
 @if ($errors->any())
-<div class="alert alert-danger">
-    <ul>
-        @foreach ($errors->all() as $error)
-        <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
 @endif
 @php
-$url = ($config['method'] == 'create') ? route('visit_request.store') : route('visit_request.update', $record->id);
+    $url = $config['method'] == 'create' ? route('visit_request.store') : route('visit_request.update', $record->id);
 @endphp
 <form action="{{ $url }}" method="post" class="box">
     @csrf
@@ -24,11 +24,14 @@ $url = ($config['method'] == 'create') ? route('visit_request.store') : route('v
                         <div class="row mb15">
                             <div class="col-lg-12">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Bất động sản quan tâm <span class="text-danger">(*)</span></label>
-                                    <select name="property_id" class="form-control setupSelect2">
-                                        <option value="">[Chọn Bất động sản]</option>
-                                        @foreach($properties as $property)
-                                        <option {{ $property->id == old('property_id', (isset($record->property_id)) ? $record->property_id : '') ? 'selected' : '' }} value="{{ $property->id }}">{{ $property->title }}</option>
+                                    <label for="" class="control-label text-left">Dự án quan tâm <span
+                                            class="text-danger">(*)</span></label>
+                                    <select name="project_id" class="form-control setupSelect2">
+                                        <option value="">[Chọn Dự án]</option>
+                                        @foreach ($projects as $project)
+                                            <option
+                                                {{ $project->id == old('project_id', isset($record->project_id) ? $record->project_id : '') ? 'selected' : '' }}
+                                                value="{{ $project->id }}">{{ $project->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -37,12 +40,10 @@ $url = ($config['method'] == 'create') ? route('visit_request.store') : route('v
                         <div class="row mb15">
                             <div class="col-lg-12">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Họ và tên khách hàng <span class="text-danger">(*)</span></label>
-                                    <input
-                                        type="text"
-                                        name="full_name"
-                                        value="{{ old('full_name', ($record->full_name) ?? '' ) }}"
-                                        class="form-control"
+                                    <label for="" class="control-label text-left">Họ và tên khách hàng <span
+                                            class="text-danger">(*)</span></label>
+                                    <input type="text" name="full_name"
+                                        value="{{ old('full_name', $record->full_name ?? '') }}" class="form-control"
                                         autocomplete="off">
                                 </div>
                             </div>
@@ -50,22 +51,18 @@ $url = ($config['method'] == 'create') ? route('visit_request.store') : route('v
                         <div class="row mb15">
                             <div class="col-lg-6">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Email <span class="text-danger">(*)</span></label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value="{{ old('email', ($record->email) ?? '' ) }}"
-                                        class="form-control">
+                                    <label for="" class="control-label text-left">Email <span
+                                            class="text-danger">(*)</span></label>
+                                    <input type="email" name="email"
+                                        value="{{ old('email', $record->email ?? '') }}" class="form-control">
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Số điện thoại <span class="text-danger">(*)</span></label>
-                                    <input
-                                        type="text"
-                                        name="phone"
-                                        value="{{ old('phone', ($record->phone) ?? '' ) }}"
-                                        class="form-control">
+                                    <label for="" class="control-label text-left">Số điện thoại <span
+                                            class="text-danger">(*)</span></label>
+                                    <input type="text" name="phone"
+                                        value="{{ old('phone', $record->phone ?? '') }}" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -73,22 +70,18 @@ $url = ($config['method'] == 'create') ? route('visit_request.store') : route('v
                             <div class="col-lg-6">
                                 <div class="form-row">
                                     <label for="" class="control-label text-left">Ngày hẹn dự kiến</label>
-                                    <input
-                                        type="date"
-                                        name="preferred_date"
-                                        value="{{ old('preferred_date', (isset($record->preferred_date)) ? date('Y-m-d', strtotime($record->preferred_date)) : '') }}"
+                                    <input type="date" name="preferred_date"
+                                        value="{{ old('preferred_date', isset($record->preferred_date) ? date('Y-m-d', strtotime($record->preferred_date)) : '') }}"
                                         class="form-control">
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Giờ hẹn <span class="text-danger">(*)</span></label>
-                                    <input
-                                        type="text"
-                                        name="preferred_time"
-                                        value="{{ old('preferred_time', ($record->preferred_time) ?? '' ) }}"
-                                        class="form-control"
-                                        placeholder="Ví dụ: 10:00 - 11:30">
+                                    <label for="" class="control-label text-left">Giờ hẹn <span
+                                            class="text-danger">(*)</span></label>
+                                    <input type="text" name="preferred_time"
+                                        value="{{ old('preferred_time', $record->preferred_time ?? '') }}"
+                                        class="form-control" placeholder="Ví dụ: 10:00 - 11:30">
                                 </div>
                             </div>
                         </div>
@@ -114,10 +107,18 @@ $url = ($config['method'] == 'create') ? route('visit_request.store') : route('v
                                 <div class="form-row">
                                     <label for="" class="control-label text-left">Trạng thái xử lý</label>
                                     <select name="status" class="form-control setupSelect2">
-                                        <option {{ old('status', $record->status ?? '') == 'pending' ? 'selected' : '' }} value="pending">Chờ xử lý (Pending)</option>
-                                        <option {{ old('status', $record->status ?? '') == 'confirmed' ? 'selected' : '' }} value="confirmed">Đã xác nhận (Confirmed)</option>
-                                        <option {{ old('status', $record->status ?? '') == 'completed' ? 'selected' : '' }} value="completed">Đã hoàn thành (Completed)</option>
-                                        <option {{ old('status', $record->status ?? '') == 'cancelled' ? 'selected' : '' }} value="cancelled">Đã hủy (Cancelled)</option>
+                                        <option
+                                            {{ old('status', $record->status ?? '') == 'pending' ? 'selected' : '' }}
+                                            value="pending">Chờ xử lý (Pending)</option>
+                                        <option
+                                            {{ old('status', $record->status ?? '') == 'confirmed' ? 'selected' : '' }}
+                                            value="confirmed">Đã xác nhận (Confirmed)</option>
+                                        <option
+                                            {{ old('status', $record->status ?? '') == 'completed' ? 'selected' : '' }}
+                                            value="completed">Đã hoàn thành (Completed)</option>
+                                        <option
+                                            {{ old('status', $record->status ?? '') == 'cancelled' ? 'selected' : '' }}
+                                            value="cancelled">Đã hủy (Cancelled)</option>
                                     </select>
                                 </div>
                             </div>
@@ -128,8 +129,10 @@ $url = ($config['method'] == 'create') ? route('visit_request.store') : route('v
                                     <label for="" class="control-label text-left">Nhân viên phụ trách</label>
                                     <select name="assigned_agent_id" class="form-control setupSelect2">
                                         <option value="">[Chọn Nhân viên]</option>
-                                        @foreach($agents as $agent)
-                                        <option {{ $agent->id == old('assigned_agent_id', (isset($record->assigned_agent_id)) ? $record->assigned_agent_id : '') ? 'selected' : '' }} value="{{ $agent->id }}">{{ $agent->full_name }}</option>
+                                        @foreach ($agents as $agent)
+                                            <option
+                                                {{ $agent->id == old('assigned_agent_id', isset($record->assigned_agent_id) ? $record->assigned_agent_id : '') ? 'selected' : '' }}
+                                                value="{{ $agent->id }}">{{ $agent->full_name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -138,7 +141,8 @@ $url = ($config['method'] == 'create') ? route('visit_request.store') : route('v
                         <div class="row mb15">
                             <div class="col-lg-12">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Ghi chú nội bộ (Admin)</label>
+                                    <label for="" class="control-label text-left">Ghi chú nội bộ
+                                        (Admin)</label>
                                     <textarea name="admin_notes" class="form-control" rows="5">{{ old('admin_notes', $record->admin_notes ?? '') }}</textarea>
                                 </div>
                             </div>

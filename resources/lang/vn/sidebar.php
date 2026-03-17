@@ -59,25 +59,25 @@ return [
             ]
         ],
 
-        [
-            'title' => 'Quản lý người dùng',
-            'icon' => 'fa fa-user',
-            'name' => ['user'],
-            'subModule' => [
-                [
-                    'title' => 'Nhóm người dùng',
-                    'route' => 'user/catalogue/index'
-                ],
-                [
-                    'title' => 'Người dùng',
-                    'route' => 'user/index'
-                ],
-                [
-                    'title' => 'Quyền hạn',
-                    'route' => 'permission/index'
-                ]
-            ]
-        ],
+        // [
+        //     'title' => 'Quản lý người dùng',
+        //     'icon' => 'fa fa-user',
+        //     'name' => ['user'],
+        //     'subModule' => [
+        //         [
+        //             'title' => 'Nhóm người dùng',
+        //             'route' => 'user/catalogue/index'
+        //         ],
+        //         [
+        //             'title' => 'Người dùng',
+        //             'route' => 'user/index'
+        //         ],
+        //         [
+        //             'title' => 'Quyền hạn',
+        //             'route' => 'permission/index'
+        //         ]
+        //     ]
+        // ],
         [
             'title' => 'Bài viết',
             'icon' => 'fa fa-file',

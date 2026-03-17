@@ -299,6 +299,11 @@ class ProjectService extends BaseService
         $payload['is_hot']      = ($request->input('is_hot') == 1 || $request->has('is_hot')) ? 1 : 0;
         $payload['is_urgent']   = ($request->input('is_urgent') == 1 || $request->has('is_urgent')) ? 1 : 0;
         $payload['price_negotiable'] = ($request->input('price_negotiable') == 1 || $request->has('price_negotiable')) ? 1 : 0;
+        
+        // Handle nullable agent_id
+        if ($request->has('agent_id') && ($request->input('agent_id') == '0' || empty($request->input('agent_id')))) {
+            $payload['agent_id'] = null;
+        }
 
         // SEO Fields
         $payload['meta_title'] = $request->input('meta_title');
@@ -329,6 +334,7 @@ class ProjectService extends BaseService
             'is_featured',
             'is_hot',
             'is_urgent',
+            'agent_id',
             'sort_order',
             'view_count',
         ];
@@ -409,6 +415,7 @@ class ProjectService extends BaseService
             'is_urgent',
             'sort_order',
             'view_count',
+            'agent_id',
             'published_at',
         ];
     }

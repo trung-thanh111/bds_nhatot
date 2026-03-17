@@ -12,6 +12,7 @@ use App\Repositories\RealEstate\ProjectTypeRepository;
 use App\Repositories\User\ProvinceRepository;
 use App\Http\Requests\RealEstate\Project\StoreRequest;
 use App\Http\Requests\RealEstate\Project\UpdateRequest;
+use App\Repositories\RealEstate\AgentRepo;
 use App\Classes\NestedsetRealEstate;
 
 class ProjectController extends Controller
@@ -22,6 +23,7 @@ class ProjectController extends Controller
     protected $projectPropertyGroupRepository;
     protected $projectTypeRepository;
     protected $provinceRepository;
+    protected $agentRepo;
 
     public function __construct(
         ProjectService $projectService,
@@ -29,7 +31,8 @@ class ProjectController extends Controller
         ProjectCatalogueRepository $projectCatalogueRepository,
         ProjectPropertyGroupRepository $projectPropertyGroupRepository,
         ProjectTypeRepository $projectTypeRepository,
-        ProvinceRepository $provinceRepository
+        ProvinceRepository $provinceRepository,
+        AgentRepo $agentRepo
     ) {
         $this->projectService = $projectService;
         $this->projectRepository = $projectRepository;
@@ -37,6 +40,7 @@ class ProjectController extends Controller
         $this->projectPropertyGroupRepository = $projectPropertyGroupRepository;
         $this->projectTypeRepository = $projectTypeRepository;
         $this->provinceRepository = $provinceRepository;
+        $this->agentRepo = $agentRepo;
     }
 
     public function index(Request $request)
@@ -155,6 +159,7 @@ class ProjectController extends Controller
         $nestedset = new NestedsetRealEstate(['table' => 'project_catalogues']);
         $dropdown = $nestedset->Dropdown(['text' => '[Chọn Nhóm BĐS]']);
         $provinces = $this->provinceRepository->all();
+        $agents = $this->agentRepo->all();
 
         $config = $this->configData('create');
         return view('backend.dashboard.layout', [
@@ -163,7 +168,8 @@ class ProjectController extends Controller
             'propertyGroups' => $propertyGroups,
             'projectTypes' => $projectTypes,
             'dropdown' => $dropdown,
-            'provinces' => $provinces
+            'provinces' => $provinces,
+            'agents' => $agents
         ]);
     }
 
@@ -188,6 +194,7 @@ class ProjectController extends Controller
         $nestedset = new NestedsetRealEstate(['table' => 'project_catalogues']);
         $dropdown = $nestedset->Dropdown(['text' => '[Chọn Nhóm BĐS]']);
         $provinces = $this->provinceRepository->all();
+        $agents = $this->agentRepo->all();
 
         $config = $this->configData('edit');
         return view('backend.dashboard.layout', [
@@ -197,7 +204,8 @@ class ProjectController extends Controller
             'propertyGroups' => $propertyGroups,
             'projectTypes' => $projectTypes,
             'dropdown' => $dropdown,
-            'provinces' => $provinces
+            'provinces' => $provinces,
+            'agents' => $agents
         ]);
     }
 
