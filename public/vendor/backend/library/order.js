@@ -1,6 +1,6 @@
-(function($) {
-	"use strict";
-	var HT = {}; 
+(function ($) {
+    "use strict";
+    window.HT = window.HT || {};
     var _token = $('meta[name="csrf-token"]').attr('content');
 
 
@@ -9,20 +9,20 @@
     }
 
     HT.loadCity = (province_id) => {
-        if(province_id != ''){
+        if (province_id != '') {
             $(".province").val(province_id).trigger('change');
         }
     }
 
     HT.editOrder = () => {
-        $(document).on('click', '.edit-order', function(){
+        $(document).on('click', '.edit-order', function () {
             let _this = $(this)
             let target = _this.attr('data-target')
             let html = ''
             let originalHtml = _this.parents('.ibox').find('.ibox-content').html()
-            if(target === 'description'){
+            if (target === 'description') {
                 html = HT.renderDescriptionOrder(_this)
-            }else if(target == 'customerInfo'){
+            } else if (target == 'customerInfo') {
                 html = HT.renderCustomerOrderInformation()
                 setTimeout(() => {
                     HT.select2();
@@ -40,7 +40,7 @@
     }
 
     HT.cancleEdit = () => {
-        $(document).on('click', '.cancle-edit', function(){
+        $(document).on('click', '.cancle-edit', function () {
             let _this = $(this);
             let originalHtml = decodeURIComponent(atob(_this.attr('data-html')))
             _this.html('Sửa').removeClass('cancle-edit').addClass('edit-order')
@@ -51,8 +51,8 @@
     HT.renderCustomerOrderInformation = () => {
 
         let data = {
-            fullname : $('.fullname').text(),
-            email : $('.email').text(),
+            fullname: $('.fullname').text(),
+            email: $('.email').text(),
             phone: $('.phone').text(),
             address: $('.address').text(),
             ward_id: $('.ward_id').val(),
@@ -136,13 +136,13 @@
         setTimeout(() => {
             HT.loadCity(data.province_id)
         }, 0)
-        return  html;
+        return html;
     }
 
     HT.provincesList = () => {
         let html = ''
-        for(let i = 0; i < provinces.length; i++){
-            html += '<option value="'+provinces[i].id+'">'+provinces[i].name+'</option>'
+        for (let i = 0; i < provinces.length; i++) {
+            html += '<option value="' + provinces[i].id + '">' + provinces[i].name + '</option>'
         }
         return html
     }
@@ -151,11 +151,11 @@
 
         let inputValue = _this.parents('.ibox').find('.ibox-content').text().trim()
 
-        return '<input class="form-control ajax-edit" name="description"  data-field="description" value="'+inputValue+'" data-description="'+inputValue+'">';
+        return '<input class="form-control ajax-edit" name="description"  data-field="description" value="' + inputValue + '" data-description="' + inputValue + '">';
     }
 
     HT.updateDescription = () => {
-        $(document).on('change', '.ajax-edit', function(){
+        $(document).on('change', '.ajax-edit', function () {
 
             let _this = $(this)
             let field = _this.attr('data-field')
@@ -173,18 +173,18 @@
     }
 
     HT.getLocation = () => {
-        $(document).on('change', '.location', function(){
+        $(document).on('change', '.location', function () {
             let _this = $(this)
             let option = {
-                'data' : {
-                    'location_id' : _this.val(),
+                'data': {
+                    'location_id': _this.val(),
                 },
-                'target' : _this.attr('data-target')
+                'target': _this.attr('data-target')
             }
 
 
             HT.sendDataTogetLocation(option)
-            
+
         })
     }
 
@@ -193,22 +193,22 @@
         let district_id = $('.district_id').val()
         let ward_id = $('.ward_id').val()
         $.ajax({
-            url: 'ajax/location/getLocation', 
-            type: 'GET', 
+            url: 'ajax/location/getLocation',
+            type: 'GET',
             data: option,
-            dataType: 'json', 
-            success: function(res) {
+            dataType: 'json',
+            success: function (res) {
 
-               $('.'+option.target).html(res.html)
+                $('.' + option.target).html(res.html)
 
-                if(district_id != '' && option.target == 'districts'){
+                if (district_id != '' && option.target == 'districts') {
                     $('.districts').val(district_id).trigger('change')
                 }
-        
-                if(ward_id != '' && option.target == 'wards'){
+
+                if (ward_id != '' && option.target == 'wards') {
                     $('.wards').val(ward_id).trigger('change')
                 }
-              
+
             }
         });
     }
@@ -216,15 +216,15 @@
 
     HT.ajaxUpdateOrderInfo = (option, _this) => {
         $.ajax({
-            url: 'ajax/order/update', 
-            type: 'POST', 
+            url: 'ajax/order/update',
+            type: 'POST',
             data: option,
-            dataType: 'json', 
-            success: function(res) {
-                if(res.error == 10){
-                    if(_this.parents('.ibox').find('.cancle-edit').attr('data-target') == 'description'){
+            dataType: 'json',
+            success: function (res) {
+                if (res.error == 10) {
+                    if (_this.parents('.ibox').find('.cancle-edit').attr('data-target') == 'description') {
                         HT.renderDescriptionHtml(option.payload, _this.parents('.ibox'));
-                    }else if(_this.parents('.ibox').find('.cancle-edit').attr('data-target') == 'customerInfo'){
+                    } else if (_this.parents('.ibox').find('.cancle-edit').attr('data-target') == 'customerInfo') {
                         HT.renderCustomerInfoHtml(res);
                     }
                 }
@@ -271,17 +271,17 @@
         $('.district_id').val(res.order.district_id)
         $('.province_id').val(res.order.province_id)
 
-        $('.order-customer-information').parents('.ibox').find('.cancle-edit').removeClass('cancle-edit').addClass('edit-order').attr('data-html','').html('Sửa')
+        $('.order-customer-information').parents('.ibox').find('.cancle-edit').removeClass('cancle-edit').addClass('edit-order').attr('data-html', '').html('Sửa')
     }
 
     HT.renderDescriptionHtml = (payload, target) => {
         target.find('.ibox-content').html(payload.description)
-        target.find('.cancle-edit').removeClass('cancle-edit').addClass('edit-order').attr('data-html','').html('Sửa')
+        target.find('.cancle-edit').removeClass('cancle-edit').addClass('edit-order').attr('data-html', '').html('Sửa')
     }
 
 
     HT.saveCustomer = () => {
-        $(document).on('click', '.saveCustomer', function(){
+        $(document).on('click', '.saveCustomer', function () {
             let _this = $(this)
             let option = {
                 id: $('.orderId').val(),
@@ -301,11 +301,11 @@
     }
 
     HT.updateField = () => {
-        $(document).on('click', '.updateField', function(){
+        $(document).on('click', '.updateField', function () {
             let _this = $(this)
             let option = {
                 payload: {
-                    [_this.attr('data-field')] : _this.attr('data-value')
+                    [_this.attr('data-field')]: _this.attr('data-value')
                 },
                 id: $('.orderId').val(),
                 _token: _token
@@ -314,12 +314,12 @@
             // HT.createOrderConfirmSection(_this)
 
             $.ajax({
-                url: 'ajax/order/update', 
-                type: 'POST', 
+                url: 'ajax/order/update',
+                type: 'POST',
                 data: option,
-                dataType: 'json', 
-                success: function(res) {
-                    if(res.error == 10){
+                dataType: 'json',
+                success: function (res) {
+                    if (res.error == 10) {
                         HT.createOrderConfirmSection(_this)
                     }
                 },
@@ -328,11 +328,11 @@
     }
 
     HT.updateBadge = () => {
-        $(document).on('change', '.updateBadge', function(){
+        $(document).on('change', '.updateBadge', function () {
             let _this = $(this)
             let option = {
                 payload: {
-                    [_this.attr('data-field')] : _this.val()
+                    [_this.attr('data-field')]: _this.val()
                 },
                 id: _this.parents('tr').find('.checkBoxItem').val(),
                 _token: _token
@@ -341,21 +341,21 @@
             let confirmStatus = _this.parents('tr').find('.confirm').val()
             // console.log(confirmStatus);
             toastr.clear()
-            if(confirmStatus != 'pending'){
+            if (confirmStatus != 'pending') {
                 $.ajax({
-                    url: 'ajax/order/update', 
-                    type: 'POST', 
+                    url: 'ajax/order/update',
+                    type: 'POST',
                     data: option,
-                    dataType: 'json', 
-                    success: function(res) {
-                        if(res.error === 10){
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.error === 10) {
                             toastr.success('Cập nhật trạng thái thành công', 'Thông báo từ hệ thống!')
-                        }else{
+                        } else {
                             toastr.error('Có vấn đề xảy ra! Hãy thử lại', 'Thông báo từ hệ thống!')
                         }
                     },
                 });
-            }else{
+            } else {
                 // let originalStatus = _this.siblings('.changeOrderStatus').val()
                 toastr.error('Bạn Phải xác nhận đơn hàng trước khi thực hiện cập nhật này', 'Thông báo từ hệ thống!')
             }
@@ -371,27 +371,27 @@
         $('.confirm-box').find('img').attr('src', BASE_URL + correctImage)
         $('.isConfirm').html(_this.attr('data-title'))
 
-        if(_this.attr('data-value') == 'confirm'){
+        if (_this.attr('data-value') == 'confirm') {
             $('.confirm-block').html('Đã xác nhận')
             $('.cancle-block').html(button)
         }
 
-        if(_this.attr('data-value') == 'cancle'){
-           _this.parents('.cancle-block').html('Đơn hàng đã được hủy')
+        if (_this.attr('data-value') == 'cancle') {
+            _this.parents('.cancle-block').html('Đơn hàng đã được hủy')
         }
 
-        
+
     }
 
-	$(document).ready(function(){
-       HT.editOrder()
-       HT.updateDescription()
-       HT.cancleEdit()
-       HT.getLocation()
-       HT.saveCustomer()
-       HT.updateField()
-       HT.updateBadge()
-	});
+    $(document).ready(function () {
+        HT.editOrder()
+        HT.updateDescription()
+        HT.cancleEdit()
+        HT.getLocation()
+        HT.saveCustomer()
+        HT.updateField()
+        HT.updateBadge()
+    });
 
 })(jQuery);
 

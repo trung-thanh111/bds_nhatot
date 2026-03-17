@@ -1,55 +1,55 @@
-(function($) {
-	"use strict";
-	var HT = {}; 
+(function ($) {
+    "use strict";
+window.HT = window.HT || {}; var HT = window.HT;
 
     HT.seoPreview = () => {
-        $('input[name=meta_title]').on('keyup', function(){
+        $('input[name=meta_title]').on('keyup', function () {
             let input = $(this)
             let value = input.val()
             $('.meta-title').html(value)
         })
 
 
-       $('.seo-canonical').each(function(){
+        $('.seo-canonical').each(function () {
             let _this = $(this)
             _this.css({
-                'padding-left':   parseInt($('.baseUrl').outerWidth()) + 10
+                'padding-left': parseInt($('.baseUrl').outerWidth()) + 10
             })
-       })
-
-       $('input[name=canonical]').on('keyup', function(){
-            let input = $(this)
-            let value = HT.removeUtf8(input.val())
-            $('.canonical').html(BASE_URL + value + SUFFIX) 
         })
 
-       
+        $('input[name=canonical]').on('keyup', function () {
+            let input = $(this)
+            let value = HT.removeUtf8(input.val())
+            $('.canonical').html(BASE_URL + value + SUFFIX)
+        })
 
 
-        $(document).on('keyup', '.change-title', function(e){
+
+
+        $(document).on('keyup', '.change-title', function (e) {
             let _this = $(this)
             let flag = _this.attr('data-flag')
             let canonical = HT.removeUtf8(_this.val())
-            if(flag == 0){
+            if (flag == 0) {
                 $('.seo-canonical').val(canonical).trigger('keyup')
             }
         })
     }
 
     HT.checkSeoDescriptionLength = () => {
-        $('textarea[name=meta_description]').on('keyup change', function(){
+        $('textarea[name=meta_description]').on('keyup change', function () {
             let input = $(this)
             let value = input.val()
             $('.countD').html(value.length)
             $('.meta-description').html(value)
-            if(value.length > 160){
+            if (value.length > 160) {
                 input.css({
                     'border': '1px solid red'
                 })
                 $('.countD').css({
                     'color': 'red'
                 })
-            }else{
+            } else {
                 input.css({
                     'border': '1px solid #c4cdd5'
                 })
@@ -79,11 +79,11 @@
 
 
 
-	$(document).ready(function(){
+    $(document).ready(function () {
         HT.seoPreview()
         HT.checkSeoDescriptionLength()
-	});
+    });
 
-    
+
 
 })(jQuery);

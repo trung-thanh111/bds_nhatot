@@ -1,6 +1,6 @@
-(function($) {
-	"use strict";
-	var HT = {}; 
+(function ($) {
+    "use strict";
+window.HT = window.HT || {}; var HT = window.HT;
     var typingTimer;
     var doneTyingInterval = 500; // 1s
 
@@ -10,104 +10,104 @@
 
 
     HT.promotionSource = () => {
-        $(document).on('click', '.chooseSource', function(){
+        $(document).on('click', '.chooseSource', function () {
             let _this = $(this)
             let flag = (_this.attr('id') == 'allSource') ? true : false;
-            if(flag){
+            if (flag) {
                 _this.parents('.ibox-content').find('.source-wrapper').remove()
-            }else{
+            } else {
                 $.ajax({
-                    url: 'ajax/source/getAllSource', 
-                    type: 'GET', 
+                    url: 'ajax/source/getAllSource',
+                    type: 'GET',
                     // data: option,
-                    dataType: 'json', 
-                    success: function(res) {
+                    dataType: 'json',
+                    success: function (res) {
                         let sourceData = res.data
-                        if(!$('.source-wrapper').length){
+                        if (!$('.source-wrapper').length) {
                             let sourceHtml = HT.renderPromotionSource(sourceData).prop('outerHTML')
                             _this.parents('.ibox-content').append(sourceHtml)
                             HT.promotionMultipleSelect2()
-                        } 
+                        }
                     },
                 });
 
 
-                
+
             }
         })
     }
 
     HT.renderPromotionSource = (sourceData) => {
-        
+
         let wrapper = $('<div>').addClass('source-wrapper')
         // if(sourceData.length){
-            let select = $('<select>')
-                        .addClass('multipleSelect2')
-                        .attr('name', 'sourceValue[]')
-                        .attr('multiple', true)
-            
-            for(let i = 0; i < sourceData.length; i++ ){
-                let option = $('<option>').attr('value', sourceData[i].id).text(sourceData[i].name)
-                select.append(option)
-            }
-            wrapper.append(select)
+        let select = $('<select>')
+            .addClass('multipleSelect2')
+            .attr('name', 'sourceValue[]')
+            .attr('multiple', true)
+
+        for (let i = 0; i < sourceData.length; i++) {
+            let option = $('<option>').attr('value', sourceData[i].id).text(sourceData[i].name)
+            select.append(option)
+        }
+        wrapper.append(select)
         // }
         return wrapper
     }
 
     HT.chooseCustomerCondition = () => {
-        $(document).on('change', '.chooseApply', function(){
+        $(document).on('change', '.chooseApply', function () {
             let _this = $(this)
             let id = _this.attr('id')
-            if(id === 'allApply'){
+            if (id === 'allApply') {
                 _this.parents('.ibox-content').find('.apply-wrapper').remove()
-            }else{
+            } else {
                 let applyHtml = HT.renderApplyCondition().prop('outerHTML')
                 _this.parents('.ibox-content').append(applyHtml)
                 HT.promotionMultipleSelect2()
             }
         })
     }
-    
+
     HT.renderApplyCondition = () => {
 
         let applyConditionData = JSON.parse($('.applyStatusList').val())
         let wrapper = $('<div>').addClass('apply-wrapper')
         let wrapperContionItem = $('<div>').addClass('wrapper-condition')
-        if(applyConditionData.length){
+        if (applyConditionData.length) {
             let select = $('<select>')
-                        .addClass('multipleSelect2 conditionItem')
-                        .attr('name', 'applyValue[]')
-                        .attr('multiple', true)
-            
-            for(let i = 0; i < applyConditionData.length; i++ ){
+                .addClass('multipleSelect2 conditionItem')
+                .attr('name', 'applyValue[]')
+                .attr('multiple', true)
+
+            for (let i = 0; i < applyConditionData.length; i++) {
                 let option = $('<option>').attr('value', applyConditionData[i].id).text(applyConditionData[i].name)
                 select.append(option)
             }
             wrapper.append(select)
             wrapper.append(wrapperContionItem)
         }
-        return wrapper 
+        return wrapper
     }
 
     HT.chooseApplyItem = () => {
-        $(document).on('change', '.conditionItem', function(){
-            let _this  = $(this)
+        $(document).on('change', '.conditionItem', function () {
+            let _this = $(this)
             let condition = {
                 value: _this.val(),
                 label: _this.select2('data')
             }
 
 
-            $('.wrapperConditionItem').each(function(){
+            $('.wrapperConditionItem').each(function () {
                 let _item = $(this)
                 let itemClass = _item.attr('class').split(' ')[2]
-                if(condition.value.includes(itemClass) == false){
+                if (condition.value.includes(itemClass) == false) {
                     _item.remove()
                 }
             })
 
-            for(let i = 0; i < condition.value.length; i++){
+            for (let i = 0; i < condition.value.length; i++) {
                 let value = condition.value[i]
                 HT.createConditionItem(value, condition.label[i].text)
             }
@@ -116,52 +116,52 @@
 
     HT.checkConditionItemSet = () => {
         let checkedValue = $('.conditionItemSelected').val()
-        if(checkedValue.length && $('.conditionItem').length){
+        if (checkedValue.length && $('.conditionItem').length) {
             checkedValue = JSON.parse(checkedValue)
             $('.conditionItem').val(checkedValue).trigger('change')
         }
     }
 
     HT.createConditionItem = (value, label) => {
-        if(!$('.wrapper-condition').find('.' + value).elExist()){
+        if (!$('.wrapper-condition').find('.' + value).elExist()) {
             $.ajax({
-                url: 'ajax/dashboard/getPromotionConditionValue', 
-                type: 'GET', 
+                url: 'ajax/dashboard/getPromotionConditionValue',
+                type: 'GET',
                 data: {
                     value: value
                 },
-                dataType: 'json', 
-                success: function(res) {
+                dataType: 'json',
+                success: function (res) {
                     let optionData = res.data
-                    let conditionItem = $('<div>').addClass('wrapperConditionItem mt10 '+ value)
+                    let conditionItem = $('<div>').addClass('wrapperConditionItem mt10 ' + value)
                     let conditionHiddenInput = $('.condition_input_' + value)
                     let conditionHiddenInputValue = []
-                    if(conditionHiddenInput.length){
+                    if (conditionHiddenInput.length) {
                         conditionHiddenInputValue = JSON.parse(conditionHiddenInput.val())
                     }
-                    
+
                     let select = $('<select>')
-                                    .addClass('multipleSelect2 objectItem')
-                                    .attr('name', value + "[]")
-                                    .attr('multiple', true)
-                    for(let i = 0; i < optionData.length; i++){
+                        .addClass('multipleSelect2 objectItem')
+                        .attr('name', value + "[]")
+                        .attr('multiple', true)
+                    for (let i = 0; i < optionData.length; i++) {
                         let option = $('<option>').attr('value', optionData[i].id)
-                                                    .text(optionData[i].text)
+                            .text(optionData[i].text)
                         select.append(option)
                     }
                     select.val(conditionHiddenInputValue).trigger('change')
-                    
+
 
                     const conditionLabel = HT.createConditionLabel(label, value)
                     conditionItem.append(conditionLabel)
                     conditionItem.append(select)
-            
-                   
+
+
                     $('.wrapper-condition').append(conditionItem)
                     HT.promotionMultipleSelect2()
                 },
             });
-        } 
+        }
     }
 
     HT.createConditionLabel = (label, value) => {
@@ -176,9 +176,9 @@
         flex.append(conditionLabel)
         wrapperBox.append(flex)
         return wrapperBox.prop('outerHTML')
-        
+
     }
-   
+
     HT.promotionMultipleSelect2 = () => {
         $('.multipleSelect2').select2({
             // minimumInputLength: 2,
@@ -201,13 +201,13 @@
             //         }
             //     },
             //     cache: true
-              
+
             //   }
         });
     }
 
     HT.deleteAmountRangeCondition = () => {
-        $(document).on('click','.delete-order-amount-range-condition', function(){
+        $(document).on('click', '.delete-order-amount-range-condition', function () {
             let _this = $(this)
             _this.parents('tr').remove()
         })
@@ -215,7 +215,7 @@
 
     HT.renderOrderRangeConditionContainer = () => {
 
-        $(document).on('change', '.promotionMethod', function(){
+        $(document).on('change', '.promotionMethod', function () {
             let _this = $(this)
             let option = _this.val()
             switch (option) {
@@ -234,7 +234,7 @@
         })
 
         let method = $('.preload_promotionMethod').val()
-        if(method.length && typeof method !== 'undefined'){
+        if (method.length && typeof method !== 'undefined') {
             $('.promotionMethod').val(method).trigger('change')
         }
     }
@@ -250,7 +250,7 @@
             min_order_value: ['0'],
             max_order_value: ['0'],
             max_discount_amount: ['0'],
-            discount_value : ['0'],
+            discount_value: ['0'],
             discount_type: ['FIXED'],
         }
 
@@ -298,8 +298,8 @@
                         value="${$discount_value}"
                     >
                     <select name="TOTAL_ORDERS[discount_type]" class="multipleSelect2" id="">
-                        <option value="FIXED" ${ ($discount_type == 'FIXED') ? 'selected' : '' }>đ</option>
-                        <option value="PERCENTAGE" ${ ($discount_type == 'PERCENTAGE') ? 'selected' : '' }>%</option>
+                        <option value="FIXED" ${($discount_type == 'FIXED') ? 'selected' : ''}>đ</option>
+                        <option value="PERCENTAGE" ${($discount_type == 'PERCENTAGE') ? 'selected' : ''}>%</option>
                     </select>
                 </div>
             </td>
@@ -307,7 +307,7 @@
                 <div class="delete-some-item delete-order-amount-range-condition"><svg data-icon="TrashSolidLarge" aria-hidden="true" focusable="false" width="15" height="16" viewBox="0 0 15 16" class="bem-Svg" style="display: block;"><path fill="currentColor" d="M2 14a1 1 0 001 1h9a1 1 0 001-1V6H2v8zM13 2h-3a1 1 0 01-1-1H6a1 1 0 01-1 1H1v2h13V2h-1z"></path></svg></div>
             </td>
         </tr>`
-        
+
 
         let html = `<div class="order_amount_range">
             <table class="table table-striped">
@@ -335,7 +335,7 @@
             min_shipping_value: ['0'],
             max_shipping_value: ['0'],
             max_discount_amount: ['0'],
-            discount_value : ['0'],
+            discount_value: ['0'],
             discount_type: ['FIXED'],
         }
 
@@ -383,8 +383,8 @@
                         value="${$discount_value}"
                     >
                     <select name="SHIPPING_ORDERS[discount_type]" class="multipleSelect2" id="">
-                        <option value="FIXED" ${ ($discount_type == 'FIXED') ? 'selected' : '' }>đ</option>
-                        <option value="PERCENTAGE" ${ ($discount_type == 'PERCENTAGE') ? 'selected' : '' }>%</option>
+                        <option value="FIXED" ${($discount_type == 'FIXED') ? 'selected' : ''}>đ</option>
+                        <option value="PERCENTAGE" ${($discount_type == 'PERCENTAGE') ? 'selected' : ''}>%</option>
                     </select>
                 </div>
             </td>
@@ -392,7 +392,7 @@
                 <div class="delete-some-item delete-order-amount-range-condition"><svg data-icon="TrashSolidLarge" aria-hidden="true" focusable="false" width="15" height="16" viewBox="0 0 15 16" class="bem-Svg" style="display: block;"><path fill="currentColor" d="M2 14a1 1 0 001 1h9a1 1 0 001-1V6H2v8zM13 2h-3a1 1 0 01-1-1H6a1 1 0 01-1 1H1v2h13V2h-1z"></path></svg></div>
             </td>
         </tr>`
-        
+
 
         let html = `<div class="order_amount_range">
             <table class="table table-striped">
@@ -423,14 +423,14 @@
 
         let className = `${moduleType == 'ALL_PRODUCTS' ? 'readonly' : 'product-quantity'}`;
 
-        for(let key in selectData){
-            selectHtml += '<option '+ ((moduleType.length && typeof moduleType !== 'undefined' && moduleType == key) ? 'selected' : '') +'  value="'+key+'" data-model="Product"> '+selectData[key]+' </option>'
+        for (let key in selectData) {
+            selectHtml += '<option ' + ((moduleType.length && typeof moduleType !== 'undefined' && moduleType == key) ? 'selected' : '') + '  value="' + key + '" data-model="Product"> ' + selectData[key] + ' </option>'
         }
 
         let preloadData = JSON.parse($('.input_product_and_quantity').val()) || {
-            max_discount_amount : ['0'],
-            discount_value : ['0'],
-            discount_type : ['FIXED'],
+            max_discount_amount: ['0'],
+            discount_value: ['0'],
+            discount_type: ['FIXED'],
         }
         let html = `<div class="product_and_quantity">
             <div class="choose-module mt20 ">
@@ -484,8 +484,8 @@
                                     value="${preloadData.discount_value}"
                                 >
                                 <select name="PRODUCT_VOUCHER[discount_type]" class="multipleSelect2" id="">
-                                <option value="FIXED" ${ (preloadData.discount_type == 'FIXED') ? 'selected' : '' }>đ</option>
-                                <option value="PERCENTAGE" ${ (preloadData.discount_type == 'PERCENTAGE') ? 'selected' : '' }>%</option>
+                                <option value="FIXED" ${(preloadData.discount_type == 'FIXED') ? 'selected' : ''}>đ</option>
+                                <option value="PERCENTAGE" ${(preloadData.discount_type == 'PERCENTAGE') ? 'selected' : ''}>%</option>
                                 </select>
                             </div>
                         </td>
@@ -505,31 +505,31 @@
 
     HT.loadProduct = (option) => {
         $.ajax({
-            url: 'ajax/product/loadProductVoucher', 
-            type: 'GET', 
+            url: 'ajax/product/loadProductVoucher',
+            type: 'GET',
             data: option,
-            dataType: 'json', 
-            success: function(res) {
+            dataType: 'json',
+            success: function (res) {
                 HT.fillToObjectList(res)
             },
         });
     }
 
     HT.getPaginationMenu = () => {
-        $(document).on('click', '.page-link', function(e){
+        $(document).on('click', '.page-link', function (e) {
             e.preventDefault()
             let _this = $(this)
             let option = {
                 model: $('.select-product-and-quantity').val(),
                 page: _this.text(),
-                keyword : $('.search-model').val()
+                keyword: $('.search-model').val()
             }
             HT.loadProduct(option)
         })
     }
 
     HT.productQuantityListProduct = () => {
-        $(document).on('click', '.product-quantity', function(e){
+        $(document).on('click', '.product-quantity', function (e) {
             let option = {
                 model: $('.select-product-and-quantity option:selected').data('model'),
             }
@@ -538,7 +538,7 @@
     }
 
     HT.fillToObjectList = (data) => {
-        
+
         switch (data.model) {
             case "Product":
                 HT.fillProductToList(data.objects)
@@ -549,16 +549,16 @@
 
     HT.fillProductToList = (object) => {
         let html = ''
-        if(object.data.length){
-            let model = $('.select-product-and-quantity').val() 
-            for(let i = 0; i < object.data.length; i++){
+        if (object.data.length) {
+            let model = $('.select-product-and-quantity').val()
+            for (let i = 0; i < object.data.length; i++) {
                 let image = object.data[i].image
                 let name = object.data[i].name
                 let product_id = object.data[i].id
                 let code = object.data[i].code
                 let price = object.data[i].price
-                let classBox = model + '_' + product_id 
-                let isChecked = ($('.boxWrapper .'+classBox+'').length ) ? true : false
+                let classBox = model + '_' + product_id
+                let isChecked = ($('.boxWrapper .' + classBox + '').length) ? true : false
 
                 html += ` <div 
                     class="search-object-item" 
@@ -573,7 +573,7 @@
                                 name=""
                                 value="${product_id}"
                                 class="input-checkbox"
-                                ${ (isChecked) ? 'checked' : '' }
+                                ${(isChecked) ? 'checked' : ''}
                             >
                             <span class="image img-scaledown">
                                 <img src="${image}" alt="">
@@ -589,15 +589,15 @@
                     </div>
                 </div>
             </div>`
-           }
+            }
         }
         html = html + HT.paginationLinks(object.links).prop('outerHTML')
-        
+
         $('.search-list').html(html)
     }
 
     HT.changePromotionMethod = () => {
-        $(document).on('change', '.select-product-and-quantity', function(){
+        $(document).on('change', '.select-product-and-quantity', function () {
             $('.fixGrid6').remove()
             objectChoose = []
         })
@@ -605,44 +605,44 @@
 
     HT.paginationLinks = (links) => {
         let nav = $('<nav>')
-        if(links.length > 3){
+        if (links.length > 3) {
             let paginationUl = $('<ul>').addClass('pagination')
-            $.each(links, function(index, link){
+            $.each(links, function (index, link) {
                 let liClass = 'page-item'
-                if(link.active){
+                if (link.active) {
                     liClass += ' active disabled'
-                }else if(!link.url){
+                } else if (!link.url) {
                     liClass += ' disabled'
                 }
-    
+
                 let li = $('<li>').addClass(liClass)
-                if(link.label == 'pagination.previous'){
+                if (link.label == 'pagination.previous') {
                     let span = $('<span>').addClass('page-link').attr('aria-hidden', true).html('‹')
                     li.append(span)
-                }else if(link.label == 'pagination.next'){
+                } else if (link.label == 'pagination.next') {
                     let span = $('<a>').addClass('page-link').attr('aria-hidden', true).html('›')
                     li.append(span)
-                }else if(link.url){
+                } else if (link.url) {
                     let a = $('<a>').addClass('page-link').text(link.label).attr('href', link.url).attr('data-page', link.label)
                     li.append(a)
                 }
                 paginationUl.append(li)
-            })  
+            })
             nav.append(paginationUl)
         }
         return nav
     }
 
     HT.searchObject = () => {
-        $(document).on('keyup', '.search-model', function(e){
+        $(document).on('keyup', '.search-model', function (e) {
             let _this = $(this)
             let keyword = _this.val()
             let option = {
                 model: $('.select-product-and-quantity').val(),
-                keyword : keyword
+                keyword: keyword
             }
             clearTimeout(typingTimer);
-            typingTimer = setTimeout(function(){
+            typingTimer = setTimeout(function () {
                 HT.loadProduct(option)
             }, doneTyingInterval)
         })
@@ -651,7 +651,7 @@
     var objectChoose = []
 
     HT.chooseProductPromotion = () => {
-        $(document).on('click', '.search-object-item', function(e){
+        $(document).on('click', '.search-object-item', function (e) {
             e.preventDefault()
             let _this = $(this)
             let isChecked = _this.find('input[type=checkbox]').prop('checked')
@@ -659,10 +659,10 @@
                 product_id: _this.attr('data-productid'),
                 name: _this.attr('data-name'),
             }
-            if(isChecked){
+            if (isChecked) {
                 objectChoose = objectChoose.filter(item => item.product_id !== objectItem.product_id)
                 _this.find('input[type=checkbox]').prop('checked', false)
-            }else{
+            } else {
                 objectChoose.push(objectItem)
                 _this.find('input[type=checkbox]').prop('checked', true)
             }
@@ -672,25 +672,25 @@
 
     HT.confirmProductPromotion = () => {
 
-        let preloadObject =  JSON.parse($('.input_object').val()) || {
+        let preloadObject = JSON.parse($('.input_object').val()) || {
             id: [],
             name: [],
         }
 
         let objectArray = []
-        if(preloadObject.id && preloadObject.id.length > 0){
+        if (preloadObject.id && preloadObject.id.length > 0) {
             objectArray = preloadObject.id.map((id, index) => ({
                 product_id: id || 'null',
-                name: preloadObject.name[index] || 'null', 
+                name: preloadObject.name[index] || 'null',
             }))
         }
-        
-        if(objectArray.length && typeof objectArray !== 'undefined'){
+
+        if (objectArray.length && typeof objectArray !== 'undefined') {
             let preloadHtml = HT.renderBoxWrapper(objectArray)
             HT.checkFixGrid(preloadHtml)
         }
-        $(document).on('click', '.confirm-product-promotion', function(e){
-            
+        $(document).on('click', '.confirm-product-promotion', function (e) {
+
             let html = HT.renderBoxWrapper(objectChoose)
             HT.checkFixGrid(html)
             $('#findProduct').modal('hide')
@@ -701,11 +701,11 @@
 
         let html = ''
         let model = $('.select-product-and-quantity').val()
-        if(objectData.length){
-            for(let i = 0; i < objectData.length; i++){
-                let { product_id, name} = objectData[i]
+        if (objectData.length) {
+            for (let i = 0; i < objectData.length; i++) {
+                let { product_id, name } = objectData[i]
                 let classBox = `${model}_${product_id}`
-                if(!$(`.boxWrapper .${classBox}`).length){
+                if (!$(`.boxWrapper .${classBox}`).length) {
                     html += `<div class="fixGrid6 ${classBox}">
                         <div class="goods-item">
                             <a class="goods-item-name" title="${name}">${name}</a>
@@ -725,10 +725,10 @@
     }
 
     HT.checkFixGrid = (html) => {
-        if($('.fixGrid6').elExist){
-           $('.boxSearchIcon').remove()
-           $('.boxWrapper').prepend(html)
-        }else{
+        if ($('.fixGrid6').elExist) {
+            $('.boxSearchIcon').remove()
+            $('.boxWrapper').prepend(html)
+        } else {
             $('.fixGrid6').remove()
             $('.boxWrapper').prepend(HT.boxSearchIcon())
         }
@@ -741,19 +741,19 @@
     }
 
     HT.deleteGoodsItem = () => {
-        $(document).on('click', '.delete-goods-item', function(e){
+        $(document).on('click', '.delete-goods-item', function (e) {
             e.stopPropagation()
             let _button = $(this)
             _button.parents('.fixGrid6').remove()
         })
     }
 
-    HT.disableSelect = () =>{
-        $(document).on('change','.select-product-and-quantity', function(){
+    HT.disableSelect = () => {
+        $(document).on('change', '.select-product-and-quantity', function () {
             let _this = $(this)
-            if(_this.val() == 'ALL_PRODUCTS'){
+            if (_this.val() == 'ALL_PRODUCTS') {
                 $('.voucher .product-quantity').removeAttr('data-toggle data-target').removeClass('product-quantity').addClass('readonly');
-            }else{
+            } else {
                 $('.voucher .readonly').attr('data-toggle', 'modal').attr('data-target', '#findProduct').removeClass('readonly').addClass('product-quantity');
             }
         })
@@ -764,7 +764,7 @@
             $('.readonly').removeAttr('data-toggle data-target');
         });
     };
-    
+
     HT.checked = () => {
         $(document).ready(function () {
             $('input[name="combine_promotion"]').on('change', function () {
@@ -772,8 +772,8 @@
             });
         });
     }
-   
-	$(document).ready(function(){
+
+    $(document).ready(function () {
         HT.checked()
         HT.removeModal()
         HT.disableSelect()
@@ -791,7 +791,7 @@
         HT.deleteGoodsItem()
         HT.changePromotionMethod()
         HT.checkConditionItemSet()
-	});
+    });
 
 
 })(jQuery);

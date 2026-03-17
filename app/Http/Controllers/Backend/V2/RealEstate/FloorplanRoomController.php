@@ -72,7 +72,7 @@ class FloorplanRoomController extends Controller
         }
         $config = [
             ...$this->config(),
-            'method' => 'update',
+            'method' => 'edit',
             'extendJs' => true
         ];
         $floorplans = $this->floorplanService->all();
@@ -107,7 +107,7 @@ class FloorplanRoomController extends Controller
         $this->checkExists($record);
         $config = [
             ...$this->config(),
-            'method' => 'update'
+            'method' => 'edit'
         ];
         $template = 'backend.floorplan_room.delete';
         return view('backend.dashboard.layout', compact(

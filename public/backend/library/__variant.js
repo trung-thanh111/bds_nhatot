@@ -1,6 +1,6 @@
 (function($) {
 	"use strict";
-	var HT = {}; 
+window.HT = window.HT || {}; var HT = window.HT;
 
     HT.setupProductVariant = () => {
         if($('.turnOnVariant').length){

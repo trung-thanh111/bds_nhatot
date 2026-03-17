@@ -66,7 +66,7 @@ class GalleryCatalogueController extends Controller
         }
         $config = [
             ...$this->config(),
-            'method' => 'update',
+            'method' => 'edit',
             'extendJs' => true
         ];
         $template = 'backend.gallery.catalogue.store';
@@ -99,7 +99,7 @@ class GalleryCatalogueController extends Controller
         $this->checkExists($record);
         $config = [
             ...$this->config(),
-            'method' => 'update'
+            'method' => 'edit'
         ];
         $template = 'backend.gallery.catalogue.delete';
         return view('backend.dashboard.layout', compact(

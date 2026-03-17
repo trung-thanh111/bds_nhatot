@@ -24,6 +24,12 @@
 <script src="{{ asset('vendor/backend/library/variant.js') }}"></script>
 <script src="{{ asset('vendor/backend/library/voucher.js') }}"></script>
 <script src="{{ asset('vendor/backend/library/widget.js') }}"></script>
+@if (isset($config['js']) && is_array($config['js']))
+    @foreach ($config['js'] as $key => $val)
+        {!! '<script src="' . $val . '"></script>' !!}
+    @endforeach
+@endif
+
 <script src="{{ asset('vendor/backend/library/library.js') }}"></script>
 
 <!-- Plugin -->

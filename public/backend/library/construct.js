@@ -1,9 +1,9 @@
-(function($) {
-	"use strict";
-	var HT = {}; 
+(function ($) {
+    "use strict";
+window.HT = window.HT || {}; var HT = window.HT;
     var _token = $('meta[name="csrf-token"]').attr('content');
     var typingTimer;
-    var doneTyingInterval = 100; 
+    var doneTyingInterval = 100;
 
     $.fn.elExist = function () {
         return this.length > 0
@@ -11,51 +11,51 @@
 
 
     HT.searchModel = () => {
-        $(document).on('keyup', '.search-model', function(e){
+        $(document).on('keyup', '.search-model', function (e) {
             e.preventDefault()
             let _this = $(this)
-            
+
             let keyword = _this.val()
             let option = {
                 model: 'Product',
-                keyword : keyword
+                keyword: keyword
             }
             HT.sendAjax(option)
-            
+
         })
     }
 
     HT.sendAjax = (option) => {
         clearTimeout(typingTimer);
-            typingTimer = setTimeout(function(){
-                $.ajax({
-                    url: 'ajax/dashboard/findModelObject', 
-                    type: 'GET', 
-                    data: option,
-                    dataType: 'json', 
-                    success: function(res) {
-                        let html = HT.renderSearchResult(res)
-                        if(html.length){
-                            $('.ajax-search-result').html(html).show()
-                        }else{
-                            $('.ajax-search-result').html(html).hide()
-                        }
-                    },
-                    beforeSend: function() {
-                        $('.ajax-search-result').html('').hide()
-                    },
-                });
-               
-            }, doneTyingInterval)
+        typingTimer = setTimeout(function () {
+            $.ajax({
+                url: 'ajax/dashboard/findModelObject',
+                type: 'GET',
+                data: option,
+                dataType: 'json',
+                success: function (res) {
+                    let html = HT.renderSearchResult(res)
+                    if (html.length) {
+                        $('.ajax-search-result').html(html).show()
+                    } else {
+                        $('.ajax-search-result').html(html).hide()
+                    }
+                },
+                beforeSend: function () {
+                    $('.ajax-search-result').html('').hide()
+                },
+            });
+
+        }, doneTyingInterval)
     }
-    
+
     HT.renderSearchResult = (data) => {
         let html = ''
-        if(data.length){
-            for(let i = 0; i < data.length; i++){
+        if (data.length) {
+            for (let i = 0; i < data.length; i++) {
 
-                let flag = ($('#model-'+data[i].id).length) ? 1 : 0;
-                let setChecked = ($('#model-'+data[i].id).length) ? HT.setChecked() : ''
+                let flag = ($('#model-' + data[i].id).length) ? 1 : 0;
+                let setChecked = ($('#model-' + data[i].id).length) ? HT.setChecked() : ''
 
                 html += `<button 
                             class="ajax-search-item" 
@@ -75,37 +75,37 @@
             }
         }
         return html
-    }   
+    }
 
     HT.setChecked = () => {
         return '<svg class="svg-next-icon button-selected-combobox svg-next-icon-size-12" width="12" height="12"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><path d="m.3,14c-0.2-0.2-0.3-0.5-0.3-0.7s0.1-0.5 0.3-0.7l1.4-1.4c0.4-0.4 1-0.4 1.4,0l.1,.1 5.5,5.9c0.2,0.2 0.5,0.2 0.7,0l13.4-13.9h0.1v-8.88178e-16c0.4-0.4 1-0.4 1.4,0l1.4,1.4c0.4,0.4 0.4,1 0,1.4l0,0-16,16.6c-0.2,0.2-0.4,0.3-0.7,0.3-0.3,0-0.5-0.1-0.7-0.3l-7.8-8.4-.2-.3z"></path></svg></svg>'
     }
 
     HT.unfocusSearchBox = () => {
-        $(document).on('click', 'html', function(e){
-            if(!$(e.target).hasClass('search-model-result') && !$(e.target).hasClass('search-model')){
+        $(document).on('click', 'html', function (e) {
+            if (!$(e.target).hasClass('search-model-result') && !$(e.target).hasClass('search-model')) {
                 $('.ajax-search-result').html('')
             }
         })
 
-        $(document).on('click', '.ajax-search-result', function(e){
+        $(document).on('click', '.ajax-search-result', function (e) {
             e.stopPropagation();
         })
     }
 
     HT.addModel = () => {
-        $(document).on('click', '.ajax-search-item' , function(e){
+        $(document).on('click', '.ajax-search-item', function (e) {
             e.preventDefault()
             let _this = $(this)
             let data = _this.data()
             let html = HT.modelTemplate(data)
             let flag = _this.attr('data-flag')
-            if(flag == 0){
+            if (flag == 0) {
                 _this.find('.auto-icon').html(HT.setChecked())
                 _this.attr('data-flag', 1)
                 $('.construction-product-result').append(HT.modelTemplate(data))
-            }else{
-                $('#model-'+data.id).remove()
+            } else {
+                $('#model-' + data.id).remove()
                 _this.find('.auto-icon').html('')
                 _this.attr('data-flag', 0)
             }
@@ -172,18 +172,18 @@
 
 
     HT.removeModel = () => {
-        $(document).on('click', '.remove-attribute', function(){
+        $(document).on('click', '.remove-attribute', function () {
             let _this = $(this)
             _this.parents('.search-result-item').remove()
         })
     }
 
-    
-	$(document).ready(function(){
+
+    $(document).ready(function () {
         HT.searchModel()
         HT.unfocusSearchBox()
         HT.addModel()
         HT.removeModel()
-	});
-    
+    });
+
 })(jQuery);

@@ -1,22 +1,22 @@
-(function($) {
-	"use strict";
-	var HT = {}; 
+(function ($) {
+    "use strict";
+    window.HT = window.HT || {};
     var counter = 1;
     var _token = $('meta[name="csrf-token"]').attr('content');
 
     HT.addSlide = (type) => {
-        $(document).on('click', '.addSlide', function(e){
+        $(document).on('click', '.addSlide', function (e) {
             e.preventDefault()
-            if(typeof(type) == 'undefined'){
+            if (typeof (type) == 'undefined') {
                 type = 'Images';
             }
             var finder = new CKFinder();
             finder.resourceType = type;
-            finder.selectActionFunction = function( fileUrl, data, allFiles ) {
+            finder.selectActionFunction = function (fileUrl, data, allFiles) {
                 let html = ''
-                for(var i = 0; i < allFiles.length; i++){
+                for (var i = 0; i < allFiles.length; i++) {
                     let image = allFiles[i].url
-                    html +=HT.renderSlideItemHtml(image)
+                    html += HT.renderSlideItemHtml(image)
                 }
 
                 $('.slide-list').append(html)
@@ -28,16 +28,16 @@
 
     HT.checkSlideNotification = () => {
         let slideItem = $('.slide-item')
-        if(slideItem.length){
+        if (slideItem.length) {
             $('.slide-notification').hide()
-        }else{
+        } else {
             $('.slide-notification').show()
         }
     }
 
     HT.renderSlideItemHtml = (image) => {
-       let tab_1 = "tab-" + counter
-       let tab_2 = "tab-" + (counter + 1)
+        let tab_1 = "tab-" + counter
+        let tab_2 = "tab-" + (counter + 1)
 
         let html = `
         <div class="col-lg-12 ui-state-default">
@@ -122,7 +122,7 @@
 
 
     HT.deleteSlide = () => {
-        $(document).on('click', '.deleteSlide', function(){
+        $(document).on('click', '.deleteSlide', function () {
             let _this = $(this)
             _this.parents('.ui-state-default').remove()
             HT.checkSlideNotification()
@@ -130,16 +130,16 @@
     }
 
     HT.selectImage = (type) => {
-        $(document).on('click', '.select-image', function(e){
+        $(document).on('click', '.select-image', function (e) {
             console.log(123)
             e.preventDefault()
-            let _this  = $(this);
-            if(typeof(type) == 'undefined'){
+            let _this = $(this);
+            if (typeof (type) == 'undefined') {
                 type = 'Images';
             }
             var finder = new CKFinder();
             finder.resourceType = type;
-            finder.selectActionFunction = function( fileUrl, data) {
+            finder.selectActionFunction = function (fileUrl, data) {
                 let image = fileUrl
                 _this.siblings('img').attr('src', image)
                 _this.siblings('input').val(image)
@@ -151,16 +151,16 @@
 
     HT.changeImageOrder = () => {
         $('.table-slide').sortable({
-            start: function(event, ui) {
+            start: function (event, ui) {
                 // Xử lý sự kiện khi bắt đầu kéo phần tử
             },
-            stop: function(event, ui) {
+            stop: function (event, ui) {
                 // Xử lý sự kiện khi kết thúc kéo phần tử
             },
-            update: function(event, ui) {
+            update: function (event, ui) {
                 let data = []
 
-                ui.item.parent('.sortui').find('.ui-state-default').each(function(){
+                ui.item.parent('.sortui').find('.ui-state-default').each(function () {
                     let _this = $(this)
                     let itemData = {
                         id: _this.find('input[name="slide[id][]"]').val(),
@@ -177,14 +177,14 @@
                 })
 
                 $.ajax({
-                    url: 'ajax/slide/order', 
-                    type: 'POST', 
+                    url: 'ajax/slide/order',
+                    type: 'POST',
                     data: {
                         payload: data,
                         _token: _token
                     },
-                    dataType: 'json', 
-                    success: function(res) {
+                    dataType: 'json',
+                    success: function (res) {
                         console.log(res)
                     },
                 });
@@ -192,16 +192,16 @@
         });
     }
 
-   
-	$(document).ready(function(){
+
+    $(document).ready(function () {
         HT.addSlide()
         HT.deleteSlide()
         HT.selectImage()
         HT.changeImageOrder()
-        
-      
-	});
 
-    
+
+    });
+
+
 
 })(jQuery);

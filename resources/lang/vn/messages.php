@@ -533,6 +533,7 @@ return [
     'deleteButton' => 'Xóa dữ liệu',
     'tableHeading' => 'Thông tin chung',
     'save' => 'Lưu lại',
+    'save_and_exit' => 'Lưu và Đóng',
     'publish' => [
         '0' => 'Chọn tình trạng',
         '1' => 'Không hoạt động',

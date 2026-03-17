@@ -78,7 +78,7 @@ class GalleryController extends Controller
         }
         $config = [
             ...$this->config(),
-            'method' => 'update',
+            'method' => 'edit',
             'extendJs' => true
         ];
         $properties = $this->propertyService->all();
@@ -115,7 +115,7 @@ class GalleryController extends Controller
         $this->checkExists($record);
         $config = [
             ...$this->config(),
-            'method' => 'update'
+            'method' => 'edit'
         ];
         $template = 'backend.gallery.delete';
         return view('backend.dashboard.layout', compact(

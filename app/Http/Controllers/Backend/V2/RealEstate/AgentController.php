@@ -67,7 +67,7 @@ class AgentController extends Controller
         }
         $config = [
             ...$this->config(),
-            'method' => 'update',
+            'method' => 'edit',
             'extendJs' => true
         ];
         $template = 'backend.agent.store';
@@ -100,7 +100,7 @@ class AgentController extends Controller
         $this->checkExists($record);
         $config = [
             ...$this->config(),
-            'method' => 'update'
+            'method' => 'edit'
         ];
         $template = 'backend.agent.delete';
         return view('backend.dashboard.layout', compact(

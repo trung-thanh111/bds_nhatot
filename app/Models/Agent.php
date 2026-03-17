@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,10 +9,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Traits\HasQuery;
 
-class Agent extends Model 
+class Agent extends Model
 {
     use HasFactory, Notifiable, SoftDeletes, HasQuery;
-    
+
     protected $fillable = [
         'full_name',
         'title',
@@ -24,20 +25,18 @@ class Agent extends Model
         'publish',
         'user_id',
     ];
-    
-    protected $casts = [
-       
-    ];
-    
-    protected $relationable = [
-       
-    ];
-    
-    public function getRelationable(){
+
+    protected $casts = [];
+
+    protected $relationable = [];
+
+    public function getRelationable()
+    {
         return $this->relationable;
     }
-    
-    public function users(): BelongsTo {
+
+    public function users(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

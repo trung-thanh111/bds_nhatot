@@ -1,6 +1,6 @@
-(function($) {
-	"use strict";
-	var HT = {}; 
+(function ($) {
+    "use strict";
+window.HT = window.HT || {}; var HT = window.HT;
 
 
     HT.createChart = (label, data) => {
@@ -8,7 +8,7 @@
         let canvas = document.getElementById('barChart')
         let ctx = canvas.getContext('2d')
 
-        if(window.myBarChart){
+        if (window.myBarChart) {
             window.myBarChart.destroy();
         }
 
@@ -28,21 +28,21 @@
 
         let chartOption = {
             tooltips: {
-              callbacks: {
-                    label: function(tooltipItem, data) {
+                callbacks: {
+                    label: function (tooltipItem, data) {
                         var value = tooltipItem.yLabel;
                         value = value.toString();
                         value = value.split(/(?=(?:...)*$)/);
                         value = value.join('.');
                         return value;
                     }
-              } 
-            }, 
+                }
+            },
             scales: {
                 yAxes: [{
                     ticks: {
-                        beginAtZero:true,
-                        userCallback: function(value, index, values) {
+                        beginAtZero: true,
+                        userCallback: function (value, index, values) {
                             // Convert the number to a string and splite the string every 3 charaters from the end
                             value = value.toString();
                             value = value.split(/(?=(?:...)*$)/);
@@ -58,12 +58,12 @@
             }
         }
 
-        window.myBarChart = new Chart(ctx, {type: 'bar', data: chartData, options:chartOption});
+        window.myBarChart = new Chart(ctx, { type: 'bar', data: chartData, options: chartOption });
 
     }
 
     HT.changeChart = () => {
-        $(document).on('click', '.chartButton', function(e){
+        $(document).on('click', '.chartButton', function (e) {
             e.preventDefault()
             let button = $(this)
             let chartType = button.attr('data-chart')
@@ -75,29 +75,29 @@
 
     HT.callChart = (chartType) => {
         $.ajax({
-            type        : 'GET',
-            url         :  'ajax/order/chart',
-            data		: {
-                chartType : chartType
+            type: 'GET',
+            url: 'ajax/order/chart',
+            data: {
+                chartType: chartType
             },
-            dataType    : 'json',
-            success: function(response){
+            dataType: 'json',
+            success: function (response) {
 
                 HT.createChart(response.label, response.data)
             }
         });
     }
-   
-   
-	$(document).ready(function(){
-        
+
+
+    $(document).ready(function () {
+
         HT.createChart(label, data)
 
         HT.changeChart();
 
 
-	});
+    });
 
-    
+
 
 })(jQuery);

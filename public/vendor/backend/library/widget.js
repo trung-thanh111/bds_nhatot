@@ -1,15 +1,15 @@
-(function($) {
-	"use strict";
-	var HT = {}; 
+(function ($) {
+    "use strict";
+    window.HT = window.HT || {};
     var _token = $('meta[name="csrf-token"]').attr('content');
     var typingTimer;
     var doneTyingInterval = 300; // 1s
 
     HT.searchModel = () => {
-        $(document).on('keyup', '.search-model', function(e){
+        $(document).on('keyup', '.search-model', function (e) {
             e.preventDefault()
             let _this = $(this)
-            if($('input[type=radio]:checked').length === 0){
+            if ($('input[type=radio]:checked').length === 0) {
                 alert('Bạn chưa chọn Module');
                 _this.val('')
                 return false;
@@ -17,60 +17,60 @@
             let keyword = _this.val()
             let option = {
                 model: $('input[type=radio]:checked').val(),
-                keyword : keyword
+                keyword: keyword
             }
             HT.sendAjax(option)
-            
+
         })
     }
 
     HT.chooseModel = () => {
-        $(document).on('change', '.input-radio', function(){
+        $(document).on('change', '.input-radio', function () {
             let _this = $(this)
             let option = {
                 model: _this.val(),
-                keyword : $('.search-model').val()
+                keyword: $('.search-model').val()
             }
             $('.search-model-result').html('');
-            if(option.keyword.length >= 2){
+            if (option.keyword.length >= 2) {
                 HT.sendAjax(option)
             }
-            
+
 
         })
     }
 
     HT.sendAjax = (option) => {
         clearTimeout(typingTimer);
-            typingTimer = setTimeout(function(){
-                $.ajax({
-                    url: 'ajax/dashboard/findModelObject', 
-                    type: 'GET', 
-                    data: option,
-                    dataType: 'json', 
-                    success: function(res) {
-                        let html = HT.renderSearchResult(res)
-                        if(html.length){
-                            $('.ajax-search-result').html(html).show()
-                        }else{
-                            $('.ajax-search-result').html(html).hide()
-                        }
-                    },
-                    beforeSend: function() {
-                        $('.ajax-search-result').html('').hide()
-                    },
-                });
-               
-            }, doneTyingInterval)
+        typingTimer = setTimeout(function () {
+            $.ajax({
+                url: 'ajax/dashboard/findModelObject',
+                type: 'GET',
+                data: option,
+                dataType: 'json',
+                success: function (res) {
+                    let html = HT.renderSearchResult(res)
+                    if (html.length) {
+                        $('.ajax-search-result').html(html).show()
+                    } else {
+                        $('.ajax-search-result').html(html).hide()
+                    }
+                },
+                beforeSend: function () {
+                    $('.ajax-search-result').html('').hide()
+                },
+            });
+
+        }, doneTyingInterval)
     }
 
     HT.renderSearchResult = (data) => {
         let html = ''
-        if(data.length){
-            for(let i = 0; i < data.length; i++){
+        if (data.length) {
+            for (let i = 0; i < data.length; i++) {
 
-                let flag = ($('#model-'+data[i].id).length) ? 1 : 0;
-                let setChecked = ($('#model-'+data[i].id).length) ? HT.setChecked() : ''
+                let flag = ($('#model-' + data[i].id).length) ? 1 : 0;
+                let setChecked = ($('#model-' + data[i].id).length) ? HT.setChecked() : ''
 
                 html += `<button 
                             class="ajax-search-item" 
@@ -97,30 +97,30 @@
 
 
     HT.unfocusSearchBox = () => {
-        $(document).on('click', 'html', function(e){
-            if(!$(e.target).hasClass('search-model-result') && !$(e.target).hasClass('search-model')){
+        $(document).on('click', 'html', function (e) {
+            if (!$(e.target).hasClass('search-model-result') && !$(e.target).hasClass('search-model')) {
                 $('.ajax-search-result').html('')
             }
         })
 
-        $(document).on('click', '.ajax-search-result', function(e){
+        $(document).on('click', '.ajax-search-result', function (e) {
             e.stopPropagation();
         })
     }
 
     HT.addModel = () => {
-        $(document).on('click', '.ajax-search-item' , function(e){
+        $(document).on('click', '.ajax-search-item', function (e) {
             e.preventDefault()
             let _this = $(this)
             let data = _this.data()
             let html = HT.modelTemplate(data)
             let flag = _this.attr('data-flag')
-            if(flag == 0){
+            if (flag == 0) {
                 _this.find('.auto-icon').html(HT.setChecked())
                 _this.attr('data-flag', 1)
                 $('.search-model-result').append(HT.modelTemplate(data))
-            }else{
-                $('#model-'+data.id).remove()
+            } else {
+                $('#model-' + data.id).remove()
                 _this.find('.auto-icon').html('')
                 _this.attr('data-flag', 0)
             }
@@ -155,19 +155,19 @@
     }
 
     HT.removeModel = () => {
-        $(document).on('click', '.deleted', function(){
+        $(document).on('click', '.deleted', function () {
             let _this = $(this)
             _this.parents('.search-result-item').remove()
         })
     }
 
-   
-	$(document).ready(function(){
+
+    $(document).ready(function () {
         HT.searchModel()
         HT.chooseModel()
         HT.unfocusSearchBox()
         HT.addModel()
         HT.removeModel()
-	});
+    });
 
 })(jQuery);

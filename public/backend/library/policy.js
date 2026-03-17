@@ -1,13 +1,13 @@
-(function($) {
-	"use strict";
-	var HT = {}; 
+(function ($) {
+    "use strict";
+window.HT = window.HT || {}; var HT = window.HT;
 
     HT.addProgram = () => {
-        $(document).on('click', '.add-policy', function(){
+        $(document).on('click', '.add-policy', function () {
 
             let chapterIndex = $('.policy-wrapper').length
 
-            let textareaId = `ckPolicy_${chapterIndex}`; 
+            let textareaId = `ckPolicy_${chapterIndex}`;
 
             let html = `<div class="ibox mt20 policy-wrapper" data-chapter-index=${chapterIndex}>
                 <div class="ibox-title">
@@ -29,17 +29,17 @@
     }
 
     HT.removeProgram = () => {
-        $(document).on('click', '.remove-policy-item', function(){
+        $(document).on('click', '.remove-policy-item', function () {
             let _this = $(this)
             _this.parents('.policy-wrapper').remove()
         })
     }
 
 
-	$(document).ready(function(){
+    $(document).ready(function () {
         HT.addProgram()
         HT.removeProgram()
-	});
+    });
 
 })(jQuery);
 

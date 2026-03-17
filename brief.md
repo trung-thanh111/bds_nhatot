@@ -1,1833 +1,758 @@
-# 🏗️ SYSTEM DESIGN — NỀN TẢNG BĐS CÁ NHÂN (DYNAMIC + MULTI-DEPLOY)
-
-> **Version:** 2.0 — Optimized Brief  
-> **Model:** 1 Môi giới đăng · Khách chỉ xem · Dynamic theo loại BĐS · Multi-deployment  
-> **Cập nhật:** Bổ sung đầy đủ field động, cấu trúc deploy nhiều dự án cùng codebase
-
----
-
-## MỤC LỤC
-
-1. [Tổng quan kiến trúc & triết lý thiết kế](#1-tổng-quan-kiến-trúc--triết-lý-thiết-kế)
-2. [Kiến trúc Multi-Deployment](#2-kiến-trúc-multi-deployment)
-3. [Danh sách Pages chi tiết](#3-danh-sách-pages-chi-tiết)
-4. [Modules — Phân tích đầy đủ & các tình huống xảy ra](#4-modules--phân-tích-đầy-đủ--các-tình-huống-xảy-ra)
-5. [Nhóm loại BĐS & Field động theo từng nhóm](#5-nhóm-loại-bđs--field-động-theo-từng-nhóm)
-6. [Database Schema — Thiết kế Dynamic đầy đủ](#6-database-schema--thiết-kế-dynamic-đầy-đủ)
-7. [Quan hệ bảng (ERD)](#7-quan-hệ-bảng-erd)
-8. [Logic Dynamic Field hoạt động như thế nào](#8-logic-dynamic-field-hoạt-động-như-thế-nào)
-9. [Admin Panel — Cấu trúc chuẩn hóa](#9-admin-panel--cấu-trúc-chuẩn-hóa)
-10. [Multi-Deployment — Cách triển khai nhiều dự án](#10-multi-deployment--cách-triển-khai-nhiều-dự-án)
-11. [Tech Stack & Infrastructure](#11-tech-stack--infrastructure)
-12. [Checklist triển khai](#12-checklist-triển-khai)
-
----
-
-## 1. TỔNG QUAN KIẾN TRÚC & TRIẾT LÝ THIẾT KẾ
-
-### 1.1 Nguyên tắc cốt lõi
+## 1. SƠ ĐỒ QUAN HỆ
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  TRIẾT LÝ: "1 Codebase — N Deployments — Fully Dynamic"    │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ✅ 1 môi giới (admin) toàn quyền quản lý nội dung         │
-│  ✅ Khách chỉ XEM — không đăng ký, không đăng nhập         │
-│  ✅ Dynamic fields — mỗi loại BĐS có form/field riêng      │
-│  ✅ Multi-deploy — cùng code, khác brand/layout/data       │
-│  ✅ Admin UI giống nhau 100% cho mọi deployment            │
-│                                                             │
-│  ❌ Không cần: user registration, chat, ví tiền, VIP       │
-└─────────────────────────────────────────────────────────────┘
-```
+━━━ ĐỊA LÝ — JSON file (KHÔNG có DB table) ━━━━━━━━━━━━━━━━━━━
+  /resources/json/vie_address_before_1_7.json  ← 63 tỉnh + quận/huyện/phường cũ
+  /resources/json/vie_address_after_1_7.json   ← ~34 tỉnh mới + phường mới (bỏ cấp huyện)
 
-### 1.2 Các loại "Dự án / Deployment" có thể triển khai
+  Cấu trúc JSON (tham khỏa 2 base trên)
 
-| Deployment | Loại BĐS chủ yếu             | Layout                      | Brand               |
-| ---------- | ---------------------------- | --------------------------- | ------------------- |
-| Site A     | Mua bán nhà phố, căn hộ      | Layout hiện đại             | "Nhà Tốt HCM"       |
-| Site B     | Cho thuê mặt bằng thương mại | Layout doanh nghiệp         | "Mặt Bằng Pro"      |
-| Site C     | Nhà ở xã hội                 | Layout đơn giản, thân thiện | "Nhà XH Bình Dương" |
-| Site D     | Dự án BĐS lớn (multi-unit)   | Layout brochure             | "Dự Án Vinhomes X"  |
-| Site E     | Mix tất cả                   | Layout tổng hợp             | "Bất Động Sản ABC"  |
+  Lưu trong bảng projects:
+  ┌────────────────────────────────────┬────────────────────────────────┐
+  │ ĐỊA CHỈ CŨ (trước 01/07/2025)      │ ĐỊA CHỈ MỚI (sau 01/07/2025)  │
+  ├────────────────────────────────────┼────────────────────────────────┤
+  │ province_code   VARCHAR(80)        │ province_new_code  VARCHAR(80) │
+  │ province_name   VARCHAR(150)       │ province_new_name  VARCHAR(150)│
+  │ district_code   VARCHAR(80)        │ (không có district mới)        │
+  │ district_name   VARCHAR(150)       │                                │
+  │ ward_code       VARCHAR(80)        │ ward_new_code      VARCHAR(80) │
+  │ ward_name       VARCHAR(150)       │ ward_new_name      VARCHAR(150)│
+  └────────────────────────────────────┴────────────────────────────────┘
+  address  VARCHAR(500) → số nhà, tên đường, ngõ, hẻm (dùng chung)
 
----
+  Chiến lược filter:
+  - Filter theo tỉnh:   WHERE province_code = ? OR province_new_code = ?
+  - Filter theo huyện:  WHERE district_code = ? (chỉ tin đăng trước 01/07/2025)
+  - Tin mới (sau sáp nhập): district_code = NULL, province_new_code có giá trị
 
-## 2. KIẾN TRÚC MULTI-DEPLOYMENT
+━━━ LOOKUP TABLES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  project_property_groups (1) ──── (N) project_types
+  project_property_groups (1) ──── (N) project_catalogues
+  project_types           (N) ──── (1) project_property_groups
 
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                    GIT REPOSITORY (1 codebase)                   │
-│         Next.js App + Admin Panel + API Routes                   │
-└────────┬─────────────────┬──────────────────┬────────────────────┘
-         │                 │                  │
-         ▼                 ▼                  ▼
-┌─────────────┐   ┌─────────────┐   ┌─────────────────┐
-│  Deploy A   │   │  Deploy B   │   │   Deploy C...N  │
-│  site-a.com │   │  site-b.com │   │   site-x.com    │
-│  DB riêng   │   │  DB riêng   │   │   DB riêng      │
-│  .env riêng │   │  .env riêng │   │   .env riêng    │
-└─────────────┘   └─────────────┘   └─────────────────┘
+━━━ CATALOGUE TREE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  project_catalogues (self-ref parent_id) -> triển khai như post_catalogue nhé
 
-Mỗi deployment:
-  - Database PostgreSQL độc lập (isolate data hoàn toàn)
-  - File .env riêng (brand, colors, contact, features)
-  - Có thể override layout qua theme config
-  - Admin panel URL: /admin (giống nhau 100%)
-```
+━━━ CORE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  projects (N) ──── (1) project_catalogues
+  projects (N) ──── (1) project_property_groups   [denorm]
+  projects (N) ──── (1) project_types             [denorm]
+  projects (1) ──── (N) project_items             [khi is_project=1]
+  projects (1) ──── (N) project_views
+  projects (1) ──── (N) contact_requests
 
-### 2.1 Cấu hình theo `.env` hoặc `site_settings` DB
-
-```env
-# .env của mỗi deployment
-SITE_NAME="Nhà Tốt HCM"
-SITE_DESCRIPTION="Mua bán cho thuê bất động sản HCM"
-SITE_THEME="modern"              # modern | corporate | minimal | luxury
-PRIMARY_COLOR="#E84040"
-CONTACT_PHONE="0901234567"
-CONTACT_EMAIL="admin@nhatothcm.com"
-ZALO_URL="https://zalo.me/..."
-FACEBOOK_URL="https://facebook.com/..."
-GOOGLE_MAPS_KEY="..."
-GA_ID="G-XXXXXXXX"
-
-# Feature flags — bật/tắt tính năng theo deployment
-FEATURE_MAP=true
-FEATURE_VIRTUAL_TOUR=false
-FEATURE_MORTGAGE_CALC=true
-FEATURE_COMPARE=true
-FEATURE_BLOG=false
-FEATURE_PROJECT_MODULE=true
-FEATURE_SOCIAL_HOUSING=true
-
-# Loại BĐS được phép đăng (filter danh mục)
-ENABLED_CATEGORIES="can-ho,nha-o,dat-nen,mat-bang"
+━━━ TỔNG: 7 bảng chính + 2 phụ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ---
 
-## 3. DANH SÁCH PAGES CHI TIẾT
+## 2. SAMPLE DATA
 
-### 3.1 Public Pages (Khách xem — 0 yêu cầu đăng nhập)
+### project_property_groups
 
-| STT | Tên trang              | URL pattern                            | Mô tả chi tiết                                                                                                                     |
-| --- | ---------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **Trang chủ**          | `/`                                    | Hero banner, danh mục nổi bật, tin mới nhất, tin nổi bật, bộ lọc nhanh, dự án tiêu biểu, thống kê (số tin, dự án), bản đồ overview |
-| 2   | **Danh sách tin**      | `/listings`                            | Grid/List view, bộ lọc đầy đủ sidebar, sort, phân trang                                                                            |
-| 3   | **Lọc theo giao dịch** | `/mua-ban` `/cho-thue`                 | Breadcrumb, filter auto-set transaction_type                                                                                       |
-| 4   | **Lọc theo danh mục**  | `/[category-slug]`                     | VD: `/can-ho-chung-cu`, tự động filter                                                                                             |
-| 5   | **Lọc theo tỉnh**      | `/[province-slug]`                     | VD: `/ho-chi-minh`                                                                                                                 |
-| 6   | **Lọc kết hợp**        | `/[trans]/[cat]/[province]/[district]` | VD: `/mua-ban/can-ho/ho-chi-minh/quan-1`                                                                                           |
-| 7   | **Chi tiết tin**       | `/tin/[slug]`                          | Toàn bộ thông tin, gallery ảnh, video, map, dynamic fields, liên hệ, tin liên quan                                                 |
-| 8   | **Danh sách dự án**    | `/du-an`                               | Grid dự án, filter theo loại/tỉnh/trạng thái                                                                                       |
-| 9   | **Chi tiết dự án**     | `/du-an/[slug]`                        | Thông tin dự án, thư viện ảnh, căn hộ mẫu, tiến độ, bảng giá, tin đăng trong dự án                                                 |
-| 10  | **Tìm kiếm**           | `/search?q=...`                        | Full-text search results, gợi ý                                                                                                    |
-| 11  | **Bản đồ**             | `/ban-do`                              | Map view toàn bộ tin, cluster pins, filter trên map                                                                                |
-| 12  | **Blog / Tin tức**     | `/blog`                                | Danh sách bài viết (nếu bật feature)                                                                                               |
-| 13  | **Chi tiết bài viết**  | `/blog/[slug]`                         | Nội dung bài viết, tin liên quan                                                                                                   |
-| 14  | **Trang liên hệ**      | `/lien-he`                             | Form liên hệ, thông tin, map văn phòng                                                                                             |
-| 15  | **Giới thiệu**         | `/gioi-thieu`                          | Thông tin môi giới, kinh nghiệm, chứng chỉ                                                                                         |
-| 16  | **Bảng giá dịch vụ**   | `/dich-vu`                             | Giới thiệu dịch vụ môi giới (nếu cần)                                                                                              |
-| 17  | **Sitemap HTML**       | `/sitemap`                             | Danh sách tất cả trang                                                                                                             |
-| 18  | **404**                | `/404`                                 | Trang lỗi thân thiện                                                                                                               |
-| 19  | **Tính toán vay**      | `/tinh-toan-vay`                       | Máy tính lãi suất ngân hàng (nếu bật)                                                                                              |
-| 20  | **So sánh**            | `/so-sanh?ids=1,2,3`                   | So sánh 2–3 tin cùng loại (nếu bật)                                                                                                |
+| id  | code       | name       | sort_order |
+| --- | ---------- | ---------- | ---------- |
+| 1   | apartment  | Căn hộ     | 1          |
+| 2   | house      | Nhà ở      | 2          |
+| 3   | land       | Đất        | 3          |
+| 4   | commercial | Thương mại | 4          |
+| 5   | room       | Phòng trọ  | 5          |
+| 6   | project    | Dự án      | 6          |
 
-### 3.2 Admin Pages (Chỉ môi giới — cần đăng nhập)
+### project_types
 
-| STT | Tên trang                     | URL                             | Mô tả                                                  |
-| --- | ----------------------------- | ------------------------------- | ------------------------------------------------------ |
-| 1   | **Đăng nhập**                 | `/admin/login`                  | Form đăng nhập                                         |
-| 2   | **Dashboard**                 | `/admin`                        | KPI: tổng tin, lượt xem, liên hệ, tin hết hạn, biểu đồ |
-| 3   | **DS tin đăng**               | `/admin/listings`               | Bảng quản lý, filter, sort, bulk action                |
-| 4   | **Thêm tin**                  | `/admin/listings/new`           | Form động theo loại BĐS chọn                           |
-| 5   | **Sửa tin**                   | `/admin/listings/[id]/edit`     | Form động, load field theo category                    |
-| 6   | **Xem trước tin**             | `/admin/listings/[id]/preview`  | Preview trước khi publish                              |
-| 7   | **DS dự án**                  | `/admin/projects`               | Quản lý dự án lớn                                      |
-| 8   | **Thêm/Sửa dự án**            | `/admin/projects/[id]`          | Form dự án đầy đủ                                      |
-| 9   | **Quản lý ảnh**               | `/admin/media`                  | Thư viện ảnh, upload batch                             |
-| 10  | **Danh mục**                  | `/admin/categories`             | Cây danh mục, field definitions                        |
-| 11  | **Field Builder**             | `/admin/categories/[id]/fields` | Cấu hình field động cho từng danh mục                  |
-| 12  | **Địa lý**                    | `/admin/locations`              | Tỉnh/Huyện/Xã (import hoặc thêm tay)                   |
-| 13  | **Tin liên hệ**               | `/admin/contacts`               | Inbox từ khách, đánh dấu đã xử lý                      |
-| 14  | **Blog**                      | `/admin/blog`                   | Quản lý bài viết                                       |
-| 15  | **Thêm/Sửa blog**             | `/admin/blog/[id]`              | Editor bài viết (rich text)                            |
-| 16  | **Thống kê**                  | `/admin/analytics`              | Lượt xem theo tin, theo ngày, liên hệ                  |
-| 17  | **Cài đặt chung**             | `/admin/settings`               | Thông tin site, liên hệ, SEO mặc định                  |
-| 18  | **Cài đặt giao diện**         | `/admin/settings/theme`         | Theme, màu sắc, logo, favicon                          |
-| 19  | **Cài đặt bật/tắt tính năng** | `/admin/settings/features`      | Feature flags                                          |
-| 20  | **Cài đặt SEO**               | `/admin/settings/seo`           | Meta defaults, schema markup                           |
-| 21  | **Đổi mật khẩu**              | `/admin/settings/security`      | Bảo mật tài khoản                                      |
-| 22  | **Banner / Slide**            | `/admin/banners`                | Quản lý slider trang chủ                               |
-| 23  | **Testimonials**              | `/admin/testimonials`           | Đánh giá khách hàng                                    |
+| id  | group_id | code            | name            | transaction_type |
+| --- | -------- | --------------- | --------------- | ---------------- |
+| 1   | 1        | can_ho_chung_cu | Căn hộ chung cư | both             |
+| 2   | 1        | penthouse       | Penthouse       | sale             |
+| 3   | 1        | condotel        | Condotel        | sale             |
+| 4   | 1        | officetel       | Officetel       | both             |
+| 5   | 1        | nha_o_xa_hoi    | Nhà ở xã hội    | sale             |
+| 6   | 2        | nha_mat_tien    | Nhà mặt tiền    | both             |
+| 7   | 2        | biet_thu        | Biệt thự        | both             |
+| 8   | 2        | nha_pho_lien_ke | Nhà phố liên kế | both             |
+| 9   | 3        | dat_nen_du_an   | Đất nền dự án   | sale             |
+| 10  | 3        | dat_tho_cu      | Đất thổ cư      | sale             |
+| 11  | 3        | dat_nong_nghiep | Đất nông nghiệp | sale             |
+| 12  | 4        | mat_bang        | Mặt bằng        | rent             |
+| 13  | 4        | van_phong       | Văn phòng       | rent             |
+| 14  | 4        | kho_xuong       | Kho / Xưởng     | rent             |
+| 15  | 5        | phong_tro       | Phòng trọ       | rent             |
+| 16  | 5        | can_ho_mini     | Căn hộ mini     | rent             |
+| 17  | 6        | du_an_can_ho    | Dự án căn hộ    | sale             |
+| 18  | 6        | du_an_nha_o     | Dự án nhà ở     | sale             |
 
----
+### project_catalogues
 
-## 4. MODULES — PHÂN TÍCH ĐẦY ĐỦ & CÁC TÌNH HUỐNG XẢY RA
+| id  | parent_id | name       | slug       | group_id | level |
+| --- | --------- | ---------- | ---------- | -------- | ----- |
+| 1   | NULL      | Mua bán    | mua-ban    | NULL     | 1     |
+| 2   | NULL      | Cho thuê   | cho-thue   | NULL     | 1     |
+| 10  | NULL      | Căn hộ     | can-ho     | 1        | 1     |
+| 11  | NULL      | Nhà ở      | nha-o      | 2        | 1     |
+| 12  | NULL      | Đất        | dat        | 3        | 1     |
+| 13  | NULL      | Thương mại | thuong-mai | 4        | 1     |
+| 14  | NULL      | Phòng trọ  | phong-tro  | 5        | 1     |
+| 15  | NULL      | Dự án      | du-an      | 6        | 1     |
 
----
-
-### MODULE 1: Listing Management (Quản lý tin đăng — Trung tâm hệ thống)
-
-**Chức năng chính:**
-
-- CRUD đầy đủ
-- Form đăng tin **thay đổi động theo danh mục** được chọn
-- Upload ảnh (kéo thả, sort, đặt ảnh bìa)
-- Trạng thái: draft → active → expired / sold / rented
-- Slug SEO tự động sinh
-- Clone tin (copy nhanh)
-
-**Các tình huống có thể xảy ra:**
+### projects — record mẫu
 
 ```
-✅ Đăng tin mới → chọn danh mục → form hiện đúng field động
-✅ Lưu nháp publish = 1 → quay lại sửa tiếp → publish = 2
-✏️  Sửa tin đang active → vẫn hiển thị, cập nhật tức thì
-📋  Bulk actions: xóa nhiều, đổi trạng thái nhiều tin
-🔍  Tìm tin trong admin → search theo tiêu đề, mã tin, địa chỉ
-📊  Xem stats từng tin: lượt xem, click SĐT, liên hệ
-🏷️  Đánh dấu nổi bật (featured) → hiện ở trang chủ
-📌  Pin tin lên đầu danh sách (sort_order)
-🏠  Đánh dấu đã bán/đã thuê → chuyển status, vẫn hiển thị (hoặc ẩn — config)
-```
+id: 1 | code: BDS-000001
+slug: ban-can-ho-2pn-vinhomes-q-binh-thanh-bds-000001
+catalogue_id: 10 | property_group: apartment
+type_code: can_ho_chung_cu | transaction_type: sale | is_project: 0
 
----
+title:        Bán căn hộ 2PN Vinhomes Central Park - Quận Bình Thạnh
+price:        4500000000 | price_vnd: 4500000000 | price_unit: total
+area: 68.50 | bedrooms: 2 | bathrooms: 2 | floor_number: 15
+direction: dong_nam | balcony_direction: nam
+legal_status: so_hong | furniture_status: full
 
-### MODULE 2: Search & Filter (Tìm kiếm — Không cần Elasticsearch)
+── Địa chỉ CŨ ─────────────────────────────
+province_code: thanh_pho_ho_chi_minh
+province_name: Thành phố Hồ Chí Minh
+district_code: quan_binh_thanh
+district_name: Quận Bình Thạnh
+ward_code:     phuong_22
+ward_name:     Phường 22
 
-**Chức năng chính:**
+── Địa chỉ MỚI (HCM không sáp nhập) ───────
+province_new_code: thanh_pho_ho_chi_minh
+province_new_name: Thành phố Hồ Chí Minh
+ward_new_code:     phuong_22
+ward_new_name:     Phường 22
 
-- Full-text search (Mysql `tsvector` + `tsquery`)
-- Bộ lọc cơ bản: danh mục (mua bán, cho thuê,.. và còn loại dự án nhà ở, đất hay dự án... nhé ), tỉnh/huyện (trước và sau sáp nhập tại việt nam ), giá (từ - đến), diện tích (từ - đến), loại GD (căn hộ, nhà phố, đất nền, dự án), hướng nhà, hướng ban công (fix cứng lọc các hướng vd: Đông, Tây, Nam, Bắc, Đông Nam, Đông Bắc, Tây Nam, Tây Bắc), pháp lý (sổ hồng, sổ đỏ, chung cư, đất nền, dự án,.. ), nội thất nữa nhé (đồ cơ bản, full nội thất, không nội thất -> tùy theo dự án nhé), nổi bật, ...
+address: 208 Nguyễn Hữu Cảnh
 
-**Các tình huống có thể xảy ra:**
+has_elevator: 1 | has_pool: 1 | has_parking: 1 | has_gym: 1 | has_security: 1
 
-```
-✅ Tìm "căn hộ quận 1" → full-text match title + description + address
-✅ Filter nhiều điều kiện → AND logic, chuỗi query params trên URL
-✅ URL filter → chia sẻ link giữ nguyên bộ lọc
-⚠️  Không có kết quả → hiện "0 tin phù hợp" + gợi ý mở rộng filter
-⚠️  Từ tìm kiếm không dấu → normalize về có dấu để match (unaccented search)
-🔄  Thay đổi filter → URL cập nhật, không reload page (SPA behavior)
-📱  Mobile → bộ lọc thu gọn vào modal
-🗺️  Tìm kiếm trên map → vẽ bán kính → filter theo PostGIS
-📊  Sort: mới nhất / giá tăng / giá giảm / diện tích / featured-first
-⚡  Cache kết quả tìm kiếm phổ biến → Redis (nếu cần)
+image: /ckfinder/userfiles/projects/BDS-000001/cover.jpg
+album: projects/BDS-000001
+
+extra_fields: {
+  "block_name": "Park 1", "apartment_code": "P1-15.08",
+  "year_built": 2018, "management_fee": 16500,
+  "view_type": "river", "area_balcony": 8.5
+}
+
+status: active | publish: 2 | is_featured: 1 | sort_order: 0
 ```
 
 ---
 
-### MODULE 6: Project Module (Dự án BĐS lớn)
+## 3. MIGRATIONS — 8 MODULE
 
-**Chức năng chính:**
+---
 
-- Quản lý dự án độc lập (có thể không có tin đơn lẻ)
-- Hoặc tập hợp nhiều tin đơn lẻ trong 1 dự án
-- Bảng giá theo loại căn (có thể import Excel)
-- Tiến độ xây dựng
-- Thông tin pháp lý dự án
+### MODULE 1 — `project_property_groups`
 
-**Các tình huống có thể xảy ra:**
+> Nhóm loại BĐS. Quyết định form field nào render khi admin tạo tin. Admin mở rộng được (không dùng ENUM).
 
-```
-✅ Tạo dự án → gán nhiều tin đăng vào dự án
-✅ Xem trang dự án → hiện thư viện ảnh + bảng giá + tin trong dự án
-⚠️  Dự án chưa có tin nào → vẫn hiển thị trang dự án
-🔄  Cập nhật tiến độ dự án → hiện timeline
-📊  Bảng giá căn hộ: import từ Excel / nhập tay theo loại căn
-🗑️  Xóa dự án → tin đăng liên quan vẫn còn (project_id = NULL)
-🏗️  Feature flag: tắt module này nếu deployment không dùng
+```php
+Schema::create('project_property_groups', function (Blueprint $table) {
+    $table->id();
+
+    $table->string('code', 50)->unique();
+    // Mã dùng trong code: 'apartment','house','land','commercial','room','project'
+    // Lưu DENORM vào projects.property_group để tránh JOIN khi filter
+
+    $table->string('name', 150);
+    // Tên hiển thị: "Căn hộ", "Nhà ở", "Đất"
+
+    $table->string('description', 500)->nullable();
+    // Mô tả ngắn trong admin UI
+
+    $table->string('icon_url', 300)->nullable();
+    // URL icon — hiện trong form chọn loại và trang chủ
+
+    $table->unsignedSmallInteger('sort_order')->default(0);
+
+    $table->tinyInteger('publish')->default(2);
+    // 2 = hiện trong form, 1 = ẩn
+
+    $table->timestamps();
+});
 ```
 
 ---
 
-### MODULE 7: Contact / Lead Capture (Liên hệ từ khách)
+### MODULE 2 — `project_types`
 
-**Chức năng chính:**
+```php
+Schema::create('project_types', function (Blueprint $table) {
+    $table->id();
 
-- Nút xem SĐT (click → reveal, đếm lượt)
-- Form liên hệ nhanh (tên, SĐT, tin nhắn)
-- Tích hợp Zalo / Messenger / Viber click-to-chat
-- Email thông báo đến admin khi có liên hệ mới
-- Inbox quản lý liên hệ trong admin
+    $table->foreignId('group_id')
+          ->constrained('project_property_groups')
+          ->onDelete('restrict');
+    // FK về nhóm — restrict: không xóa nhóm khi còn loại đang dùng
 
-**Các tình huống có thể xảy ra:**
+    $table->string('code', 80)->unique();
+    // Mã: 'can_ho_chung_cu', 'nha_mat_tien', 'dat_tho_cu'
+    // Lưu DENORM vào projects.type_code để filter không JOIN
 
-```
-✅ Click "Xem SĐT" → hiện SĐT + đếm phone_click_count
-✅ Form liên hệ submit → lưu DB + gửi email thông báo admin
-✅ Click Zalo → mở Zalo app (mobile) hoặc Zalo web
-⚠️  Form submit spam → Google reCAPTCHA v3 (invisible)
-⚠️  SĐT không hợp lệ → validate regex VN phone
-⚠️  Email gửi thất bại → retry queue (3 lần)
-⚠️  Nhiều submit cùng IP trong 1 phút → rate limit, hỏi captcha
-📧  Email thông báo bao gồm: tên khách, SĐT, tin nhắn, link tin đăng
-📬  Admin đánh dấu liên hệ: new → read → replied → closed
-📊  Thống kê: bao nhiêu liên hệ / tin / ngày
-🔔  Tùy chọn: gửi SMS thông báo đến SĐT admin (Twilio/ESMS)
-```
+    $table->string('name', 200);
+    // Tên đầy đủ: "Căn hộ chung cư", "Nhà mặt tiền"
 
----
+    $table->string('name_short', 80)->nullable();
+    // Tên ngắn cho badge trên card: "Chung cư", "Nhà phố"
 
-### MODULE 8: SEO & Meta (Tối ưu tìm kiếm)
+    $table->enum('transaction_type', ['sale', 'rent', 'both'])->default('both');
+    // sale = chỉ mua bán | rent = chỉ cho thuê | both = cả hai
 
-**Chức năng chính:**
+    $table->unsignedSmallInteger('sort_order')->default(0);
 
-- Tự động sinh meta title / description từ data tin
-- Open Graph tags (chia sẻ Facebook/Zalo)
-- Twitter Card
-- JSON-LD Schema Markup (RealEstate, BreadcrumbList)
-- Sitemap.xml tự động cập nhật
-- Robots.txt có thể config
-- Canonical URL
-- Hreflang (nếu đa ngôn ngữ)
+    $table->tinyInteger('publish')->default(2);
+    // 2 = hiện trong form, 1 = ẩn
 
-**Các tình huống có thể xảy ra:**
-
-```
-✅ Đăng tin mới → tự động có meta tags đầy đủ
-✅ Chia sẻ link lên Facebook → OG image là ảnh bìa tin
-✅ Google index → sitemap submit tự động (Google Search Console)
-⚠️  Meta description dài > 160 ký tự → tự cắt bớt
-⚠️  Tiêu đề trùng nhau → thêm suffix "(Quận X, HCM)"
-🔄  Tin bị xóa → trả về 410 Gone (không 404) để SEO
-🔄  Slug thay đổi → 301 redirect từ slug cũ
-📊  Structured data RealEstate: giá, diện tích, địa chỉ, ảnh
+    $table->timestamps();
+});
 ```
 
 ---
 
-### MODULE 9: Analytics & Thống kê
+### MODULE 3 — `project_catalogues` -> tham khảo post_catalogue để triển khai đúng khi có dùng tree nhé -> chỉnh sửa field đúng nhé
 
-**Chức năng chính:**
+```php
+Schema::create('project_catalogues', function (Blueprint $table) {
+    $table->id();
 
-- Đếm lượt xem mỗi tin (dedup theo IP + ngày)
-- Đếm click xem SĐT
-- Đếm số liên hệ form
-- Dashboard admin: biểu đồ 7 ngày / 30 ngày
-- Google Analytics tích hợp (GA4)
-- Xuất báo cáo CSV
+    $table->unsignedBigInteger('parent_id')->nullable();
+    // Self-reference — NULL = cấp gốc
 
-**Các tình huống có thể xảy ra:**
+    $table->foreignId('property_group_id')
+          ->nullable()
+          ->constrained('project_property_groups')
+          ->onDelete('set null');
+    // Nhóm BĐS → form field nào render. NULL = danh mục điều hướng menu
 
-```
-✅ Khách vào xem tin → ghi view (dedup: cùng IP + cùng ngày + cùng tin = 1 view)
-✅ Bot Google crawl → detect User-Agent, không đếm view
-⚠️  Admin xem tin của mình → không đếm view (detect admin session)
-📊  Dashboard hiện: top 10 tin được xem nhiều nhất
-📊  Dashboard hiện: số liên hệ theo ngày (chart)
-📊  Dashboard hiện: tỷ lệ click SĐT / lượt xem
-📤  Export danh sách liên hệ theo khoảng ngày (CSV)
-```
+    $table->string('name', 200);
+    $table->string('slug', 200)->unique();
 
----
+    $table->enum('transaction_type', ['sale', 'rent', 'both'])->default('both')->nullable();
+    // Preset giao dịch trong form đăng tin
 
-### MODULE 10: Blog / Nội dung (Tùy chọn — Feature Flag)
+    $table->string('icon_url', 300)->nullable();
 
-**Chức năng chính:**
+    $table->unsignedTinyInteger('level')->default(1);
+    // 1 = gốc, 2 = con — không vượt quá 2 cấp
 
-- Viết bài về thị trường BĐS
-- Rich text editor (TipTap / Quill)
-- Phân loại bài viết (tag)
-- SEO từng bài
+    $table->string('path', 100)->nullable();
+    // "10", "10/101" — dùng WHERE path LIKE '10/%' để lấy toàn bộ con
 
-**Các tình huống xảy ra:**
+    $table->unsignedSmallInteger('sort_order')->default(0);
+    $table->tinyInteger('publish')->default(2);
+    // 2 = hiện trong form, 1 = ẩn
 
-```
-✅ Tạo bài viết → draft → publish với scheduled date
-⚠️  Bài viết chứa ảnh ngoài → tự fetch & host lại (tránh hotlink)
-🔄  Sửa bài published → cập nhật tức thì
-🗑️  Xóa bài → soft delete, URL trả 410
-```
+    $table->string('meta_title', 200)->nullable();
+    $table->string('meta_desc', 400)->nullable();
 
----
+    $table->timestamps();
 
-### MODULE 11: Mortgage Calculator (Tính lãi vay — Tùy chọn)
-
-**Chức năng chính:**
-
-- Tính lãi vay mua nhà (giảm dần / đều)
-- Nhúng vào trang chi tiết tin
-- Trang riêng `/tinh-toan-vay`
-
----
-
-### MODULE 12: Compare (So sánh tin — Tùy chọn)
-
-**Chức năng chính:**
-
-- So sánh 2–3 tin cùng loại
-- Lưu danh sách so sánh trong localStorage
-- Bảng so sánh field theo field
-
----
-
-### MODULE 13: Notification / Reminder (Nhắc nhở tự động)
-
-**Các tình huống:**
-
-```
-📧 Tin sắp hết hạn (7 ngày trước) → email nhắc admin
-📧 Tin đã hết hạn → email nhắc gia hạn
-📧 Có liên hệ mới từ khách → email realtime đến admin
-📧 Báo cáo tuần → tóm tắt lượt xem, liên hệ 7 ngày qua
-🔁 Cron job chạy mỗi đêm: kiểm tra tin hết hạn → update status
+    $table->foreign('parent_id')
+          ->references('id')
+          ->on('project_catalogues')
+          ->onDelete('set null');
+});
 ```
 
 ---
 
-### MODULE 14: Import / Export Data
+### MODULE 4 — `projects` ← BẢNG TRUNG TÂM
 
-**Chức năng chính:**
+```php
+Schema::create('projects', function (Blueprint $table) {
 
-- Import tin hàng loạt từ Excel/CSV
-- Export danh sách tin (CSV/Excel)
-- Export danh sách liên hệ
-- Backup database (scheduled)
+    // ── ĐỊNH DANH ───────────────────────────────────────────────
+    $table->id();
 
-**Tình huống:**
+    $table->string('code', 20)->unique()->nullable();
+    // Auto-gen bằng Observer: "BDS-000001"
+    // Dùng để đặt tên album CKFinder: "projects/BDS-000001"
 
-```
-📥  Import Excel: validate từng dòng, báo lỗi dòng nào sai format
-⚠️  Import tin trùng (same title + address) → cảnh báo, cho phép skip/overwrite
-📤  Export tin → bao gồm URL ảnh, stats
-```
+    $table->string('slug', 600)->unique();
+    // Khi đổi slug → lưu slug cũ vào slug_redirects để 301 redirect
 
----
+    // ── PHÂN LOẠI ──────────────────────────────────────────────
+    $table->foreignId('catalogue_id')
+          ->constrained('project_catalogues')
+          ->onDelete('restrict');
 
-## 5. NHÓM LOẠI BĐS & FIELD ĐỘNG THEO TỪNG NHÓM
+    $table->string('property_group', 50)->index();
+    // DENORM từ catalogue.propertyGroup.code
+    // Observer tự đồng bộ khi catalogue_id thay đổi
 
-### 5.1 Sơ đồ phân nhóm
+    $table->string('type_code', 80)->index();
+    // DENORM từ project_types.code
 
-```
-GIAO DỊCH (transaction_type)
-├── MUA BÁN (sale)
-└── CHO THUÊ (rent)
+    $table->enum('transaction_type', ['sale', 'rent'])->index();
 
-NHÓM LOẠI BĐS (property_group) — quyết định SET FIELD hiển thị
-├── GROUP_A: Căn hộ / Chung cư / Nhà ở xã hội
-├── GROUP_B: Nhà phố / Biệt thự / Nhà riêng
-├── GROUP_C: Đất (các loại)
-├── GROUP_D: Mặt bằng / Văn phòng / Kho xưởng
-├── GROUP_E: Phòng trọ / Nhà trọ
-└── GROUP_F: Dự án (quản lý riêng qua Project module)
-```
+    $table->tinyInteger('is_project')->default(0);
+    // 0 = tin lẻ | 1 = dự án lớn (có project_items)
 
----
+    // ── NỘI DUNG ───────────────────────────────────────────────
+    $table->string('title', 500);
+    $table->text('description')->nullable();  // HTML từ CKEditor
+    $table->string('summary', 500)->nullable();
 
-### 5.2 Field đầy đủ theo từng nhóm
+    // ── GIÁ ────────────────────────────────────────────────────
+    $table->decimal('price', 18, 2)->nullable();
+    $table->tinyInteger('price_negotiable')->default(0);  // 1 = Giá thỏa thuận
+    $table->enum('price_unit', ['total','per_m2','per_month','per_m2_month'])->default('total');
 
-#### GROUP A — Căn hộ / Chung cư / Nhà ở xã hội
+    $table->decimal('price_vnd', 18, 2)->nullable()->index();
+    // Giá quy đổi VND để filter range — Observer tự tính:
+    // per_m2/per_m2_month → price × area | còn lại → price
 
-| Field                       | Label                    | Type                               | Bắt buộc | Có thể filter |
-| --------------------------- | ------------------------ | ---------------------------------- | -------- | ------------- |
-| `area`                      | Diện tích (m²)           | number                             | ✅       | ✅            |
-| `price`                     | Giá                      | number                             | ✅       | ✅            |
-| `bedrooms`                  | Số phòng ngủ             | select (0,1,2,3,4,5+)              | ✅       | ✅            |
-| `bathrooms`                 | Số phòng tắm             | select (1,2,3,4+)                  | ✅       | ✅            |
-| `floor_number`              | Căn hộ ở tầng            | number                             |          |               |
-| `total_floors`              | Tổng số tầng tòa nhà     | number                             |          |               |
-| `direction`                 | Hướng ban công/cửa chính | select                             |          | ✅            |
-| `balcony_direction`         | Hướng ban công           | select                             |          |               |
-| `furniture`                 | Nội thất                 | select (none/basic/full)           |          | ✅            |
-| `legal_status`              | Pháp lý                  | select                             |          | ✅            |
-| `project_name`              | Tên dự án / chung cư     | text                               |          |               |
-| `block_name`                | Tên tòa / block          | text                               |          |               |
-| `apartment_code`            | Mã căn                   | text                               |          |               |
-| `area_use`                  | DT sử dụng (m²)          | number                             |          |               |
-| `area_balcony`              | DT ban công (m²)         | number                             |          |               |
-| `has_elevator`              | Thang máy                | boolean                            |          | ✅            |
-| `has_pool`                  | Hồ bơi                   | boolean                            |          | ✅            |
-| `has_parking`               | Bãi đỗ xe                | boolean                            |          | ✅            |
-| `has_gym`                   | Phòng gym                | boolean                            |          |               |
-| `has_security`              | Bảo vệ 24/7              | boolean                            |          |               |
-| `has_supermarket`           | Siêu thị nội khu         | boolean                            |          |               |
-| `view_type`                 | View nhìn ra             | select (city/river/park/sea/other) |          |               |
-| `year_built`                | Năm xây dựng             | number                             |          |               |
-| `handover_date`             | Ngày bàn giao            | date                               |          |               |
-| `management_fee`            | Phí quản lý (nghìn/m²)   | number                             |          |               |
-| `is_social_housing`         | Nhà ở xã hội             | boolean                            |          | ✅            |
-| `social_housing_conditions` | Điều kiện mua NOX        | textarea                           |          |               |
-| `virtual_tour_url`          | Link Virtual Tour 360°   | url                                |          |               |
+    // ── DIỆN TÍCH ──────────────────────────────────────────────
+    $table->decimal('area', 10, 2)->nullable()->index();
+    $table->decimal('area_use', 10, 2)->nullable();    // DT sử dụng (căn hộ)
+    $table->decimal('area_land', 10, 2)->nullable();   // DT đất (nhà phố)
+    $table->decimal('length', 8, 2)->nullable();       // Chiều dài (m)
+    $table->decimal('width', 8, 2)->nullable();        // Mặt tiền (m)
 
----
+    // ── ĐỊA CHỈ CŨ — trước sáp nhập 01/07/2025 ────────────────
+    $table->string('province_code', 80)->nullable()->index();
+    // Code tỉnh cũ: "thanh_pho_ho_chi_minh" — slug-style gạch dưới
 
-#### GROUP B — Nhà phố / Biệt thự / Nhà riêng
+    $table->string('province_name', 150)->nullable();
+    // Tên tỉnh cũ: "Thành phố Hồ Chí Minh"
 
-| Field              | Label                  | Type                                    | Bắt buộc | Có thể filter |
-| ------------------ | ---------------------- | --------------------------------------- | -------- | ------------- |
-| `area`             | Diện tích đất (m²)     | number                                  | ✅       | ✅            |
-| `area_use`         | Diện tích sử dụng (m²) | number                                  |          |               |
-| `price`            | Giá                    | number                                  | ✅       | ✅            |
-| `length`           | Chiều dài (m)          | number                                  |          | ✅            |
-| `width`            | Chiều rộng (m)         | number                                  |          | ✅            |
-| `floors`           | Số tầng                | select (1–10+)                          | ✅       | ✅            |
-| `bedrooms`         | Số phòng ngủ           | select                                  | ✅       | ✅            |
-| `bathrooms`        | Số phòng tắm           | select                                  |          |               |
-| `direction`        | Hướng nhà              | select                                  |          | ✅            |
-| `legal_status`     | Pháp lý                | select                                  | ✅       | ✅            |
-| `furniture`        | Nội thất               | select                                  |          | ✅            |
-| `road_width`       | Đường trước nhà (m)    | number                                  |          | ✅            |
-| `house_type`       | Loại nhà               | select (mat-tien/hem/biet-thu/nha-vuon) | ✅       | ✅            |
-| `alley_width`      | Chiều rộng hẻm (m)     | number                                  |          |               |
-| `has_rooftop`      | Sân thượng             | boolean                                 |          |               |
-| `has_basement`     | Tầng hầm               | boolean                                 |          |               |
-| `has_parking`      | Chỗ đậu xe             | boolean                                 |          | ✅            |
-| `is_corner_lot`    | Đất góc (2 mặt tiền)   | boolean                                 |          |               |
-| `near_school`      | Gần trường học         | boolean                                 |          |               |
-| `near_hospital`    | Gần bệnh viện          | boolean                                 |          |               |
-| `near_market`      | Gần chợ/siêu thị       | boolean                                 |          |               |
-| `year_built`       | Năm xây                | number                                  |          |               |
-| `renovation_year`  | Năm sửa chữa gần nhất  | number                                  |          |               |
-| `has_mezzanine`    | Lửng                   | boolean                                 |          |               |
-| `electricity_type` | Điện                   | select (kinh-doanh/sinh-hoat)           |          |               |
+    $table->string('district_code', 80)->nullable()->index();
+    // Code quận/huyện cũ: "quan_binh_thanh"
+    // NULL với tin đăng sau 01/07/2025
 
----
+    $table->string('district_name', 150)->nullable();
+    // Tên quận/huyện cũ: "Quận Bình Thạnh"
 
-#### GROUP C — Đất (các loại)
+    $table->string('ward_code', 80)->nullable();
+    // Code phường/xã cũ: "phuong_22"
 
-| Field            | Label                  | Type                                                          | Bắt buộc | Có thể filter |
-| ---------------- | ---------------------- | ------------------------------------------------------------- | -------- | ------------- |
-| `area`           | Diện tích (m²)         | number                                                        | ✅       | ✅            |
-| `price`          | Giá                    | number                                                        | ✅       | ✅            |
-| `price_per_m2`   | Giá/m² (tự tính)       | number                                                        |          |               |
-| `length`         | Chiều dài (m)          | number                                                        |          |               |
-| `width`          | Mặt tiền (m)           | number                                                        |          | ✅            |
-| `legal_status`   | Pháp lý                | select                                                        | ✅       | ✅            |
-| `land_type`      | Loại đất               | select (tho-cu/tho-nong/thuong-mai/cong-nghiep/dat-nen-du-an) | ✅       | ✅            |
-| `direction`      | Hướng                  | select                                                        |          |               |
-| `road_width`     | Đường trước (m)        | number                                                        |          | ✅            |
-| `is_corner`      | Đất góc                | boolean                                                       |          |               |
-| `is_cleared`     | Đã giải phóng mặt bằng | boolean                                                       |          |               |
-| `infrastructure` | Hạ tầng                | multiselect (dien/nuoc/duong/canh)                            |          |               |
-| `zoning`         | Quy hoạch              | select (dan-cu/thuong-mai/cong-nghiep/chua-ro)                |          | ✅            |
-| `quy_hoach_doc`  | Link file QH 1/500     | url                                                           |          |               |
-| `current_use`    | Hiện trạng             | select (dat-trong/co-nha-cu/co-cay)                           |          |               |
-| `region_type`    | Khu vực                | select (noi-thanh/ngoai-thanh/khu-cong-nghiep/resort)         |          | ✅            |
+    $table->string('ward_name', 150)->nullable();
+    // Tên phường/xã cũ: "Phường 22"
 
----
+    // ── ĐỊA CHỈ MỚI — sau sáp nhập 01/07/2025 ─────────────────
+    $table->string('province_new_code', 80)->nullable()->index();
+    // Code tỉnh mới: "hue", "quang_nam_da_nang"
+    // Load từ vie_address_after_1_7.json
+    // NULL với tin đăng trước sáp nhập (chưa cần điền)
 
-#### GROUP D — Mặt bằng / Văn phòng / Kho xưởng
+    $table->string('province_new_name', 150)->nullable();
+    // Tên tỉnh mới: "Huế"
 
-| Field                    | Label                        | Type                                               | Bắt buộc | Có thể filter |
-| ------------------------ | ---------------------------- | -------------------------------------------------- | -------- | ------------- |
-| `area`                   | Diện tích (m²)               | number                                             | ✅       | ✅            |
-| `price`                  | Giá thuê/tháng               | number                                             | ✅       | ✅            |
-| `price_unit`             | Đơn vị giá                   | select (month/m2_month/total)                      | ✅       |               |
-| `floors`                 | Số tầng                      | number                                             |          |               |
-| `floor_number`           | Tầng mặt bằng                | number                                             |          | ✅            |
-| `length`                 | Chiều dài (m)                | number                                             |          |               |
-| `width`                  | Mặt tiền (m)                 | number                                             | ✅       | ✅            |
-| `height_clear`           | Chiều cao thông thủy (m)     | number                                             |          |               |
-| `road_width`             | Đường trước (m)              | number                                             |          | ✅            |
-| `space_type`             | Loại mặt bằng                | select (shop/office/warehouse/showroom/restaurant) | ✅       | ✅            |
-| `has_elevator`           | Thang máy                    | boolean                                            |          | ✅            |
-| `has_loading_dock`       | Cửa hàng hàng / Loading dock | boolean                                            |          |               |
-| `has_mezzanine`          | Lửng / Gác                   | boolean                                            |          |               |
-| `has_toilet`             | WC riêng                     | boolean                                            |          |               |
-| `electricity_capacity`   | Công suất điện (KVA)         | number                                             |          |               |
-| `air_conditioning`       | Điều hòa                     | select (none/window/central)                       |          |               |
-| `parking_slots`          | Số chỗ đậu xe                | number                                             |          |               |
-| `security_deposit`       | Tiền đặt cọc (tháng)         | number                                             |          |               |
-| `min_lease_term`         | Thời gian thuê tối thiểu     | select (1m/3m/6m/1y/2y+)                           |          |               |
-| `allowed_business`       | Ngành nghề cho phép          | textarea                                           |          |               |
-| `business_license_ready` | Sẵn đăng kinh doanh          | boolean                                            |          |               |
-| `current_tenant`         | Đang có thuê                 | boolean                                            |          |               |
-| `lease_remaining`        | Còn lại (tháng)              | number                                             |          |               |
+    // Không có district_new — sau sáp nhập bỏ cấp huyện
 
----
+    $table->string('ward_new_code', 80)->nullable();
+    // Code phường/xã mới (tên có thể đổi sau sáp nhập)
 
-#### GROUP E — Phòng trọ / Nhà trọ
+    $table->string('ward_new_name', 150)->nullable();
+    // Tên phường/xã mới
 
-| Field                   | Label                    | Type                     | Bắt buộc | Có thể filter |
-| ----------------------- | ------------------------ | ------------------------ | -------- | ------------- |
-| `area`                  | Diện tích (m²)           | number                   | ✅       | ✅            |
-| `price`                 | Giá thuê/tháng           | number                   | ✅       | ✅            |
-| `furniture`             | Nội thất                 | select                   |          | ✅            |
-| `has_private_bathroom`  | WC riêng                 | boolean                  |          | ✅            |
-| `has_window`            | Cửa sổ thoáng            | boolean                  |          |               |
-| `has_balcony`           | Ban công                 | boolean                  |          |               |
-| `has_loft`              | Gác lửng                 | boolean                  |          |               |
-| `has_air_conditioning`  | Điều hòa                 | boolean                  |          | ✅            |
-| `has_water_heater`      | Máy nước nóng            | boolean                  |          |               |
-| `has_fridge`            | Tủ lạnh                  | boolean                  |          |               |
-| `has_washing_machine`   | Máy giặt                 | boolean                  |          |               |
-| `has_parking_bike`      | Gửi xe máy               | boolean                  |          | ✅            |
-| `has_parking_car`       | Gửi ôtô                  | boolean                  |          |               |
-| `has_security`          | Bảo vệ                   | boolean                  |          |               |
-| `has_camera`            | Camera                   | boolean                  |          |               |
-| `electricity_price`     | Giá điện (nghìn/kWh)     | number                   |          |               |
-| `water_price`           | Giá nước (nghìn/m³)      | number                   |          |               |
-| `internet_included`     | Có wifi                  | boolean                  |          | ✅            |
-| `max_people`            | Số người ở tối đa        | select (1/2/3/4+)        |          |               |
-| `gender_restriction`    | Giới tính                | select (any/male/female) |          |               |
-| `pet_allowed`           | Cho nuôi thú cưng        | boolean                  |          |               |
-| `deposit_months`        | Đặt cọc (tháng)          | number                   |          |               |
-| `notice_period`         | Báo trước khi dọn (ngày) | number                   |          |               |
-| `floor_number`          | Ở tầng                   | number                   |          |               |
-| `building_total_floors` | Tổng số tầng             | number                   |          |               |
-| `available_from`        | Trống từ ngày            | date                     |          |               |
+    // ── ĐỊA CHỈ CHI TIẾT (dùng chung) ──────────────────────────
+    $table->string('address', 500)->nullable();
+    // Số nhà, tên đường, ngõ, hẻm: "208 Nguyễn Hữu Cảnh"
 
----
+    $table->decimal('latitude', 10, 7)->nullable();
+    $table->decimal('longitude', 11, 7)->nullable();
 
-## 6. DATABASE SCHEMA — THIẾT KẾ DYNAMIC ĐẦY ĐỦ
+    // ── THÔNG TIN NHÀ Ở ────────────────────────────────────────
+    $table->unsignedSmallInteger('bedrooms')->nullable()->index();
+    // 0=studio, 1,2,3,4,5 (5+ lưu là 5)
+    $table->unsignedSmallInteger('bathrooms')->nullable();
+    $table->unsignedSmallInteger('floors')->nullable();
+    $table->unsignedSmallInteger('floor_number')->nullable();
+    // Căn hộ ở tầng mấy trong tòa (chỉ apartment)
 
-### 6.1 Bảng `admin_users` — Tài khoản quản trị
+    // ── HƯỚNG ──────────────────────────────────────────────────
+    $table->enum('direction',['dong','tay','nam','bac','dong_nam','dong_bac','tay_nam','tay_bac'])->nullable()->index();
+    $table->enum('balcony_direction',['dong','tay','nam','bac','dong_nam','dong_bac','tay_nam','tay_bac'])->nullable();
 
-```sql
-CREATE TABLE admin_users (
-    id              SERIAL PRIMARY KEY,
-    email           VARCHAR(255) UNIQUE NOT NULL,
-    password_hash   VARCHAR(255) NOT NULL,
-    full_name       VARCHAR(255) NOT NULL,
+    // ── PHÁP LÝ & NỘI THẤT ─────────────────────────────────────
+    $table->enum('legal_status',[
+        'so_hong','so_do','hop_dong_mua_ban','so_chung_cu',
+        'dat_nen_du_an','du_an','dang_cho_so','chua_co_so',
+    ])->nullable()->index();
 
-    -- Thông tin công khai hiển thị trên website
-    display_name    VARCHAR(255),          -- Tên hiển thị ("Anh Minh BĐS")
-    avatar_url      VARCHAR(500),
-    bio             TEXT,                  -- Giới thiệu bản thân
-    experience_years INT,                 -- Năm kinh nghiệm
-    certifications  JSONB,                 -- ["Chứng chỉ môi giới 2023", "..."]
+    $table->enum('furniture_status',['none','basic','full','negotiable'])->default('none')->index();
+    // Label hiển thị theo property_group:
+    // none: apartment="Bàn giao thô" | room="Phòng trống" | commercial="Nguyên bản"
+    // full: apartment="Full nội thất" | room="Full đồ" | commercial="Đã hoàn thiện"
 
-    -- Kênh liên hệ công khai
-    public_phone        VARCHAR(20),
-    public_phone_2      VARCHAR(20),
-    public_email        VARCHAR(255),
-    zalo_url            VARCHAR(500),
-    facebook_url        VARCHAR(500),
-    youtube_url         VARCHAR(500),
-    tiktok_url          VARCHAR(500),
-    website_url         VARCHAR(500),
+    // ── TIỆN ÍCH ───────────────────────────────────────────────
+    $table->tinyInteger('has_elevator')->default(0);
+    $table->tinyInteger('has_pool')->default(0);
+    $table->tinyInteger('has_parking')->default(0);
+    $table->tinyInteger('has_security')->default(0);
+    $table->tinyInteger('has_balcony')->default(0);
+    $table->tinyInteger('has_rooftop')->default(0);
+    $table->tinyInteger('has_basement')->default(0);
+    $table->tinyInteger('has_gym')->default(0);
+    $table->tinyInteger('has_ac')->default(0);
+    $table->tinyInteger('has_wifi')->default(0);
 
-    -- Địa chỉ văn phòng
-    office_address      VARCHAR(500),
-    office_maps_url     VARCHAR(500),  -- Link Google Maps
+    // ── EXTRA FIELDS JSON ───────────────────────────────────────
+    $table->json('extra_fields')->nullable();
+    // apartment: { block_name, apartment_code, year_built, management_fee,
+    //              handover_date, view_type, area_balcony, virtual_tour_url }
+    // house:     { year_built, renovation_year, road_type, alley_width,
+    //              electricity_type, has_mezzanine }
+    // land:      { land_type, zoning, road_width, infrastructure[],
+    //              current_use, is_corner, quy_hoach_url }
+    // commercial:{ space_type, height_clear, electricity_capacity,
+    //              security_deposit, min_lease_term, parking_slots, allowed_business }
+    // room:      { electricity_price, water_price, max_people,
+    //              gender_restriction, pet_allowed, deposit_months, available_from }
+    // project:   { developer_name, developer_logo, distributor_name, total_units,
+    //              total_blocks, area_total, started_at, expected_handover,
+    //              progress_pct, price_per_m2_min, price_per_m2_max,
+    //              ownership_type, brochure_url, highlights }
 
-    -- Bảo mật
-    failed_login_count  INT DEFAULT 0,
-    locked_until        TIMESTAMP,
-    last_login_at       TIMESTAMP,
-    last_login_ip       VARCHAR(45),
+    // ── MEDIA (CKFinder) ────────────────────────────────────────
+    $table->string('image', 500)->nullable();
+    // URL ảnh bìa: "/ckfinder/userfiles/projects/BDS-000001/cover.jpg"
 
-    -- Cài đặt thông báo
-    notify_contact_email    BOOLEAN DEFAULT TRUE,
-    notify_contact_sms      BOOLEAN DEFAULT FALSE,
-    notify_expiry_email     BOOLEAN DEFAULT TRUE,
-    notify_weekly_report    BOOLEAN DEFAULT TRUE,
+    $table->string('album', 200)->nullable();
+    // Path thư mục CKFinder: "projects/BDS-000001"
+    // Format: "projects/{code}" — auto-gen bằng Observer sau khi có code
+    // Frontend dùng để gọi CKFinder API lấy danh sách ảnh trong thư mục
 
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+    $table->tinyInteger('has_video')->default(0);
+    $table->string('video_url', 500)->nullable();    // YouTube URL gốc
+    $table->string('video_embed', 500)->nullable();  // Observer tự extract embed URL
+
+    $table->tinyInteger('has_virtual_tour')->default(0);
+    $table->string('virtual_tour_url', 500)->nullable();
+
+    // ── TRẠNG THÁI ─────────────────────────────────────────────
+    $table->enum('status',['draft','active','hidden','sold','rented'])->default('draft')->index();
+    $table->tinyInteger('is_featured')->default(0)->index();
+    $table->tinyInteger('is_hot')->default(0);
+    $table->tinyInteger('is_urgent')->default(0);
+    $table->integer('sort_order')->default(0)->index();
+    $table->tinyInteger('publish')->default(2);
+    // 2 = hiển thị | 1 = ẩn — đồng bộ convention toàn project
+
+    // ── SEO ─────────────────────────────────────────────────────
+    $table->string('meta_title', 200)->nullable();   // NULL = tự gen từ title
+    $table->string('meta_desc', 400)->nullable();    // NULL = tự gen từ summary
+    $table->string('focus_keyword', 200)->nullable();
+
+    // ── ANALYTICS CACHE ─────────────────────────────────────────
+    $table->integer('view_count')->default(0);
+    // Sync định kỳ từ project_views qua Queue job
+
+    // ── THỜI GIAN ───────────────────────────────────────────────
+    $table->timestamp('published_at')->nullable();
+    // Thời điểm admin publish (draft → active)
+
+    // ── TIMESTAMPS & SOFT DELETE ────────────────────────────────
+    $table->timestamps();
+    $table->softDeletes();
+
+    // ── INDEXES ─────────────────────────────────────────────────
+    $table->index(['status','transaction_type','province_code','catalogue_id'], 'idx_projects_filter_main');
+    $table->index(['province_new_code','status','transaction_type'], 'idx_projects_filter_new');
+    $table->index(['is_featured','sort_order','published_at'], 'idx_projects_featured');
+    $table->fullText(['title','summary','address'], 'ft_projects_search');
+});
 ```
 
 ---
 
-### 6.2 Bảng `admin_sessions` — Session đăng nhập
+### MODULE 5 — `project_items`
 
-```sql
-CREATE TABLE admin_sessions (
-    id              BIGSERIAL PRIMARY KEY,
-    refresh_token_hash  VARCHAR(255) UNIQUE NOT NULL,
-    ip_address      VARCHAR(45),
-    user_agent      VARCHAR(500),
-    device_name     VARCHAR(255),    -- "Chrome on MacOS"
-    is_revoked      BOOLEAN DEFAULT FALSE,
-    expires_at      TIMESTAMP NOT NULL,
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+```php
+Schema::create('project_items', function (Blueprint $table) {
+    $table->id();
+
+    $table->foreignId('project_id')
+          ->constrained('projects')
+          ->onDelete('cascade');
+    // Xóa dự án → xóa hết items
+
+    $table->string('name', 200);
+    // apartment: "Căn 2PN loại A" | land: "Lô A1-05" | commercial: "Shophouse SH-01"
+
+    $table->string('item_code', 50)->nullable();
+    // Mã ngắn: "2PN-A", "A1-05", "SH-01"
+
+    $table->unsignedSmallInteger('bedrooms')->nullable();
+    $table->unsignedSmallInteger('bathrooms')->nullable();
+
+    $table->decimal('area_min', 8, 2)->nullable();
+    $table->decimal('area_max', 8, 2)->nullable();
+    $table->decimal('price_min', 18, 2)->nullable();
+    $table->decimal('price_max', 18, 2)->nullable();
+    $table->decimal('price_per_m2', 12, 2)->nullable();
+
+    $table->integer('total_units')->default(0);
+    $table->integer('available_units')->default(0);
+
+    $table->enum('item_status',['available','limited','sold_out'])->default('available');
+    // available = Còn | limited = Sắp hết | sold_out = Hết
+
+    $table->string('floor_plan_image', 500)->nullable();
+    // Ảnh mặt bằng căn/lô (CKFinder, 1 ảnh)
+
+    $table->json('extra_fields')->nullable();
+    // apartment: { floor_number_min, floor_number_max, direction, area_balcony, view_type }
+    // land:      { width, length, road_width, is_corner, legal_status }
+    // commercial:{ floor_number, width, height_clear, space_type }
+
+    $table->text('description')->nullable();
+    $table->unsignedSmallInteger('sort_order')->default(0);
+
+    $table->tinyInteger('publish')->default(2);
+    // 2 = hiển thị | 1 = ẩn
+
+    $table->timestamps();
+});
 ```
 
 ---
 
-### 6.3 Bảng `categories` — Danh mục (Cây 2 cấp + nhóm field)
+### MODULE 6 — `contact_requests` _(rename visit_requests)_
 
-```sql
-CREATE TABLE categories (
-    id              SERIAL PRIMARY KEY,
-    parent_id       INT REFERENCES categories(id) ON DELETE SET NULL,
+```php
+// Thực tế: Schema::rename('visit_requests', 'contact_requests') + addColumn
+Schema::create('contact_requests', function (Blueprint $table) {
+    $table->id();
 
-    name            VARCHAR(255) NOT NULL,
-    slug            VARCHAR(255) UNIQUE NOT NULL,
-    name_en         VARCHAR(255),          -- Tùy chọn cho SEO
+    $table->foreignId('project_id')->nullable()
+          ->constrained('projects')->onDelete('set null');
 
-    -- Nhóm field động — quyết định form đăng tin dùng field nào
-    property_group  ENUM(
-                        'apartment',       -- GROUP_A: Căn hộ, chung cư, NOXH
-                        'house',           -- GROUP_B: Nhà phố, biệt thự
-                        'land',            -- GROUP_C: Đất các loại
-                        'commercial',      -- GROUP_D: Mặt bằng, văn phòng, kho
-                        'room',            -- GROUP_E: Phòng trọ, nhà trọ
-                        'project'          -- GROUP_F: Dự án (dùng Project module)
-                    ),
+    $table->enum('request_type',['listing','project','general','phone_click'])->default('listing');
+    $table->string('source_url', 600)->nullable();
 
-    -- Loại giao dịch mặc định
-    default_transaction ENUM('sale','rent','both') DEFAULT 'both',
+    $table->string('full_name', 200)->nullable();
+    $table->string('phone', 20)->nullable();
+    $table->string('email', 200)->nullable();
+    $table->text('message')->nullable();
 
-    -- Hiển thị
-    icon_emoji      VARCHAR(10),           -- "🏠"
-    icon_url        VARCHAR(500),
-    color_hex       VARCHAR(7),            -- "#E84040"
-    description     TEXT,
+    $table->enum('interested_in',['buy','rent','consult','invest'])->default('consult');
+    $table->enum('preferred_contact',['phone','zalo','email','any'])->default('any');
+    $table->string('contact_time', 100)->nullable();
 
-    -- SEO
-    meta_title      VARCHAR(255),
-    meta_description VARCHAR(500),
-    h1_text         VARCHAR(255),          -- Heading trang danh mục
+    $table->enum('status',['new','read','contacted','done','spam'])->default('new');
+    $table->text('admin_note')->nullable();
 
-    -- Cài đặt
-    show_on_homepage    BOOLEAN DEFAULT TRUE,
-    is_active           BOOLEAN DEFAULT TRUE,
-    sort_order          INT DEFAULT 0,
+    $table->string('ip_address', 45)->nullable();
+    $table->decimal('recaptcha_score', 3, 2)->nullable();
+    $table->tinyInteger('email_sent')->default(0);
+    $table->timestamp('email_sent_at')->nullable();
 
-    -- Cấu trúc
-    level           TINYINT DEFAULT 1,
-    path            VARCHAR(200),          -- "1/5" breadcrumb
-
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+    $table->timestamps();
+    $table->index(['status','created_at'], 'idx_contacts_status');
+    $table->index('project_id', 'idx_contacts_project');
+});
 ```
 
 ---
 
-### 6.4 Bảng `field_definitions` — Định nghĩa field động
+### MODULE 7 — `project_views`
 
-```sql
--- Định nghĩa các field cho từng property_group
--- Admin có thể thêm/sửa/xóa field qua Field Builder UI
-CREATE TABLE field_definitions (
-    id              SERIAL PRIMARY KEY,
+```php
+Schema::create('project_views', function (Blueprint $table) {
+    $table->id();
 
-    -- Field áp dụng cho nhóm nào
-    property_group  ENUM('apartment','house','land','commercial','room','project') NOT NULL,
+    $table->foreignId('project_id')
+          ->constrained('projects')
+          ->onDelete('cascade');
 
-    -- Định danh
-    field_key       VARCHAR(100) NOT NULL,     -- "bedrooms", "road_width" (camelCase/snake_case)
-    field_label     VARCHAR(255) NOT NULL,     -- "Số phòng ngủ"
-    field_label_en  VARCHAR(255),              -- "Bedrooms"
+    $table->string('ip_address', 45)->nullable();
+    $table->tinyInteger('is_bot')->default(0);
+    $table->tinyInteger('is_phone_click')->default(0);
+    $table->string('referer', 500)->nullable();
+    $table->date('view_date')->index();
+    $table->timestamp('viewed_at')->useCurrent();
 
-    -- Loại field
-    field_type      ENUM(
-                        'text',
-                        'textarea',
-                        'number',
-                        'select',
-                        'multiselect',
-                        'boolean',
-                        'date',
-                        'url',
-                        'range'
-                    ) NOT NULL,
-
-    -- Tùy chọn cho select/multiselect
-    options         JSONB,
-    -- Ví dụ: [{"value":"1","label":"1 phòng"},{"value":"2","label":"2 phòng"},...]
-
-    -- Validation
-    is_required     BOOLEAN DEFAULT FALSE,     -- Bắt buộc khi publish
-    min_value       DECIMAL(15,4),             -- Số tối thiểu (nếu type=number)
-    max_value       DECIMAL(15,4),
-    min_length      INT,
-    max_length      INT,
-    placeholder     VARCHAR(255),
-    helper_text     VARCHAR(500),              -- Gợi ý dưới field
-
-    -- Hành vi
-    is_filterable   BOOLEAN DEFAULT FALSE,     -- Hiện trong bộ lọc tìm kiếm
-    is_comparable   BOOLEAN DEFAULT FALSE,     -- Hiện trong trang so sánh
-    is_public       BOOLEAN DEFAULT TRUE,      -- Hiện với khách xem không
-    show_in_list    BOOLEAN DEFAULT FALSE,     -- Hiện trong card danh sách
-
-    -- Filter config (nếu is_filterable=true)
-    filter_type     ENUM('select','range','boolean','multiselect'),
-    filter_label    VARCHAR(255),
-
-    -- Icon cho field
-    icon            VARCHAR(50),               -- "bed", "bath", "maximize-2" (lucide icon)
-    unit            VARCHAR(30),               -- "m²", "tầng", "triệu/m²"
-
-    -- Cài đặt
-    sort_order      INT DEFAULT 0,
-    section_name    VARCHAR(100),              -- Nhóm field trong form: "Diện tích", "Tiện ích"
-    is_active       BOOLEAN DEFAULT TRUE,
-
-    UNIQUE(property_group, field_key),
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+    $table->unique(['project_id','ip_address','view_date'], 'idx_views_dedup');
+    $table->index(['project_id','view_date'], 'idx_views_by_date');
+});
 ```
 
 ---
 
-### 6.5 Bảng `listings` — Tin đăng (Core — field tĩnh + JSONB động)
+### MODULE 8 — `site_settings` + `slug_redirects`
 
-```sql
-CREATE TABLE listings (
-    id              BIGSERIAL PRIMARY KEY,
-    listing_code    VARCHAR(20) UNIQUE NOT NULL,  -- "BDS-000123" — mã định danh ngắn
-    slug            VARCHAR(600) UNIQUE NOT NULL,
+```php
+Schema::create('site_settings', function (Blueprint $table) {
+    $table->id();
+    $table->string('key', 100)->unique();
+    $table->text('value')->nullable();
+    $table->enum('type',['text','number','boolean','json','color','url'])->default('text');
+    $table->string('group_name', 50)->default('general');
+    $table->string('label', 200)->nullable();
+    $table->tinyInteger('is_public')->default(0);
+    $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+});
 
-    -- Phân loại
-    category_id     INT NOT NULL REFERENCES categories(id),
-    transaction_type ENUM('sale','rent') NOT NULL,
-
-    -- ===== FIELD TĨNH (chung cho mọi loại) =====
-    title           VARCHAR(500) NOT NULL,
-    description     TEXT NOT NULL,
-
-    -- Giá
-    price           DECIMAL(18,2),
-    price_negotiable BOOLEAN DEFAULT FALSE,
-    price_unit      ENUM('total','per_m2','per_month','per_m2_month') DEFAULT 'total',
-    currency        CHAR(3) DEFAULT 'VND',
-
-    -- Diện tích cơ bản (chung)
-    area            DECIMAL(10,2),         -- Diện tích chính (m²)
-
-    -- Vị trí
-    address         VARCHAR(500),
-    province_id     INT NOT NULL REFERENCES provinces(id),
-    district_id     INT NOT NULL REFERENCES districts(id),
-    ward_id         INT REFERENCES wards(id),
-    ward_name       VARCHAR(100),          -- Backup text nếu ward không có trong DB
-    street          VARCHAR(255),
-    full_address    VARCHAR(700),          -- Địa chỉ đầy đủ (tổng hợp)
-    latitude        DECIMAL(10,8),
-    longitude       DECIMAL(11,8),
-    show_exact_address BOOLEAN DEFAULT FALSE,
-
-    -- Pháp lý (common field)
-    legal_status    ENUM('pink_book','red_book','sale_contract','waiting','other') DEFAULT 'other',
-
-    -- Dự án (nếu thuộc dự án)
-    project_id      BIGINT REFERENCES projects(id) ON DELETE SET NULL,
-
-    -- ===== FIELD ĐỘNG THEO NHÓM (lưu JSONB) =====
-    -- Không phải tất cả field đều có — mỗi nhóm dùng khác nhau
-    -- Schema được định nghĩa trong field_definitions
-    extra_fields    JSONB NOT NULL DEFAULT '{}',
-    /*
-      Ví dụ GROUP_A (apartment):
-      {
-        "bedrooms": 2,
-        "bathrooms": 2,
-        "floor_number": 12,
-        "total_floors": 25,
-        "direction": "east",
-        "furniture": "full",
-        "has_elevator": true,
-        "has_pool": false,
-        "has_parking": true,
-        "project_name": "Vinhomes Central Park",
-        "apartment_code": "P2-12.08",
-        "virtual_tour_url": "https://..."
-      }
-
-      Ví dụ GROUP_C (land):
-      {
-        "length": 20,
-        "width": 5,
-        "land_type": "tho-cu",
-        "road_width": 6,
-        "zoning": "dan-cu",
-        "is_corner": false,
-        "infrastructure": ["dien","nuoc","duong"]
-      }
-
-      Ví dụ GROUP_D (commercial):
-      {
-        "width": 8,
-        "height_clear": 4.5,
-        "space_type": "shop",
-        "has_elevator": true,
-        "electricity_capacity": 50,
-        "min_lease_term": "1y",
-        "security_deposit": 3
-      }
-    */
-
-    -- Media
-    cover_image_url VARCHAR(500),          -- Ảnh bìa (cache cho hiệu suất)
-    image_count     TINYINT DEFAULT 0,     -- Số lượng ảnh (cache)
-    has_video       BOOLEAN DEFAULT FALSE,
-    has_virtual_tour BOOLEAN DEFAULT FALSE,
-
-    -- Trạng thái
-    status          ENUM('draft','active','expired','sold','rented','hidden') DEFAULT 'draft',
-
-    -- Thứ tự hiển thị
-    is_featured     BOOLEAN DEFAULT FALSE, -- Tin nổi bật
-    sort_order      INT DEFAULT 0,         -- Pin lên đầu (0=thường, >0=ưu tiên)
-
-    -- SEO
-    meta_title      VARCHAR(255),          -- Nếu NULL → tự gen từ title
-    meta_description VARCHAR(500),         -- Nếu NULL → tự gen từ description
-
-    -- Liên hệ (nếu muốn override thông tin admin)
-    contact_name    VARCHAR(255),          -- Tên hiển thị trên tin (NULL = dùng admin.display_name)
-    contact_phone   VARCHAR(20),           -- SĐT trên tin (NULL = dùng admin.public_phone)
-
-    -- Thống kê (cache — cập nhật định kỳ)
-    view_count      INT DEFAULT 0,
-    phone_click_count INT DEFAULT 0,
-    contact_count   INT DEFAULT 0,
-
-    -- Thời gian
-    published_at    TIMESTAMP,
-    expired_at      TIMESTAMP,             -- = published_at + settings.listing_duration ngày
-    sold_at         TIMESTAMP,
-
-    -- Ghi chú nội bộ
-    internal_note   TEXT,                  -- Chỉ admin thấy, không hiện public
-
-    -- Full-text search
-    search_vector   TSVECTOR,
-
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at      TIMESTAMP              -- Soft delete
-);
-
--- ===== INDEXES =====
--- Search & filter chính
-CREATE INDEX idx_listings_main ON listings(status, province_id, district_id, category_id, transaction_type);
-CREATE INDEX idx_listings_price ON listings(price) WHERE price IS NOT NULL;
-CREATE INDEX idx_listings_area ON listings(area) WHERE area IS NOT NULL;
-CREATE INDEX idx_listings_featured ON listings(is_featured, sort_order DESC, published_at DESC);
-CREATE INDEX idx_listings_published ON listings(published_at DESC) WHERE status = 'active';
-CREATE INDEX idx_listings_expired ON listings(expired_at) WHERE status = 'active';
-CREATE INDEX idx_listings_project ON listings(project_id) WHERE project_id IS NOT NULL;
-
--- Full-text search
-CREATE INDEX idx_listings_fts ON listings USING GIN(search_vector);
-
--- JSONB extra_fields query (GIN index cho query như extra_fields->>'bedrooms' = '2')
-CREATE INDEX idx_listings_extra ON listings USING GIN(extra_fields);
-
--- Geospatial (nếu dùng PostGIS)
--- CREATE INDEX idx_listings_geo ON listings USING GIST(ST_MakePoint(longitude, latitude));
-
--- ===== TRIGGER tự động cập nhật search_vector =====
-CREATE OR REPLACE FUNCTION fn_update_listing_search_vector()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.search_vector := to_tsvector('simple',
-        COALESCE(NEW.title, '')       || ' ' ||
-        COALESCE(NEW.description, '') || ' ' ||
-        COALESCE(NEW.address, '')     || ' ' ||
-        COALESCE(NEW.full_address, '') || ' ' ||
-        COALESCE(NEW.extra_fields::text, '')
-    );
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_listing_search
-BEFORE INSERT OR UPDATE ON listings
-FOR EACH ROW EXECUTE FUNCTION fn_update_listing_search_vector();
-
--- ===== TRIGGER tự động sinh listing_code =====
-CREATE OR REPLACE FUNCTION fn_generate_listing_code()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.listing_code := 'BDS-' || LPAD(NEW.id::TEXT, 6, '0');
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_listing_code
-AFTER INSERT ON listings
-FOR EACH ROW EXECUTE FUNCTION fn_generate_listing_code();
+Schema::create('slug_redirects', function (Blueprint $table) {
+    $table->id();
+    $table->string('old_slug', 600)->unique();
+    $table->string('new_slug', 600)->nullable(); // NULL = 410 Gone
+    $table->unsignedSmallInteger('redirect_type')->default(301);
+    $table->integer('hit_count')->default(0);
+    $table->timestamp('created_at')->useCurrent();
+    $table->index('old_slug');
+});
 ```
 
 ---
 
-### 6.6 Bảng `listing_images` — Ảnh tin đăng
+## 4. OBSERVER (MySQL)
 
-```sql
-CREATE TABLE listing_images (
-    id              BIGSERIAL PRIMARY KEY,
-    listing_id      BIGINT NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
+```php
+// app/Observers/ProjectObserver.php
 
-    -- URLs theo kích thước
-    url_original    VARCHAR(500) NOT NULL,
-    url_thumbnail   VARCHAR(500),          -- 400x300
-    url_medium      VARCHAR(500),          -- 800x600
-    url_large       VARCHAR(500),          -- 1200x900
-    url_webp        VARCHAR(500),          -- WebP version (tối ưu web)
+class ProjectObserver
+{
+    public function created(Project $project): void
+    {
+        $code = 'BDS-' . str_pad($project->id, 6, '0', STR_PAD_LEFT);
+        $project->updateQuietly([
+            'code'  => $code,
+            'album' => 'projects/' . $code,
+        ]);
+    }
 
-    -- Metadata ảnh
-    alt_text        VARCHAR(255),
-    width           INT,
-    height          INT,
-    file_size       INT,                   -- Bytes
+    public function saving(Project $project): void
+    {
+        // Tính price_vnd để filter range đồng nhất
+        $project->price_vnd = match (true) {
+            is_null($project->price) => null,
+            in_array($project->price_unit, ['per_m2', 'per_m2_month'])
+                => $project->price * ($project->area ?? 1),
+            default => $project->price,
+        };
 
-    -- Thứ tự & vai trò
-    sort_order      INT DEFAULT 0,
-    is_cover        BOOLEAN DEFAULT FALSE, -- Ảnh bìa
+        // Denorm property_group khi đổi catalogue
+        if ($project->isDirty('catalogue_id')) {
+            $catalogue = ProjectCatalogue::with('propertyGroup')->find($project->catalogue_id);
+            $project->property_group = $catalogue?->propertyGroup?->code;
+        }
 
-    -- Lưu trữ
-    storage_key     VARCHAR(500),          -- S3 key (để xóa sau này)
+        // Extract YouTube embed
+        if ($project->isDirty('video_url') && $project->video_url) {
+            preg_match('/(?:v=|youtu\.be\/)([^&?\/]+)/', $project->video_url, $m);
+            $id = $m[1] ?? null;
+            $project->video_embed = $id ? "https://www.youtube.com/embed/{$id}" : null;
+            $project->has_video   = $id ? 1 : 0;
+        }
 
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX idx_images_listing ON listing_images(listing_id, sort_order);
+        // Auto slug
+        if (empty($project->slug) && $project->title) {
+            $project->slug = \Str::slug($project->title) . '-' . time();
+        }
+    }
+}
 ```
 
 ---
 
-### 6.7 Bảng `listing_videos` — Video / Virtual Tour
+## 5. MODELS
 
-```sql
-CREATE TABLE listing_videos (
-    id              BIGSERIAL PRIMARY KEY,
-    listing_id      BIGINT NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
+```php
+// app/Models/Project.php
+class Project extends Model
+{
+    use SoftDeletes;
+    protected $table = 'projects';
+    protected $casts = [
+        'extra_fields' => 'array',
+        'price'        => 'decimal:2',
+        'price_vnd'    => 'decimal:2',
+        'area'         => 'decimal:2',
+        'published_at' => 'datetime',
+    ];
 
-    video_type      ENUM('youtube','vimeo','upload','virtual_tour_360','matterport') NOT NULL,
+    public function catalogue()   { return $this->belongsTo(ProjectCatalogue::class,'catalogue_id'); }
+    public function type()        { return $this->belongsTo(ProjectType::class,'type_code','code'); }
+    public function items()       { return $this->hasMany(ProjectItem::class,'project_id'); }
+    public function contacts()    { return $this->hasMany(ContactRequest::class,'project_id'); }
+    public function views()       { return $this->hasMany(ProjectView::class,'project_id'); }
 
-    raw_url         VARCHAR(500),          -- URL người dùng nhập
-    embed_url       VARCHAR(500),          -- URL nhúng (xử lý từ raw_url)
-    thumbnail_url   VARCHAR(500),
+    public function scopeActive($q)              { return $q->where('status','active')->where('publish',2); }
+    public function scopeFeatured($q)            { return $q->where('is_featured',1); }
+    public function scopeByGroup($q,string $g)   { return $q->where('property_group',$g); }
+    public function scopeByProvince($q,string $c){ return $q->where(fn($q2) =>
+        $q2->where('province_code',$c)->orWhere('province_new_code',$c));
+    }
+}
 
-    title           VARCHAR(255),
-    duration_seconds INT,
-    sort_order      INT DEFAULT 0,
+// app/Models/ProjectType.php
+class ProjectType extends Model
+{
+    protected $table = 'project_types';
+    public function group() { return $this->belongsTo(ProjectPropertyGroup::class,'group_id'); }
+}
 
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+// app/Models/ProjectCatalogue.php
+class ProjectCatalogue extends Model
+{
+    protected $table = 'project_catalogues';
+    public function parent()        { return $this->belongsTo(self::class,'parent_id'); }
+    public function children()      { return $this->hasMany(self::class,'parent_id'); }
+    public function propertyGroup() { return $this->belongsTo(ProjectPropertyGroup::class,'property_group_id'); }
+    public function projects()      { return $this->hasMany(Project::class,'catalogue_id'); }
+}
+
+// app/Models/ProjectPropertyGroup.php
+class ProjectPropertyGroup extends Model
+{
+    protected $table = 'project_property_groups';
+    public function types()      { return $this->hasMany(ProjectType::class,'group_id'); }
+    public function catalogues() { return $this->hasMany(ProjectCatalogue::class,'property_group_id'); }
+}
+
+// app/Models/ProjectItem.php
+class ProjectItem extends Model
+{
+    protected $table = 'project_items';
+    protected $casts = ['extra_fields' => 'array'];
+    public function project() { return $this->belongsTo(Project::class,'project_id'); }
+}
 ```
 
 ---
 
-### 6.8 Bảng `projects` — Dự án BĐS lớn
-
-```sql
-CREATE TABLE projects (
-    id              BIGSERIAL PRIMARY KEY,
-    project_code    VARCHAR(20) UNIQUE NOT NULL,   -- "PRJ-000001"
-    slug            VARCHAR(400) UNIQUE NOT NULL,
-    name            VARCHAR(400) NOT NULL,
-
-    -- Phân loại
-    project_type    ENUM(
-                        'chung_cu',
-                        'nha_pho_lien_ke',
-                        'biet_thu',
-                        'shophouse',
-                        'resort',
-                        'nha_o_xa_hoi',
-                        'khu_do_thi',
-                        'van_phong',
-                        'khu_cong_nghiep'
-                    ) NOT NULL,
-
-    transaction_type ENUM('sale','rent','both') DEFAULT 'sale',
-
-    -- Mô tả
-    description     TEXT,
-    highlights      TEXT,                  -- Điểm nổi bật (dạng bullet)
-
-    -- Chủ đầu tư
-    developer_name  VARCHAR(300),
-    developer_logo  VARCHAR(500),
-    developer_website VARCHAR(300),
-
-    -- Đơn vị phân phối
-    distributor_name VARCHAR(300),
-
-    -- Vị trí
-    address         VARCHAR(500),
-    province_id     INT NOT NULL REFERENCES provinces(id),
-    district_id     INT NOT NULL REFERENCES districts(id),
-    ward_id         INT REFERENCES wards(id),
-    latitude        DECIMAL(10,8),
-    longitude       DECIMAL(11,8),
-
-    -- Thông tin dự án
-    total_units     INT,                   -- Tổng số căn/lô
-    total_blocks    INT,                   -- Số tòa/phân khu
-    total_floors    INT,
-    area_total      DECIMAL(12,2),         -- Tổng diện tích đất dự án (m²)
-    density         DECIMAL(5,2),          -- Mật độ xây dựng (%)
-
-    -- Tiến độ
-    started_at      DATE,
-    expected_handover_at DATE,
-    actual_handover_at DATE,
-    status          ENUM('planning','approved','building','completed','selling','paused') DEFAULT 'planning',
-    progress_percent INT,                  -- % tiến độ xây dựng
-
-    -- Giá
-    price_min       DECIMAL(18,2),
-    price_max       DECIMAL(18,2),
-    price_per_m2_min DECIMAL(12,2),
-    price_per_m2_max DECIMAL(12,2),
-
-    -- Pháp lý
-    legal_status    ENUM('approved','pending','unknown') DEFAULT 'unknown',
-    ownership_type  ENUM('long_term','50_years','99_years') DEFAULT 'long_term',
-
-    -- Tiện ích dự án (JSONB linh hoạt)
-    project_amenities JSONB DEFAULT '[]',
-    -- Ví dụ: ["pool","gym","park","supermarket","school","hospital","security_247"]
-
-    -- Media
-    cover_image_url VARCHAR(500),
-    logo_url        VARCHAR(500),
-    virtual_tour_url VARCHAR(500),
-    youtube_url     VARCHAR(500),
-
-    -- Tài liệu
-    brochure_url    VARCHAR(500),          -- PDF brochure
-    floor_plan_url  VARCHAR(500),          -- Mặt bằng tổng thể
-
-    -- SEO & Hiển thị
-    is_featured     BOOLEAN DEFAULT FALSE,
-    is_active       BOOLEAN DEFAULT TRUE,
-    meta_title      VARCHAR(255),
-    meta_description VARCHAR(500),
-    sort_order      INT DEFAULT 0,
-
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
----
-
-### 6.9 Bảng `project_images` — Thư viện ảnh dự án
-
-```sql
-CREATE TABLE project_images (
-    id              BIGSERIAL PRIMARY KEY,
-    project_id      BIGINT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-
-    url_original    VARCHAR(500) NOT NULL,
-    url_medium      VARCHAR(500),
-    url_thumbnail   VARCHAR(500),
-
-    image_category  ENUM(
-                        'cover',           -- Ảnh bìa
-                        'exterior',        -- Ngoại thất
-                        'interior',        -- Nội thất
-                        'floor_plan',      -- Mặt bằng
-                        'location_map',    -- Bản đồ vị trí
-                        'construction',    -- Tiến độ
-                        'amenity'          -- Tiện ích
-                    ) DEFAULT 'exterior',
-
-    caption         VARCHAR(500),
-    sort_order      INT DEFAULT 0,
-
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
----
-
-### 6.10 Bảng `project_unit_types` — Bảng giá căn hộ theo loại
-
-```sql
--- Bảng loại căn trong dự án (VD: Căn 2PN loại A, Căn 3PN loại B)
-CREATE TABLE project_unit_types (
-    id              BIGSERIAL PRIMARY KEY,
-    project_id      BIGINT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-
-    name            VARCHAR(255) NOT NULL,  -- "Căn 2 phòng ngủ - Loại A"
-    unit_code       VARCHAR(50),            -- "2PN-A"
-
-    bedrooms        TINYINT,
-    bathrooms       TINYINT,
-    area_min        DECIMAL(8,2),
-    area_max        DECIMAL(8,2),
-
-    price_min       DECIMAL(18,2),
-    price_max       DECIMAL(18,2),
-
-    floor_plan_url  VARCHAR(500),           -- Ảnh mặt bằng căn
-    description     TEXT,
-
-    available_units INT,                    -- Số căn còn
-    total_units     INT,
-
-    sort_order      INT DEFAULT 0,
-
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
----
-
-### 6.11 Bảng `provinces` / `districts` / `wards`
-
-```sql
-CREATE TABLE provinces (
-    id          SERIAL PRIMARY KEY,
-    code        VARCHAR(10) UNIQUE NOT NULL,    -- Mã ĐVHC: "79"
-    name        VARCHAR(100) NOT NULL,           -- "Thành phố Hồ Chí Minh"
-    name_short  VARCHAR(50),                    -- "TP. HCM"
-    slug        VARCHAR(100) UNIQUE NOT NULL,   -- "ho-chi-minh"
-    region      ENUM('north','central','south') DEFAULT 'south',
-    sort_order  INT DEFAULT 0,
-    is_active   BOOLEAN DEFAULT TRUE
-);
-
-CREATE TABLE districts (
-    id          SERIAL PRIMARY KEY,
-    province_id INT NOT NULL REFERENCES provinces(id),
-    code        VARCHAR(10) UNIQUE NOT NULL,
-    name        VARCHAR(100) NOT NULL,           -- "Quận 1"
-    name_short  VARCHAR(50),
-    slug        VARCHAR(100) NOT NULL,
-    type        ENUM('quan','huyen','thi_xa','thanh_pho') DEFAULT 'quan',
-    sort_order  INT DEFAULT 0,
-    is_active   BOOLEAN DEFAULT TRUE,
-    UNIQUE(province_id, slug)
-);
-
-CREATE TABLE wards (
-    id          SERIAL PRIMARY KEY,
-    district_id INT NOT NULL REFERENCES districts(id),
-    code        VARCHAR(10) UNIQUE NOT NULL,
-    name        VARCHAR(100) NOT NULL,           -- "Phường Bến Nghé"
-    slug        VARCHAR(100) NOT NULL,
-    type        ENUM('phuong','xa','thi_tran') DEFAULT 'phuong',
-    is_active   BOOLEAN DEFAULT TRUE,
-    UNIQUE(district_id, slug)
-);
-```
-
----
-
-### 6.12 Bảng `contact_requests` — Liên hệ từ khách
-
-```sql
-CREATE TABLE contact_requests (
-    id              BIGSERIAL PRIMARY KEY,
-
-    -- Nguồn liên hệ
-    listing_id      BIGINT REFERENCES listings(id) ON DELETE SET NULL,
-    project_id      BIGINT REFERENCES projects(id) ON DELETE SET NULL,
-    source_page     VARCHAR(500),          -- URL trang khách đang xem
-    request_type    ENUM('listing','project','general','phone_click') DEFAULT 'listing',
-
-    -- Thông tin khách
-    full_name       VARCHAR(255),
-    phone           VARCHAR(20),
-    email           VARCHAR(255),
-    message         TEXT,
-
-    -- Yêu cầu
-    interested_in   ENUM('buy','rent','consult','invest','other') DEFAULT 'consult',
-    preferred_contact ENUM('phone','email','zalo','any') DEFAULT 'any',
-    contact_time    VARCHAR(100),          -- "Buổi sáng", "Sau 18h"
-
-    -- Xử lý
-    status          ENUM('new','read','contacted','done','spam') DEFAULT 'new',
-    admin_note      TEXT,
-
-    -- Chống spam
-    ip_address      VARCHAR(45),
-    user_agent      VARCHAR(500),
-    recaptcha_score DECIMAL(3,2),          -- 0.0 → 1.0
-
-    -- Thông báo
-    email_sent_to_admin BOOLEAN DEFAULT FALSE,
-    email_sent_at   TIMESTAMP,
-
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX idx_contacts_new ON contact_requests(status, created_at DESC);
-CREATE INDEX idx_contacts_listing ON contact_requests(listing_id) WHERE listing_id IS NOT NULL;
-```
-
----
-
-### 6.13 Bảng `listing_views` — Lượt xem
-
-```sql
-CREATE TABLE listing_views (
-    id              BIGSERIAL PRIMARY KEY,
-    listing_id      BIGINT NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
-
-    ip_address      VARCHAR(45),
-    user_agent      VARCHAR(500),
-    is_bot          BOOLEAN DEFAULT FALSE,     -- Detect bot crawl
-    referer         VARCHAR(500),
-    utm_source      VARCHAR(100),
-    utm_medium      VARCHAR(100),
-    utm_campaign    VARCHAR(100),
-
-    is_phone_click  BOOLEAN DEFAULT FALSE,     -- True khi click xem SĐT
-
-    viewed_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    view_date       DATE GENERATED ALWAYS AS (DATE(viewed_at)) STORED
-);
-
--- Chỉ count 1 view mỗi (listing_id + ip_address + view_date)
-CREATE UNIQUE INDEX idx_views_dedup ON listing_views(listing_id, ip_address, view_date)
-    WHERE is_bot = FALSE;
-
-CREATE INDEX idx_views_listing_date ON listing_views(listing_id, view_date);
-```
-
----
-
-### 6.14 Bảng `blog_posts` — Bài viết (Tùy chọn)
-
-```sql
-CREATE TABLE blog_posts (
-    id              BIGSERIAL PRIMARY KEY,
-    slug            VARCHAR(500) UNIQUE NOT NULL,
-
-    title           VARCHAR(500) NOT NULL,
-    excerpt         VARCHAR(500),          -- Tóm tắt ngắn
-    content         TEXT NOT NULL,         -- HTML content
-    cover_image_url VARCHAR(500),
-
-    -- Phân loại
-    tags            JSONB DEFAULT '[]',    -- ["mua-nha","ho-chi-minh","can-ho"]
-    category        VARCHAR(100),          -- "tin-tuc", "kien-thuc", "phap-ly"
-
-    -- Liên quan
-    related_listing_ids JSONB DEFAULT '[]', -- [123, 456] — tin đăng liên quan
-    related_province_ids JSONB DEFAULT '[]', -- Tỉnh liên quan
-
-    -- Trạng thái
-    status          ENUM('draft','published','archived') DEFAULT 'draft',
-    is_featured     BOOLEAN DEFAULT FALSE,
-
-    -- Thống kê
-    view_count      INT DEFAULT 0,
-
-    -- SEO
-    meta_title      VARCHAR(255),
-    meta_description VARCHAR(500),
-    focus_keyword   VARCHAR(255),
-
-    published_at    TIMESTAMP,
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
----
-
-### 6.15 Bảng `banners` — Slider / Banner trang chủ
-
-```sql
-CREATE TABLE banners (
-    id          SERIAL PRIMARY KEY,
-    title       VARCHAR(255),
-    subtitle    VARCHAR(500),
-
-    position    ENUM(
-                    'homepage_hero',       -- Slider trang chủ
-                    'homepage_secondary',  -- Banner phụ trang chủ
-                    'listing_list_top',    -- Trên danh sách tin
-                    'listing_detail_sidebar', -- Sidebar trang chi tiết
-                    'footer_banner'
-                ) NOT NULL,
-
-    image_url   VARCHAR(500) NOT NULL,
-    image_url_mobile VARCHAR(500),         -- Ảnh khác cho mobile
-    link_url    VARCHAR(500),
-    link_target ENUM('_self','_blank') DEFAULT '_self',
-
-    -- Hiệu ứng (nếu là hero slider)
-    button_text VARCHAR(100),
-    button_style VARCHAR(50),
-    overlay_color VARCHAR(7),
-    text_color  VARCHAR(7),
-
-    sort_order  INT DEFAULT 0,
-    is_active   BOOLEAN DEFAULT TRUE,
-
-    -- Thời gian hiển thị (tùy chọn)
-    display_from TIMESTAMP,
-    display_to  TIMESTAMP,
-
-    click_count INT DEFAULT 0,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
----
-
-### 6.16 Bảng `testimonials` — Đánh giá khách hàng
-
-```sql
-CREATE TABLE testimonials (
-    id          SERIAL PRIMARY KEY,
-    client_name VARCHAR(255) NOT NULL,
-    client_title VARCHAR(255),             -- "Khách hàng mua nhà tháng 3/2024"
-    client_avatar VARCHAR(500),
-
-    content     TEXT NOT NULL,
-    rating      TINYINT DEFAULT 5 CHECK(rating BETWEEN 1 AND 5),
-
-    -- Liên kết tin đã bán (tùy chọn)
-    listing_id  BIGINT REFERENCES listings(id) ON DELETE SET NULL,
-
-    sort_order  INT DEFAULT 0,
-    is_active   BOOLEAN DEFAULT TRUE,
-
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
----
-
-### 6.17 Bảng `site_settings` — Cài đặt hệ thống
-
-```sql
-CREATE TABLE site_settings (
-    id          SERIAL PRIMARY KEY,
-    key         VARCHAR(100) UNIQUE NOT NULL,
-    value       TEXT,
-    type        ENUM('text','json','boolean','number','color','url') DEFAULT 'text',
-    group_name  VARCHAR(50) NOT NULL DEFAULT 'general',
-    label       VARCHAR(255),
-    description VARCHAR(500),
-    is_public   BOOLEAN DEFAULT FALSE,     -- TRUE = gửi xuống frontend
-    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Dữ liệu mặc định
-INSERT INTO site_settings (key, value, type, group_name, label, is_public) VALUES
--- Thông tin chung
-('site_name',           'Bất Động Sản Cá Nhân',     'text',    'general', 'Tên website', TRUE),
-('site_tagline',        'Tìm nhà trong tầm tay',     'text',    'general', 'Slogan', TRUE),
-('site_description',    '',                          'text',    'general', 'Mô tả website', TRUE),
-
--- Liên hệ
-('contact_phone',       '',                          'text',    'contact', 'SĐT chính', TRUE),
-('contact_phone_2',     '',                          'text',    'contact', 'SĐT phụ', TRUE),
-('contact_email',       '',                          'text',    'contact', 'Email', TRUE),
-('contact_address',     '',                          'text',    'contact', 'Địa chỉ', TRUE),
-('zalo_url',            '',                          'url',     'contact', 'Zalo URL', TRUE),
-('facebook_url',        '',                          'url',     'contact', 'Facebook', TRUE),
-('youtube_url',         '',                          'url',     'contact', 'YouTube', TRUE),
-
--- Giao diện
-('theme',               'modern',                    'text',    'theme', 'Giao diện', FALSE),
-('primary_color',       '#E84040',                   'color',   'theme', 'Màu chủ đạo', TRUE),
-('logo_url',            '',                          'url',     'theme', 'Logo URL', TRUE),
-('favicon_url',         '',                          'url',     'theme', 'Favicon URL', TRUE),
-
--- Nghiệp vụ
-('listing_duration_days','60',                       'number',  'business', 'Số ngày hiệu lực tin', FALSE),
-('max_images_per_listing','20',                      'number',  'business', 'Số ảnh tối đa/tin', FALSE),
-('phone_reveal_method', 'click',                     'text',    'business', 'Cách hiện SĐT (click/blur)', TRUE),
-('show_sold_listings',  'true',                      'boolean', 'business', 'Hiện tin đã bán', TRUE),
-
--- SEO
-('google_analytics_id', '',                          'text',    'seo', 'Google Analytics ID', FALSE),
-('google_maps_api_key', '',                          'text',    'seo', 'Google Maps Key', FALSE),
-('seo_meta_title',      '',                          'text',    'seo', 'Meta title mặc định', TRUE),
-('seo_meta_description','',                          'text',    'seo', 'Meta description mặc định', TRUE),
-('google_site_verify',  '',                          'text',    'seo', 'Google Search Console verify', FALSE),
-
--- Features
-('feature_map',         'true',                      'boolean', 'features', 'Bản đồ', FALSE),
-('feature_blog',        'false',                     'boolean', 'features', 'Blog', FALSE),
-('feature_calculator',  'true',                      'boolean', 'features', 'Máy tính vay', FALSE),
-('feature_compare',     'true',                      'boolean', 'features', 'So sánh tin', FALSE),
-('feature_project',     'true',                      'boolean', 'features', 'Module dự án', FALSE),
-('feature_testimonials','true',                      'boolean', 'features', 'Đánh giá khách hàng', FALSE),
-('recaptcha_site_key',  '',                          'text',    'security', 'reCAPTCHA site key', TRUE),
-('recaptcha_secret_key','',                          'text',    'security', 'reCAPTCHA secret key', FALSE);
-```
-
----
-
-### 6.18 Bảng `slug_redirects` — SEO Redirect
-
-```sql
-CREATE TABLE slug_redirects (
-    id          BIGSERIAL PRIMARY KEY,
-    old_slug    VARCHAR(600) NOT NULL,
-    new_slug    VARCHAR(600),              -- NULL = 410 Gone
-    redirect_type ENUM('301','410') DEFAULT '301',
-    hit_count   INT DEFAULT 0,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX(old_slug)
-);
-```
-
----
-
-## 7. QUAN HỆ BẢNG (ERD)
+## 6. THỨ TỰ THỰC HIỆN MODULE
 
 ```
-admin_users (1) ════════════════ Sở hữu toàn bộ
-       │
-       └─── [ký hiệu quan hệ]
+MODULE 1 → project_property_groups
+  ├── Migration
+  ├── Model: ProjectPropertyGroup
+  └── Seeder: ProjectPropertyGroupSeeder (6 records)
 
-listings (N) ──────────── (1) categories
-listings (N) ──────────── (1) provinces
-listings (N) ──────────── (1) districts
-listings (N) ──────────── (1) wards
-listings (N) ──────────── (1) projects [optional]
-listings (1) ──────────── (N) listing_images
-listings (1) ──────────── (N) listing_videos
-listings (1) ──────────── (N) listing_views
-listings (1) ──────────── (N) contact_requests
+MODULE 2 → project_types
+  ├── Migration
+  ├── Model: ProjectType
+  └── Seeder: ProjectTypeSeeder (18 records, lookup group_id by code)
 
-categories
-  └── self-referencing: parent_id → id (cây 2 cấp)
-  └── property_group → định nghĩa set field động
+MODULE 3 → project_catalogues
+  ├── Migration
+  ├── Model: ProjectCatalogue
+  └── Seeder: ProjectCatalogueSeeder (cây 2 cấp, dùng firstOrCreate)
 
-field_definitions (N) ──── (1) property_group [ENUM, không cần FK]
-  └── Được dùng để: render form | hiển thị detail | cấu hình filter
+MODULE 4 → projects
+  ├── Migration (bảng trung tâm, đầy đủ indexes + FULLTEXT)
+  ├── Model: Project (SoftDeletes, casts, relationships, scopes)
+  ├── Observer: ProjectObserver (register trong AppServiceProvider)
+  └── LocationService (load/cache JSON file địa lý)
 
-projects (N) ──────────── (1) provinces
-projects (N) ──────────── (1) districts
-projects (1) ──────────── (N) project_images
-projects (1) ──────────── (N) project_unit_types
-projects (1) ──────────── (N) listings [1 dự án có nhiều tin đơn]
+MODULE 5 → project_items
+  ├── Migration
+  └── Model: ProjectItem
 
-provinces (1) ─────────── (N) districts
-districts (1) ─────────── (N) wards
+MODULE 6 → contact_requests
+  ├── Migration: rename visit_requests + addColumn
+  └── Model: ContactRequest
 
-site_settings (standalone — không FK)
-banners (standalone)
-testimonials (N) ──────── (1) listings [optional]
-blog_posts (standalone)
-slug_redirects (standalone)
+MODULE 7 → project_views
+  ├── Migration
+  └── Model: ProjectView
 
-TỔNG: 18 bảng chính
+
+data example: /data_example.md -> đọc để hiểu thêm về dữ liệu cách triển khai admin nhé
 ```
-
----
-
-## 8. LOGIC DYNAMIC FIELD HOẠT ĐỘNG NHƯ THẾ NÀO
-
-### 8.1 Luồng Admin Đăng Tin (Form Dynamic)
-
-```
-1. Admin chọn Danh mục (VD: "Cho thuê mặt bằng")
-   ↓
-2. System xác định property_group = 'commercial'
-   ↓
-3. Query: SELECT * FROM field_definitions
-          WHERE property_group = 'commercial'
-          ORDER BY sort_order
-   → Trả về danh sách field: width, space_type, electricity_capacity, ...
-   ↓
-4. Frontend render form với đúng các field đó
-   (grouped theo section_name: "Diện tích", "Thông tin kỹ thuật", "Tiện ích")
-   ↓
-5. Admin điền form → Submit
-   ↓
-6. Backend validate:
-   - Core fields (title, price, area, province_id...) → kiểm tra chuẩn
-   - Dynamic fields → validate theo is_required và type trong field_definitions
-   ↓
-7. Lưu vào DB:
-   - Core fields → cột riêng trong listings
-   - Dynamic fields → extra_fields JSONB
-```
-
-### 8.2 Luồng Khách Xem Tin (Render Dynamic)
-
-```
-1. Khách vào /tin/[slug]
-   ↓
-2. Query listings + categories (join lấy property_group)
-   ↓
-3. Query field_definitions WHERE property_group = ? AND is_public = TRUE
-   → Biết cần hiển thị field nào, với label gì, icon gì, unit gì
-   ↓
-4. Từ listings.extra_fields JSONB → extract từng field
-   ↓
-5. Render:
-   - Chỉ hiện field có giá trị (bỏ qua null/undefined)
-   - Dùng label từ field_definitions (không hardcode UI)
-   - Dùng icon, unit từ field_definitions
-```
-
-### 8.3 Luồng Filter Tìm Kiếm Dynamic
-
-```
-1. Khách vào trang /cho-thue/mat-bang
-   ↓
-2. System biết: transaction_type=rent, category has property_group='commercial'
-   ↓
-3. Query: SELECT * FROM field_definitions
-          WHERE property_group = 'commercial'
-          AND is_filterable = TRUE
-   → Trả về: width (range), space_type (select), has_elevator (boolean)...
-   ↓
-4. Render bộ lọc sidebar với đúng các field đó
-   ↓
-5. Khi khách chọn filter VD: space_type = 'shop':
-   Query: SELECT * FROM listings
-          WHERE extra_fields->>'space_type' = 'shop'
-
-   Hoặc dùng JSONB operator:
-   WHERE extra_fields @> '{"space_type": "shop"}'
-```
-
----
-
-## 9. ADMIN PANEL — CẤU TRÚC CHUẨN HÓA
-
-### Cấu trúc sidebar Admin (giống nhau mọi deployment)
-
-```
-📊 DASHBOARD
-  └── Tổng quan (KPIs, biểu đồ 30 ngày)
-
-🏠 TIN ĐĂNG
-  ├── Danh sách tin
-  ├── Thêm tin mới
-  └── [Tin hết hạn] (badge đỏ nếu có)
-
-🏗️ DỰ ÁN (ẩn nếu feature_project=false)
-  ├── Danh sách dự án
-  └── Thêm dự án mới
-
-📩 LIÊN HỆ
-  └── Hộp thư đến (badge số tin nhắn mới)
-
-📝 NỘI DUNG
-  ├── Bài viết Blog (ẩn nếu feature_blog=false)
-  ├── Banner / Slider
-  └── Đánh giá khách hàng
-
-📁 THƯ VIỆN ẢNH
-  └── Tất cả ảnh đã upload
-
-📊 THỐNG KÊ
-  └── Báo cáo lượt xem, liên hệ
-
-⚙️ CÀI ĐẶT
-  ├── Thông tin & Liên hệ
-  ├── Giao diện & Thương hiệu
-  ├── Tính năng
-  ├── SEO & Google
-  └── Bảo mật
-```
-
-### Admin Form đăng tin — Các section
-
-```
-SECTION 1: Loại tin
-  - Giao dịch: [Mua bán] [Cho thuê]
-  - Danh mục: (dropdown cây)
-  → Sau khi chọn → hiện các section tiếp theo tương ứng
-
-SECTION 2: Thông tin cơ bản
-  - Tiêu đề (required)
-  - Mô tả (rich text hoặc textarea)
-
-SECTION 3: Giá
-  - Giá: [input] [VND]
-  - Checkbox: Thỏa thuận
-  - Đơn vị: [Tổng giá] [Triệu/m²] [Triệu/tháng]
-
-SECTION 4: Vị trí
-  - Tỉnh/Thành (required)
-  - Quận/Huyện (required, cascade)
-  - Phường/Xã (cascade)
-  - Đường / Tên đường
-  - Địa chỉ chi tiết
-  - [Tùy chọn]: Hiển thị địa chỉ chính xác
-  - Bản đồ: Click để chọn tọa độ
-
-SECTION 5: FIELD ĐỘNG (load theo property_group)
-  → Render từ field_definitions
-  → Chia theo section_name
-
-SECTION 6: Ảnh & Video
-  - Upload ảnh (kéo thả, sort, chọn ảnh bìa)
-  - Video (paste YouTube URL)
-  - Virtual Tour URL
-
-SECTION 7: Pháp lý
-  - Tình trạng pháp lý (select)
-
-SECTION 8: Liên hệ
-  - Tên hiển thị (default: admin.display_name)
-  - SĐT (default: admin.public_phone)
-
-SECTION 9: SEO & Nâng cao
-  - Meta title (auto-gen nếu để trống)
-  - Meta description
-  - Nổi bật (checkbox)
-  - Ghi chú nội bộ
-
-BUTTONS:
-  [Lưu nháp]  [Xem trước]  [Đăng tin]
-```
-
----
-
-## 10. MULTI-DEPLOYMENT — CÁCH TRIỂN KHAI NHIỀU DỰ ÁN
-
-### 10.1 Cấu trúc thư mục project
-
-```
-/real-estate-app
-├── /src
-│   ├── /app               — Next.js App Router pages
-│   ├── /components        — UI components
-│   ├── /lib               — Utilities, DB client, etc.
-│   ├── /hooks
-│   └── /types
-├── /themes                — Layout themes
-│   ├── /modern            — Theme hiện đại
-│   ├── /corporate         — Theme doanh nghiệp
-│   ├── /minimal           — Theme tối giản
-│   └── /luxury            — Theme cao cấp
-├── /prisma                — Database schema (dùng chung)
-│   └── schema.prisma
-├── .env.example           — Template env mỗi deployment
-├── .env.site-a            — Config cho Site A
-├── .env.site-b            — Config cho Site B
-└── docker-compose.yml
-```
-
-### 10.2 Quy trình deploy dự án mới
-
-```bash
-# Bước 1: Copy và cấu hình env
-cp .env.example .env.site-c
-nano .env.site-c  # Điền thông tin brand, DB, API keys
-
-# Bước 2: Tạo database mới
-createdb site_c_db
-DATABASE_URL=postgresql://user:pass@host/site_c_db
-
-# Bước 3: Chạy migration
-npx prisma migrate deploy
-
-# Bước 4: Seed dữ liệu cơ bản
-npx prisma db seed  # Tạo admin, danh mục mặc định, provinces/districts
-
-# Bước 5: Build và deploy
-npm run build
-pm2 start "npm start" --name "site-c" -- --port 3002
-
-# Bước 6: Cấu hình Nginx
-# upstream site-c → localhost:3002
-# server_name site-c.com
-```
-
-### 10.3 Dữ liệu khởi tạo mỗi deployment (Seed)
-
-```sql
--- 1. Admin user (đổi email/password sau)
-INSERT INTO admin_users (email, password_hash, full_name)
-VALUES ('admin@site.com', '[hashed]', 'Admin');
-
--- 2. Provinces/Districts (dùng chung file seed Việt Nam)
--- Import từ file JSON chuẩn hóa 63 tỉnh thành
-
--- 3. Danh mục mặc định
--- Cấp 1: Mua bán, Cho thuê
--- Cấp 2: Căn hộ, Nhà phố, Đất, Mặt bằng, Phòng trọ
-
--- 4. Field definitions mặc định
--- Import từ file JSON chuẩn (field_definitions_seed.json)
--- Admin có thể tùy chỉnh sau
-
--- 5. Site settings mặc định
--- Import defaults, admin sẽ update qua UI
-```
-
----
-
-## 11. TECH STACK & INFRASTRUCTURE
-
-### 11.1 Stack chính
-
-| Layer                | Technology                   | Lý do chọn                                                             |
-| -------------------- | ---------------------------- | ---------------------------------------------------------------------- |
-| **Framework**        | Next.js 14 (App Router)      | SSR/SSG/ISR, SEO tốt, API routes, 1 codebase cho cả frontend + backend |
-| **Database**         | PostgreSQL 15+               | JSONB tốt cho dynamic fields, Full-text search, PostGIS tùy chọn       |
-| **ORM**              | Prisma                       | Type-safe, migration tốt, dễ seed data                                 |
-| **Auth**             | Custom JWT + bcrypt          | Đơn giản, 1 admin, không cần NextAuth                                  |
-| **Image Storage**    | Cloudflare R2                | S3-compatible, free egress, rẻ hơn AWS S3                              |
-| **Image Processing** | Sharp (Node.js)              | Resize, compress, convert WebP                                         |
-| **Cache**            | Next.js built-in cache + ISR | Không cần Redis cho hệ thống nhỏ                                       |
-| **Email**            | Resend.com                   | Free 3000 email/tháng, API đơn giản                                    |
-| **Maps**             | Google Maps JS API           | Embed map, geocoding                                                   |
-| **UI**               | TailwindCSS + shadcn/ui      | Component library đẹp, customize được                                  |
-| **Rich Text**        | TipTap                       | Editor cho blog, mô tả                                                 |
-| **Deploy**           | Vercel / VPS + PM2           | Vercel cho deploy nhanh, VPS cho control                               |
-| **Domain**           | Cloudflare DNS               | Free, DDoS protection                                                  |
-
-### 11.2 Ước tính chi phí mỗi deployment
-
-| Dịch vụ             | Free tier              | Chi phí khi tăng               |
-| ------------------- | ---------------------- | ------------------------------ |
-| Vercel Hobby        | Free (1 project)       | $20/tháng (Pro, nhiều project) |
-| Supabase PostgreSQL | Free 500MB             | $25/tháng                      |
-| Cloudflare R2       | Free 10GB/tháng        | $0.015/GB sau đó               |
-| Resend Email        | Free 3000/tháng        | $20/tháng (50k emails)         |
-| Google Maps         | Free $200 credit/tháng | Hầu hết miễn phí               |
-| **Tổng**            | **~$0/tháng**          | **~$45–65/tháng nếu scale**    |
-
-### 11.3 Cron Jobs cần thiết
-
-```
-Chạy hàng đêm (00:00):
-  → Kiểm tra tin sắp hết hạn (còn 7 ngày): gửi email nhắc admin
-  → Cập nhật status = 'expired' cho tin đã hết expired_at
-  → Cập nhật view_count cache trong listings table
-  → Refresh materialized views (nếu có)
-
-Chạy mỗi tuần (Thứ 2 08:00):
-  → Gửi báo cáo tuần: tổng lượt xem, liên hệ, tin mới
-
-Chạy mỗi giờ:
-  → Ping sitemap lên Google Search Console (sau khi có tin mới)
-```
-
----
-
-## 12. CHECKLIST TRIỂN KHAI
-
-### ✅ Phase 1 — Core (Tuần 1-2)
-
-- [ ] Setup Next.js + PostgreSQL + Prisma
-- [ ] Seed data: provinces, districts, wards VN
-- [ ] Admin auth (login, logout, refresh token)
-- [ ] CRUD Categories + Field Definitions
-- [ ] CRUD Listings (form tĩnh trước, dynamic sau)
-- [ ] Upload ảnh → Cloudflare R2
-
-### ✅ Phase 2 — Public Site (Tuần 2-3)
-
-- [ ] Trang chủ
-- [ ] Trang danh sách + filter cơ bản
-- [ ] Trang chi tiết tin (hiển thị dynamic fields)
-- [ ] Trang dự án
-- [ ] Form liên hệ + email notification
-- [ ] SEO: meta tags, OG, sitemap.xml
-
-### ✅ Phase 3 — Dynamic & Polish (Tuần 3-4)
-
-- [ ] Field Builder UI trong admin
-- [ ] Dynamic filter (filterable fields)
-- [ ] Full-text search
-- [ ] Google Maps integration
-- [ ] Thống kê lượt xem
-- [ ] Cron job hết hạn tin
-
-### ✅ Phase 4 — Multi-deploy Ready
-
-- [ ] Env-based feature flags
-- [ ] Theme system
-- [ ] Seed script chuẩn hóa
-- [ ] Deploy script (Nginx config template)
-- [ ] Admin settings UI đầy đủ
-
----
-
-_Tài liệu v2.0 — Optimized for Single Broker + Dynamic Fields + Multi-Deployment_
-_Tổng: 18 bảng · 23 trang Admin · 20 trang Public · 14 Modules_

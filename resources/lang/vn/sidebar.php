@@ -8,33 +8,76 @@ return [
             'route' => 'dashboard/index',
             'class' => 'special'
         ],
+        // [
+        //     'title' => 'Bất Động Sản',
+        //     'icon' => 'fa fa-home',
+        //     'name' => ['property', 'property_facility', 'floorplan', 'floorplan_room', 'location_highlight', 'visit_request', 'agent'],
+        //     'subModule' => [
+        //         [
+        //             'title' => 'Bất Động Sản',
+        //             'route' => 'property/index'
+        //         ],
+        //         [
+        //             'title' => 'Tiện Ích BĐS',
+        //             'route' => 'property_facility/index'
+        //         ],
+        //         [
+        //             'title' => 'Mặt Bằng',
+        //             'route' => 'floorplan/index'
+        //         ],
+        //         [
+        //             'title' => 'Phòng Mặt Bằng',
+        //             'route' => 'floorplan_room/index'
+        //         ],
+        //         [
+        //             'title' => 'Tiện Ích Lân Cận',
+        //             'route' => 'location_highlight/index'
+        //         ]
+        //     ]
+        // ],
         [
-            'title' => 'Bất Động Sản',
-            'icon' => 'fa fa-home',
-            'name' => ['property', 'property_facility', 'floorplan', 'floorplan_room', 'location_highlight', 'visit_request', 'agent'],
+            'title' => 'Bất động sản',
+            'icon' => 'fa fa-building',
+            'name' => ['realestate'],
             'subModule' => [
+                // [
+                //     'title' => 'Phân loại BĐS',
+                //     'route' => 'property/group/index'
+                // ],
+                // [
+                //     'title' => 'Loại hình BĐS',
+                //     'route' => 'project/type/index'
+                // ],
                 [
-                    'title' => 'Bất Động Sản',
-                    'route' => 'property/index'
+                    'title' => 'Nhóm bất động sản',
+                    'route' => 'project/catalogue/index'
                 ],
                 [
-                    'title' => 'Tiện Ích BĐS',
-                    'route' => 'property_facility/index'
+                    'title' => 'Danh sách dự án',
+                    'route' => 'project/index'
                 ],
-                [
-                    'title' => 'Mặt Bằng',
-                    'route' => 'floorplan/index'
-                ],
-                [
-                    'title' => 'Phòng Mặt Bằng',
-                    'route' => 'floorplan_room/index'
-                ],
-                [
-                    'title' => 'Tiện Ích Lân Cận',
-                    'route' => 'location_highlight/index'
-                ]
             ]
         ],
+
+        // [
+        //     'title' => 'Quản lý người dùng',
+        //     'icon' => 'fa fa-user',
+        //     'name' => ['user'],
+        //     'subModule' => [
+        //         [
+        //             'title' => 'Nhóm người dùng',
+        //             'route' => 'user/catalogue/index'
+        //         ],
+        //         [
+        //             'title' => 'Người dùng',
+        //             'route' => 'user/index'
+        //         ],
+        //         [
+        //             'title' => 'Quyền hạn',
+        //             'route' => 'permission/index'
+        //         ]
+        //     ]
+        // ],
         [
             'title' => 'Bài viết',
             'icon' => 'fa fa-file',

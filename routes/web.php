@@ -27,7 +27,14 @@ require __DIR__ . '/web/post.route.php';
 require __DIR__ . '/web/auth.route.php';
 require __DIR__ . '/web/ajax.route.php';
 require __DIR__ . '/web/custom.route.php';
+require __DIR__ . '/web/project/project_catalogue.route.php';
+require __DIR__ . '/web/project/project.route.php';
 require __DIR__ . '/web/realestate.route.php';
+
+// Project Routes
+foreach (glob(__DIR__ . '/web/project/*.php') as $filename) {
+    require $filename;
+}
 
 /*
 |--------------------------------------------------------------------------

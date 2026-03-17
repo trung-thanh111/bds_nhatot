@@ -11,17 +11,15 @@ use App\Http\ViewComposers\MenuComposer;
 use App\Http\ViewComposers\CartComposer;
 use App\Http\ViewComposers\CustomerComposer;
 use App\Models\Language;
-
+use App\Models\Permission;
+use App\Observers\PermissionObserver;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-
 
 class AppServiceProvider extends ServiceProvider
 {
 
-    public $bindings = [
-       
-    ];
+    public $bindings = [];
 
     /**
      * Register any application services.
@@ -36,8 +34,6 @@ class AppServiceProvider extends ServiceProvider
         // $this->app->register(RepositoryServiceProvider::class);
 
         /** @noinspection PhpUndefinedMethodInspection */
-
-
     }
 
     /**
@@ -55,38 +51,40 @@ class AppServiceProvider extends ServiceProvider
             error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
         }
 
-        
+
         $locale = app()->getLocale(); // vn en cn
         $language = Language::where('canonical', $locale)->first();
         Carbon::setLocale('vi');
 
-        Validator::extend('custom_date_format', function($attribute, $value, $parameters, $validator){
+        Validator::extend('custom_date_format', function ($attribute, $value, $parameters, $validator) {
             return Datetime::createFromFormat('d/m/Y H:i', $value) !== false;
         });
 
-        Validator::extend('custom_after', function($attribute, $value, $parameters, $validator){
+        Validator::extend('custom_after', function ($attribute, $value, $parameters, $validator) {
             $startDate = Carbon::createFromFormat('d/m/Y H:i', $validator->getData()[$parameters[0]]);
             $endDate = Carbon::createFromFormat('d/m/Y H:i', $value);
-            
+
             return $endDate->greaterThan($startDate) !== false;
         });
 
 
-        view()->composer(['frontend.*', 'mobile.*'], function($view) use ($language){
+        view()->composer(['frontend.*', 'mobile.*'], function ($view) use ($language) {
             $composerClasses = [
                 MenuComposer::class,
                 CartComposer::class,
             ];
 
-            foreach($composerClasses as $key => $val){
+            foreach ($composerClasses as $key => $val) {
                 $composer = app()->make($val, ['language' => $language->id]);
                 $composer->compose($view);
             }
         });
 
-      
 
-     
+
+
+
+        Permission::observe(PermissionObserver::class);
 
         Schema::defaultStringLength(191);
     }

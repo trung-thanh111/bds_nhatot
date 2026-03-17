@@ -25,7 +25,11 @@ Route::group(['middleware' => ['admin', 'locale', 'backend_default_locale']], fu
 
     Route::get('dashboard/index', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::post('ajax/dashboard/changeStatus', [AjaxDashboardController::class, 'changeStatus'])->name('ajax.dashboard.changeStatus');
-    Route::post('ajax/dashboard/changeStatusAll', [AjaxDashboardController::class, 'changeStatusAll'])->name('ajax.dashboard.changeStatusAll');
+    Route::get('dashboard/changeStatusAll', [DashboardController::class, 'changeStatusAll'])->name('ajax.dashboard.changeStatusAll');
+    
+    Route::group(['prefix' => 'ajax/realestate'], function () {
+        Route::get('getPropertyGroup', [\App\Http\Controllers\Ajax\RealEstateController::class, 'getPropertyGroup'])->name('ajax.realestate.getPropertyGroup');
+    });
     Route::get('ajax/dashboard/getMenu', [AjaxDashboardController::class, 'getMenu'])->name('ajax.dashboard.getMenu');
     Route::get('ajax/dashboard/findPromotionObject', [AjaxDashboardController::class, 'findPromotionObject'])->name('ajax.dashboard.findPromotionObject');
     Route::get('ajax/dashboard/getPromotionConditionValue', [AjaxDashboardController::class, 'getPromotionConditionValue'])->name('ajax.dashboard.getPromotionConditionValue');
@@ -67,6 +71,8 @@ Route::group(['middleware' => ['locale']], function () {
     Route::get('ajax/cart/applyCartVoucher', [AjaxCartController::class, 'applyCartVoucher'])->name('ajax.cart.applyCartVoucher');
     Route::get('ajax/cart/unUseVoucher', [AjaxCartController::class, 'unUseVoucher'])->name('ajax.cart.unUseVoucher');
     Route::get('ajax/location/getLocation', [LocationController::class, 'getLocation'])->name('ajax.location.index');
+    Route::get('ajax/location/getLocationBefore', [LocationController::class, 'getLocation'])->name('ajax.location.before');
+    Route::get('ajax/location/getLocationAfter', [LocationController::class, 'getLocation'])->name('ajax.location.after');
     Route::get('ajax/post/video', [AjaxPostController::class, 'video'])->name('post.video');
     Route::post('ajax/product/wishlist', [AjaxProductController::class, 'wishlist'])->name('product.wishlist');
     Route::post('ajax/product/unwishlist', [AjaxProductController::class, 'unWishlist'])->name('product.unwishlist');

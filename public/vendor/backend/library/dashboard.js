@@ -1,16 +1,16 @@
-var HT = {}; 
-if (typeof HT === "undefined") { var HT = {}; }
+window.HT = window.HT || {}; var HT = window.HT;
+window.HT = window.HT || {}; var HT = window.HT;
 
 HT.createChart = (label, data) => {
 
     let canvas = document.getElementById('barChart')
-    if(!canvas) return
+    if (!canvas) return
 
 
 
     let ctx = canvas.getContext('2d')
 
-    if(window.myBarChart){
+    if (window.myBarChart) {
         window.myBarChart.destroy();
     }
 
@@ -31,20 +31,20 @@ HT.createChart = (label, data) => {
     let chartOption = {
         tooltips: {
             callbacks: {
-                label: function(tooltipItem, data) {
+                label: function (tooltipItem, data) {
                     var value = tooltipItem.yLabel;
                     value = value.toString();
                     value = value.split(/(?=(?:...)*$)/);
                     value = value.join('.');
                     return value;
                 }
-            } 
-        }, 
+            }
+        },
         scales: {
             yAxes: [{
                 ticks: {
-                    beginAtZero:true,
-                    userCallback: function(value, index, values) {
+                    beginAtZero: true,
+                    userCallback: function (value, index, values) {
                         // Convert the number to a string and splite the string every 3 charaters from the end
                         value = value.toString();
                         value = value.split(/(?=(?:...)*$)/);
@@ -60,17 +60,17 @@ HT.createChart = (label, data) => {
         }
     }
 
-    window.myBarChart = new Chart(ctx, {type: 'bar', data: chartData, options:chartOption});
+    window.myBarChart = new Chart(ctx, { type: 'bar', data: chartData, options: chartOption });
 
 }
 
 HT.changeChart = () => {
 
     console.log(1234);
-    
 
-    if($('.chartButton').length){
-         $(document).on('click', '.chartButton', function(e){
+
+    if ($('.chartButton').length) {
+        $(document).on('click', '.chartButton', function (e) {
             e.preventDefault()
             let button = $(this)
             let chartType = button.attr('data-chart')
@@ -79,26 +79,26 @@ HT.changeChart = () => {
             HT.callChart(chartType)
         })
     }
-   
+
 }
 
 HT.callChart = (chartType) => {
     $.ajax({
-        type        : 'GET',
-        url         :  'ajax/order/chart',
-        data		: {
-            chartType : chartType
+        type: 'GET',
+        url: 'ajax/order/chart',
+        data: {
+            chartType: chartType
         },
-        dataType    : 'json',
-        success: function(response){
+        dataType: 'json',
+        success: function (response) {
 
             HT.createChart(response.label, response.data)
         }
     });
 }
 
-$(document).ready(function(){
-     if (typeof window.label !== 'undefined' && typeof window.data !== 'undefined') {
+$(document).ready(function () {
+    if (typeof window.label !== 'undefined' && typeof window.data !== 'undefined') {
         HT.createChart(window.label, window.data);
     }
 

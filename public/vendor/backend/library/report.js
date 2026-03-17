@@ -1,26 +1,26 @@
-(function($) {
-	"use strict";
-	var HT = {}; 
+(function ($) {
+    "use strict";
+    window.HT = window.HT || {};
 
     let dateValues = {
         startDate: null,
         endDate: null
     };
-    
+
 
     HT.setupDatepicker = () => {
-        if($('.datepickerReport').length){
+        if ($('.datepickerReport').length) {
             $('.datepickerReport').datetimepicker({
-                timepicker:true,
-                format:'d/m/Y',
-                maxDate:new Date(),
+                timepicker: true,
+                format: 'd/m/Y',
+                maxDate: new Date(),
             });
         }
-        
+
     }
 
     HT.setupDateRangePicker = () => {
-        if($('.rangepicker').length > 0){
+        if ($('.rangepicker').length > 0) {
             $('.rangepicker').daterangepicker({
                 timePicker: true,
                 locale: {
@@ -30,9 +30,9 @@
         }
     }
 
-	$(document).ready(function(){
+    $(document).ready(function () {
         HT.setupDatepicker()
         HT.setupDateRangePicker()
-	});
+    });
 
 })(jQuery);
