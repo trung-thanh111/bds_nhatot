@@ -1,15 +1,16 @@
 <?php  
 namespace App\Repositories\RealEstate;
-use App\Models\VisitRequest;
+use App\Models\ContactRequest;
 use App\Repositories\BaseRepository;
 
-class VisitRequestRepo  extends BaseRepository{
+class ContactRequestRepo  extends BaseRepository{
 
     protected $model;
 
     public function __construct(
-        VisitRequest $model
+        ContactRequest $model
     )
+
     {
         $this->model = $model;
         parent::__construct($model);

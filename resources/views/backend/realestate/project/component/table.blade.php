@@ -21,7 +21,8 @@
                         <input type="checkbox" value="{{ $project->id }}" class="input-checkbox checkBoxItem">
                     </td>
                     <td>
-                        <span class="img-cover"><img src="{{ $project->image ?? 'backend/img/not-found.png' }}" alt=""></span>
+                        <span class="img-cover"><img src="{{ $project->image ?? 'backend/img/not-found.png' }}"
+                                alt=""></span>
                     </td>
                     <td>
                         <div class="project-info">
@@ -35,14 +36,14 @@
                             $price = number_format($project->price, 0, ',', '.');
                         @endphp
                         @if ($project->price_unit->value == 'total')
-                            Tổng cộng {{ $price }}
+                            Tổng cộng: {{ $price }}
                         @else
-                            {{ $price }} {{ $unit }}
+                            {{ $price }} /{{ $unit }}
                         @endif
                     </td>
                     <td class="text-right">
                         @php
-                            $area = $project->area ?? $project->area_use ?? $project->area_land ?? 0;
+                            $area = $project->area ?? ($project->area_use ?? ($project->area_land ?? 0));
                         @endphp
                         {{ $area }} m²
                     </td>
@@ -64,10 +65,10 @@
                             {{ $project->publish == 2 ? 'checked' : '' }} data-modelId="{{ $project->id }}" />
                     </td>
                     <td class="text-center">
-                        <a href="{{ route('realestate.project.edit', $project->id) }}"
-                            class="btn btn-success"><i class="fa fa-edit"></i></a>
-                        <a href="{{ route('realestate.project.delete', $project->id) }}"
-                            class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                        <a href="{{ route('realestate.project.edit', $project->id) }}" class="btn btn-success"><i
+                                class="fa fa-edit"></i></a>
+                        <a href="{{ route('realestate.project.delete', $project->id) }}" class="btn btn-danger"><i
+                                class="fa fa-trash"></i></a>
                     </td>
                 </tr>
             @endforeach

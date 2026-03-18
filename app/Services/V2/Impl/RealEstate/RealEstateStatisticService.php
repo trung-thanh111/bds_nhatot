@@ -4,8 +4,10 @@ namespace App\Services\V2\Impl\RealEstate;
 
 use App\Repositories\RealEstate\AgentRepo;
 use App\Repositories\RealEstate\PropertyRepo;
-use App\Repositories\RealEstate\VisitRequestRepo;
+use App\Repositories\RealEstate\ContactRequestRepo;
 use App\Repositories\RealEstate\FloorplanRepo;
+use App\Repositories\RealEstate\ProjectRepository;
+use App\Repositories\Post\PostRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -13,19 +15,25 @@ class RealEstateStatisticService
 {
     protected $agentRepo;
     protected $propertyRepo;
-    protected $visitRequestRepo;
+    protected $contactRequestRepo;
     protected $floorplanRepo;
+    protected $projectRepository;
+    protected $postRepository;
 
     public function __construct(
         AgentRepo $agentRepo,
         PropertyRepo $propertyRepo,
-        VisitRequestRepo $visitRequestRepo,
-        FloorplanRepo $floorplanRepo
+        ContactRequestRepo $contactRequestRepo,
+        FloorplanRepo $floorplanRepo,
+        ProjectRepository $projectRepository,
+        PostRepository $postRepository
     ) {
         $this->agentRepo = $agentRepo;
         $this->propertyRepo = $propertyRepo;
-        $this->visitRequestRepo = $visitRequestRepo;
+        $this->contactRequestRepo = $contactRequestRepo;
         $this->floorplanRepo = $floorplanRepo;
+        $this->projectRepository = $projectRepository;
+        $this->postRepository = $postRepository;
     }
 
     public function getStats()
@@ -38,39 +46,43 @@ class RealEstateStatisticService
         // Counts
         $agentCount = $this->agentRepo->all()->count();
         $propertyCount = $this->propertyRepo->all()->count();
-        $visitRequestCount = $this->visitRequestRepo->all()->count();
+        $contactRequestCount = $this->contactRequestRepo->all()->count();
         $floorplanCount = $this->floorplanRepo->all()->count();
+        $projectCount = $this->projectRepository->all()->count();
+        $postCount = $this->postRepository->all()->count();
 
-        // Growth for Visit Requests
-        $currentMonthVR = $this->visitRequestRepo->findByCondition([
+        // Growth for Contact Requests
+        $currentMonthCR = $this->contactRequestRepo->findByCondition([
             ['created_at', '>=', $startOfMonth]
         ], true)->count();
 
-        $lastMonthVR = $this->visitRequestRepo->findByCondition([
+        $lastMonthCR = $this->contactRequestRepo->findByCondition([
             ['created_at', '>=', $startOfLastMonth],
             ['created_at', '<=', $endOfLastMonth]
         ], true)->count();
 
         $growth = 0;
-        if ($lastMonthVR > 0) {
-            $growth = (($currentMonthVR - $lastMonthVR) / $lastMonthVR) * 100;
-        } elseif ($currentMonthVR > 0) {
+        if ($lastMonthCR > 0) {
+            $growth = (($currentMonthCR - $lastMonthCR) / $lastMonthCR) * 100;
+        } elseif ($currentMonthCR > 0) {
             $growth = 100;
         }
 
         return [
             'agentCount' => $agentCount,
             'propertyCount' => $propertyCount,
-            'visitRequestCount' => $visitRequestCount,
+            'contactRequestCount' => $contactRequestCount,
             'floorplanCount' => $floorplanCount,
-            'currentMonthVR' => $currentMonthVR,
-            'lastMonthVR' => $lastMonthVR,
+            'projectCount' => $projectCount,
+            'postCount' => $postCount,
+            'currentMonthCR' => $currentMonthCR,
+            'lastMonthCR' => $lastMonthCR,
             'growth' => round($growth, 2),
-            'vrChart' => $this->getVRChartData()
+            'crChart' => $this->getCRChartData()
         ];
     }
 
-    public function getVRChartData($type = 1)
+    public function getCRChartData($type = 1)
     {
         $labels = [];
         $datasets = [];
@@ -78,7 +90,7 @@ class RealEstateStatisticService
         if ($type == 1) { // Annual (by month)
             for ($i = 1; $i <= 12; $i++) {
                 $labels[] = "Tháng $i";
-                $datasets[] = $this->visitRequestRepo->findByCondition([
+                $datasets[] = $this->contactRequestRepo->findByCondition([
                     [DB::raw('MONTH(created_at)'), '=', $i],
                     [DB::raw('YEAR(created_at)'), '=', date('Y')]
                 ], true)->count();
@@ -91,8 +103,8 @@ class RealEstateStatisticService
         ];
     }
 
-    public function getRecentVisitRequests($limit = 10)
+    public function getRecentContactRequests($limit = 10)
     {
-        return $this->visitRequestRepo->findByCondition([], true, ['project'], ['id', 'DESC'])->take($limit);
+        return $this->contactRequestRepo->findByCondition([], true, ['project'], ['id', 'DESC'])->take($limit);
     }
 }

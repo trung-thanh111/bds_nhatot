@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\FrontendController;
-use App\Models\VisitRequest;
+use App\Models\ContactRequest;
 use Illuminate\Http\Request;
 
-class VisitRequestController extends FrontendController
+class ContactRequestController extends FrontendController
 {
     public function __construct()
     {
@@ -30,7 +30,7 @@ class VisitRequestController extends FrontendController
 
         $validated['status'] = 'pending';
 
-        VisitRequest::create($validated);
+        ContactRequest::create($validated);
 
         return response()->json(['success' => true, 'message' => 'Yêu cầu đã được ghi nhận.']);
     }

@@ -71,11 +71,13 @@ class PostController extends Controller
         $config['seo'] = __('messages.post');
         $config['method'] = 'create';
         $dropdown  = $this->nestedset->Dropdown();
+        $postsSelection = $this->postRepository->getAllPosts($this->language);
         $template = 'backend.post.post.store';
         return view('backend.dashboard.layout', compact(
             'template',
             'dropdown',
             'config',
+            'postsSelection',
         ));
     }
 
@@ -100,6 +102,10 @@ class PostController extends Controller
         $config['method'] = 'edit';
         $dropdown  = $this->nestedset->Dropdown();
         $album = json_decode($post->album);
+        
+        $relatedPosts = $post->related_posts()->get();
+        $postsSelection = $this->postRepository->getAllPosts($this->language);
+        
         $template = 'backend.post.post.store';
         return view('backend.dashboard.layout', compact(
             'template',
@@ -107,6 +113,8 @@ class PostController extends Controller
             'dropdown',
             'post',
             'album',
+            'relatedPosts',
+            'postsSelection',
         ));
     }
 

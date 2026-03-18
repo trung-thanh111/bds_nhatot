@@ -2,7 +2,7 @@
     "use strict";
 window.HT = window.HT || {}; var HT = window.HT;
     var typingTimer;
-    var doneTyingInterval = 300; // 1s
+    var doneTyingInterval = 500; // 1s
 
     $.fn.elExist = function () {
         return this.length > 0
@@ -13,10 +13,9 @@ window.HT = window.HT || {}; var HT = window.HT;
             let _this = $(this)
             let isChecked = _this.prop('checked')
             if (isChecked) {
-                $('input[name=endDate]').val('').attr('disabled', true)
+                $('input[name=endDate]').val('').attr('readonly', true)
             } else {
-                let endDate = $('input[name=startDate]').val()
-                $('input[name=endDate]').val(endDate).attr('disabled', false)
+                $('input[name=endDate]').removeAttr('readonly')
             }
         })
     }
@@ -191,23 +190,6 @@ window.HT = window.HT || {}; var HT = window.HT;
 
     }
 
-    // HT.deleteCondition = () => {
-    //     $(document).on('click', '.wrapperConditionItem .delete', function(){
-    //         let _this = $(this)
-    //         let unSelectedValue = _this.attr('data-condition-item')
-    //         let selectedItem = $('.conditionItem').val()
-    //         let indexOf = selectedItem.indexOf(unSelectedValue)
-    //         if(indexOf !== -1){
-    //             selectedItem.splice(selectedItem, indexOf)
-    //         }
-
-    //         console.log(selectedItem);
-
-    //         // $('.conditionItem').val(unSelectedValue).trigger('change')
-    //     })
-    // }
-
-
     HT.promotionMultipleSelect2 = () => {
         $('.multipleSelect2').select2({
             // minimumInputLength: 2,
@@ -235,68 +217,11 @@ window.HT = window.HT || {}; var HT = window.HT;
         });
     }
 
-
     HT.btnJs100 = () => {
         $(document).on('click', '.btn-js-100', function () {
-            let _button = $(this)
-            let trLastChild = $('.order_amount_range').find('tbody tr:last-child')
-            let newTo = parseInt(trLastChild.find('.order_amount_range_to input').val().replace(/\./g, ''))
-
-
-            let $tr = $('<tr>')
-            let tdList = [
-                {
-                    class: 'order_amount_range_from td-range',
-                    name: 'promotion_order_amount_range[amountFrom][]',
-                    value: addCommas(parseInt(newTo) + 1),
-                },
-                {
-                    class: 'order_amount_range_to td-range',
-                    name: 'promotion_order_amount_range[amountTo][]',
-                    value: 0,
-                },
-            ]
-
-
-            for (let i = 0; i < tdList.length; i++) {
-                let $td = $('<td>', { class: tdList[i].class })
-                let $input = $('<input>')
-                    .addClass('form-control int')
-                    .attr('name', tdList[i].name)
-                    .attr('value', tdList[i].value)
-
-                $td.append($input)
-                $tr.append($td)
-            }
-
-            let $discountTd = $('<td>').addClass('discountType')
-            $discountTd.append(
-                $('<div>', { class: 'uk-flex uk-flex-middle' }).append(
-                    $('<input>', {
-                        type: 'text',
-                        name: 'promotion_order_amount_range[amountValue][]',
-                        class: 'form-control int',
-                        placeholder: 0,
-                        value: 0
-                    })
-                ).append(
-                    $('<select>', {
-                        class: 'multipleSelect2'
-                    })
-                        .attr('name', 'promotion_order_amount_range[amountType][]')
-                        .append($('<option>', { value: 'cash', text: 'đ' }))
-                        .append($('<option>', { value: 'percent', text: '%' }))
-                )
-            )
-            $tr.append($discountTd)
-            let deleteButton = $('<td>').append(
-                $('<div>', {
-                    class: 'delete-some-item delete-order-amount-range-condition'
-                }).append('<svg data-icon="TrashSolidLarge" aria-hidden="true" focusable="false" width="15" height="16" viewBox="0 0 15 16" class="bem-Svg" style="display: block;"><path fill="currentColor" d="M2 14a1 1 0 001 1h9a1 1 0 001-1V6H2v8zM13 2h-3a1 1 0 01-1-1H6a1 1 0 01-1 1H1v2h13V2h-1z"></path></svg>')
-            )
-            $tr.append(deleteButton)
-
-            $('.order_amount_range table tbody').append($tr)
+            let _this = $(this)
+            let trAttribute = _this.parents('.order_amount_range').find('tbody tr:first-child').clone()
+            _this.parents('.order_amount_range').find('tbody').append(trAttribute)
             HT.promotionMultipleSelect2()
         })
     }
@@ -309,10 +234,10 @@ window.HT = window.HT || {}; var HT = window.HT;
     }
 
     HT.renderOrderRangeConditionContainer = () => {
+
         $(document).on('change', '.promotionMethod', function () {
             let _this = $(this)
             let option = _this.val()
-            console.log(option)
             switch (option) {
                 case "order_amount_range":
                     HT.renderOrderAmountRange()
@@ -320,18 +245,6 @@ window.HT = window.HT || {}; var HT = window.HT;
                 case "product_and_quantity":
                     HT.renderProductAndQuantity()
                     break;
-                case "buy_product_take_gift":
-                    HT.renderBuyProductTakeGift()
-                    break;
-                case "buy_combo":
-                    HT.renderBuyCombo()
-                    break;
-                // case "product_quantity_range":
-                //     console.log("product_quantity_range");
-                //     break;
-                // case "goods_discount_by_quantity":
-                //     console.log("goods_discount_by_quantity");
-                //     break;
                 default:
                     HT.removePromotionContainer()
             }
@@ -343,83 +256,9 @@ window.HT = window.HT || {}; var HT = window.HT;
         }
     }
 
-    HT.renderBuyCombo = () => {
-        let preloadData = JSON.parse($('.input_product_combo').val()) || ''
-        let searchData = ''
-        if (preloadData.price != null) {
-            searchData += HT.oldChooseData(preloadData);
-        }
-        let price = preloadData.price || '';
-        let html = `
-            <div class="buy_combo">
-                <table class="table table-striped mt20 mb0">
-                    <thead>
-                        <tr>
-                            <th style="width:400px;max-width:400px;">Sản phẩm mua</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div class="search-combo">
-                                    <i class="fa fa-search"></i>
-                                    <input type="text" name="keyword" class="form-control input-search-combo" placeholder="Chọn sản phẩm mua">
-                                    <div class="ajax-search-combo"></div>
-                                </div>
-                                <div class="search-combo-result mt20 mb20">
-                                    <div class="wrapper-cb">${searchData}</div>
-                                </div>
-                                <div class="count">
-                                    <div class="uk-flex uk-flex-middle">
-                                        <span class="summay-title bold mr5">Tổng tiền :</span>
-                                        <input type="text" name="product_combos[price]" class="form-control int custom_ip" value="${price}" placeholder="Nhập số tiền">đ
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        `
-        HT.renderPromionalContainer(html)
-    }
-
-    HT.oldChooseData = (preloadData) => {
-        let html = ''
-        for (let i = 0; i < preloadData.id.length; i++) {
-            let id = preloadData.id[i]
-            let image = preloadData.image[i]
-            let name = preloadData.name[i]
-            let quantity = preloadData.quantity[i]
-            html += `
-                    <div class="search-pd-item" id="model-pd-${id}" data-modelid="${id}">
-                        <input type="hidden" name="product_combos[id][]" value="${id}">
-                        <input type="hidden" name="product_combos[image][]" value="${image}">
-                        <input type="hidden" name="product_combos[name][]" value="${name}">
-                        <div class="col-lg-8">
-                            <div class="uk-flex uk-flex-middle">
-                                <span class="image img-cover">
-                                    <img src="${image}" alt="">
-                                </span>
-                                <span class="pd_name">${name}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <input type="text" name="product_combos[quantity][]" class="form-control int custom_ip" value="${quantity}" placeholder="Nhập số lượng">
-                        </div>
-                        <div class="col-lg-1 deleted">
-                            <svg class="svg-next-icon svg-next-icon-size-12" width="12" height="12">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-                                    <path d="M18.263 16l10.07-10.07c.625-.625.625-1.636 0-2.26s-1.638-.627-2.263 0L16 13.737 5.933 3.667c-.626-.624-1.637-.624-2.262 0s-.624 1.64 0 2.264L13.74 16 3.67 26.07c-.626.625-.626 1.636 0 2.26.312.313.722.47 1.13.47s.82-.157 1.132-.47l10.07-10.068 10.068 10.07c.312.31.722.468 1.13.468s.82-.157 1.132-.47c.626-.625.626-1.636 0-2.26L18.262 16z">
-                                    </path>
-                                </svg>
-                            </svg>
-                        </div>
-                    </div>
-            `
-        }
-        return html;
-    }
+    /*Ajax Search*/
+    let typingTimer;
+    let doneTyingInterval = 400; // 1s
 
     HT.searchCombo = () => {
         $(document).on('keyup', '.input-search-combo', function (e) {
@@ -427,24 +266,23 @@ window.HT = window.HT || {}; var HT = window.HT;
             let _this = $(this)
             let keyword = _this.val()
             let option = {
-                keyword: keyword,
-                model: 'Product'
+                keyword: keyword
             }
             clearTimeout(typingTimer);
             typingTimer = setTimeout(function () {
                 $.ajax({
-                    url: 'ajax/product/loadProductPromotion',
+                    url: 'ajax/dashboard/findProduct',
                     type: 'GET',
                     data: option,
                     dataType: 'json',
                     success: function (res) {
-                        let html = HT.fillProductToCombo(res.objects)
+                        let html = HT.renderSearchResultCombo(res)
                         if (html.length) {
                             $('.ajax-search-combo').html(html).show()
                         }
                     },
                     beforeSend: function () {
-
+                        $('.ajax-search-combo').html('').hide()
                     },
                 });
 
@@ -452,49 +290,41 @@ window.HT = window.HT || {}; var HT = window.HT;
         })
     }
 
-    HT.fillProductToCombo = (object) => {
+    HT.renderSearchResultCombo = (data) => {
         let html = ''
-        if (object.data.length) {
-            for (let i = 0; i < object.data.length; i++) {
-                let image = object.data[i].image
-                let name = object.data[i].variant_name
-                let product_variant_id = object.data[i].product_variant_id
-                let product_id = object.data[i].id
-                let uuid = object.data[i].uuid
-                let price = addCommas(object.data[i].price)
-                let check = uuid || product_id
-                let flag = ($('#model-pd-' + check).length) ? 1 : 0;
-                let setChecked = ($('#model-pd-' + check).length) ? HT.setCheckedPd() : ''
+        if (data.length) {
+            for (let i = 0; i < data.length; i++) {
+                let flag = ($('#model-pd-' + data[i].id).length) ? 1 : 0;
+                let setChecked = ($('#model-pd-' + data[i].id).length) ? HT.setCheckedPd() : ''
                 html +=
                     `
                     <button 
-                            class="ajax-search-cb" 
-                            data-flag="${flag}"
-                            data-image="${image}" 
-                            data-name="${name}" 
-                            data-id="${product_id}"
-                            data-variant_id="${product_variant_id}" 
-                            data-uuid="${uuid}"
-                            data-price="${object.data[i].price}"
+                            class="ajax-pd-item" 
+                            data-flag="${flag}" 
+                            data-canonical="${data[i].languages[0].pivot.canonical}" 
+                            data-image="${data[i].image}" 
+                            data-name="${data[i].languages[0].pivot.name}" 
+                            data-id="${data[i].id}"
                         >
                         <div class="uk-flex uk-flex-middle uk-flex-space-between">
-                            <span>${name}</span>
-                            <div class="uk-flex uk-flex-middle">
-                                <span class="price mr20">${price}đ</span>
-                                <div class="auto-icon">
-                                    ${setChecked}
-                                </div>
+                            <span>${data[i].languages[0].pivot.name}</span>
+                            <div class="auto-icon">
+                                ${setChecked}
                             </div>
                         </div>
                     </button>
                 `
             }
         }
-        return html;
+        return html
+    }
+
+    HT.setCheckedPd = () => {
+        return '<svg class="svg-next-icon button-selected-combobox svg-next-icon-size-12" width="12" height="12"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><path d="m.3,14c-0.2-0.2-0.3-0.5-0.3-0.7s0.1-0.5 0.3-0.7l1.4-1.4c0.4-0.4 1-0.4 1.4,0l.1,.1 5.5,5.9c0.2,0.2 0.5,0.2 0.7,0l13.4-13.9h0.1v-8.88178e-16c0.4-0.4 1-0.4 1.4,0l1.4,1.4c0.4,0.4 0.4,1 0,1.4l0,0-16,16.6c-0.2,0.2-0.4,0.3-0.7,0.3-0.3,0-0.5-0.1-0.7-0.3l-7.8-8.4-.2-.3z"></path></svg></svg>'
     }
 
     HT.addProductToCombo = () => {
-        $(document).on('click', '.ajax-search-combo .ajax-search-cb', function (e) {
+        $(document).on('click', '.ajax-pd-item', function (e) {
             e.preventDefault()
             let _this = $(this)
             let data = _this.data()
@@ -502,8 +332,7 @@ window.HT = window.HT || {}; var HT = window.HT;
             if (flag == 0) {
                 _this.find('.auto-icon').html(HT.setCheckedPd())
                 _this.attr('data-flag', 1)
-                let html = HT.productComboTemplate(data)
-                $('.wrapper-cb').append(html)
+                $('.search-combo-result .wrapper-search').append(HT.productTemplate(data))
             } else {
                 $('#model-pd-' + data.id).remove()
                 _this.find('.auto-icon').html('')
@@ -512,213 +341,22 @@ window.HT = window.HT || {}; var HT = window.HT;
         })
     }
 
-    HT.productComboTemplate = (data) => {
-        let id = data.id
-        let uuid = data.uuid
-        let image = data.image
-        let name = data.name
-        let price = addCommas(data.price)
-        let html = `
-            <div class="search-pd-item" id="model-pd-${id}" data-model="${id}">
-                <input type="hidden" name="product_combos[id][]" value="${id}">
-                <input type="hidden" name="product_combos[uuid][]" value="${uuid}">
-                <input type="hidden" name="product_combos[image][]" value="${image}">
-                <input type="hidden" name="product_combos[name][]" value="${name}">
-                <div class="col-lg-8">
-                    <div class="uk-flex uk-flex-middle">
-                        <span class="image img-cover">
-                            <img src="${image}" alt="">
-                        </span>
-                        <div class="it">
-                            <span class="pd_name">${name}</span>
-                            <span class="price">${price}đ</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <input type="text" name="product_combos[quantity][]" class="form-control int custom_ip" value="" placeholder="Nhập số lượng">
-                </div>
-                <div class="col-lg-1 deleted">
-                        <svg class="svg-next-icon svg-next-icon-size-12" width="12" height="12">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-                                <path d="M18.263 16l10.07-10.07c.625-.625.625-1.636 0-2.26s-1.638-.627-2.263 0L16 13.737 5.933 3.667c-.626-.624-1.637-.624-2.262 0s-.624 1.64 0 2.264L13.74 16 3.67 26.07c-.626.625-.626 1.636 0 2.26.312.313.722.47 1.13.47s.82-.157 1.132-.47l10.07-10.068 10.068 10.07c.312.31.722.468 1.13.468s.82-.157 1.132-.47c.626-.625.626-1.636 0-2.26L18.262 16z">
-                                </path>
-                            </svg>
-                        </svg>
-                </div>
-            </div>`
-        return html
-    }
-
     HT.unfocusSearchCombo = () => {
 
         $(document).on('click', 'html', function (e) {
-            if (!$(e.target).hasClass('search-pd-result') && !$(e.target).hasClass('input-search-pd')) {
-                $('.ajax-search-pd').html('')
+            if (!$(e.target).hasClass('search-combo-result') && !$(e.target).hasClass('input-search-combo')) {
+                $('.ajax-search-combo').html('')
             }
         })
 
-        $(document).on('click', '.ajax-search-pd', function (e) {
+        $(document).on('click', '.ajax-search-combo', function (e) {
             e.stopPropagation();
         })
     }
 
-    HT.renderBuyProductTakeGift = () => {
-        let selectData = JSON.parse($('.input-buy-product-take-gift').val())
-        let selectHtml = ''
-        let moduleType = $('.preload_select-buy-product-take-gift').val()
-        for (let key in selectData) {
-            selectHtml += '<option ' + ((moduleType.length && typeof moduleType !== 'undefined' && moduleType == key) ? 'selected' : '') + '  value="' + key + '"> ' + selectData[key] + ' </option>'
-        }
-        let preloadDataProducts = JSON.parse($('.input_products').val()) || ''
-        let preloadDataProductGifts = JSON.parse($('.input_product_gifts').val()) || ''
-        let searchProduct = ''
-        let searchProductGift = ''
-        if (!preloadDataProducts && !preloadDataProductGifts) {
-            searchProduct = '';
-            searchProductGift = '';
-        } else {
-            if (preloadDataProducts) {
-                searchProduct += HT.oldChooseProduct(preloadDataProducts);
-            }
-            if (preloadDataProductGifts) {
-                searchProductGift += HT.oldChooseProductGift(preloadDataProductGifts);
-            }
-        }
-        let html = `
-            <div class="buy_product_take_gift">
-                <div class="choose-module mt20">
-                    <div class="fix-label mt20">Áp dụng</div>
-                    <select name="module_type" id="" class="multipleSelect2 select-buy-product-take-gift">
-                        ${selectHtml}
-                    </select>
-                </div>
-                <table class="table table-striped mt20 mb0">
-                    <thead>
-                        <tr>
-                            <th style="width:400px;max-width:400px;">Sản phẩm mua</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div class="search-product">
-                                    <i class="fa fa-search"></i>
-                                    <input type="text" name="keyword" class="form-control input-search-pd" placeholder="Chọn sản phẩm mua">
-                                    <div class="ajax-search-pd"></div>
-                                </div>
-                                <div class="search-pd-result mt20">
-                                    <div class="wrapper-search">
-                                        ${searchProduct}
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <table class="table table-striped mb0">
-                    <thead>
-                        <tr>
-                            <th style="width:400px;max-width:400px;">Quà tặng</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div class="search-product-gift">
-                                    <i class="fa fa-search"></i>
-                                    <input type="text" name="keyword" class="form-control input-search-pd-gift" placeholder="Chọn quà tặng">
-                                    <div class="ajax-search-pd-gift"></div>
-                                </div>
-                                <div class="search-pd-gift-result mt20">
-                                    <div class="wrapper-search">${searchProductGift}</div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        `
-        HT.renderPromionalContainer(html)
-    }
 
-    HT.oldChooseProduct = (preloadDataProducts) => {
-        let html = ''
-        for (let i = 0; i < preloadDataProducts.id.length; i++) {
-            let id = preloadDataProducts.id[i]
-            let image = preloadDataProducts.image[i]
-            let name = preloadDataProducts.name[i]
-            let quantity = preloadDataProducts.quantity[i]
-            html += `
-                    <div class="search-pd-item" id="model-pd-${id}" data-modelid="${id}">
-                        <input type="hidden" name="products[id][]" value="${id}">
-                        <input type="hidden" name="products[image][]" value="${image}">
-                        <input type="hidden" name="products[name][]" value="${name}">
-                        <div class="col-lg-8">
-                            <div class="uk-flex uk-flex-middle">
-                                <span class="image img-cover">
-                                    <img src="${image}" alt="">
-                                </span>
-                                <span class="pd_name">${name}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <input type="text" name="products[quantity][]" class="form-control int custom_ip" value="${quantity}" placeholder="Nhập số lượng">
-                        </div>
-                        <div class="col-lg-1 deleted">
-                            <svg class="svg-next-icon svg-next-icon-size-12" width="12" height="12">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-                                    <path d="M18.263 16l10.07-10.07c.625-.625.625-1.636 0-2.26s-1.638-.627-2.263 0L16 13.737 5.933 3.667c-.626-.624-1.637-.624-2.262 0s-.624 1.64 0 2.264L13.74 16 3.67 26.07c-.626.625-.626 1.636 0 2.26.312.313.722.47 1.13.47s.82-.157 1.132-.47l10.07-10.068 10.068 10.07c.312.31.722.468 1.13.468s.82-.157 1.132-.47c.626-.625.626-1.636 0-2.26L18.262 16z">
-                                    </path>
-                                </svg>
-                            </svg>
-                        </div>
-                 </div>
-            `
-        }
 
-        return html;
-
-    }
-
-    HT.oldChooseProductGift = (preloadDataProductGifts) => {
-        let html = ''
-        for (let i = 0; i < preloadDataProductGifts.id.length; i++) {
-            let id = preloadDataProductGifts.id[i]
-            let image = preloadDataProductGifts.image[i]
-            let name = preloadDataProductGifts.name[i]
-            let quantity = preloadDataProductGifts.quantity[i]
-            html += `
-                    <div class="search-pd-item" id="model-pdg-${id}" data-modelid="${id}">
-                        <input type="hidden" name="product_gifts[id][]" value="${id}">
-                        <input type="hidden" name="product_gifts[image][]" value="${image}">
-                        <input type="hidden" name="product_gifts[name][]" value="${name}">
-                        <div class="col-lg-8">
-                            <div class="uk-flex uk-flex-middle">
-                                <span class="image img-cover">
-                                    <img src="${image}" alt="">
-                                </span>
-                                <span class="pd_name">${name}</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <input type="text" name="product_gifts[quantity][]" class="form-control int custom_ip" value="${quantity}" placeholder="Nhập số lượng">
-                        </div>
-                        <div class="col-lg-1 deleted">
-                            <svg class="svg-next-icon svg-next-icon-size-12" width="12" height="12">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-                                    <path d="M18.263 16l10.07-10.07c.625-.625.625-1.636 0-2.26s-1.638-.627-2.263 0L16 13.737 5.933 3.667c-.626-.624-1.637-.624-2.262 0s-.624 1.64 0 2.264L13.74 16 3.67 26.07c-.626.625-.626 1.636 0 2.26.312.313.722.47 1.13.47s.82-.157 1.132-.47l10.07-10.068 10.068 10.07c.312.31.722.468 1.13.468s.82-.157 1.132-.47c.626-.625.626-1.636 0-2.26L18.262 16z">
-                                    </path>
-                                </svg>
-                            </svg>
-                        </div>
-                 </div>
-            `
-        }
-
-        return html;
-
-    }
+    /*End search*/
 
     /*Product*/
 
@@ -761,7 +399,7 @@ window.HT = window.HT || {}; var HT = window.HT;
                 html +=
                     `
                     <button 
-                            class="ajax-search-item" 
+                            class="ajax-pd" 
                             data-flag="${flag}" 
                             data-canonical="${data[i].languages[0].pivot.canonical}" 
                             data-image="${data[i].image}" 
@@ -775,18 +413,16 @@ window.HT = window.HT || {}; var HT = window.HT;
                             </div>
                         </div>
                     </button>
+                    <input type="hidden" name="products[id][]" value="${data[i].id}">
                 `
             }
         }
         return html
     }
 
-    HT.setCheckedPd = () => {
-        return '<svg class="svg-next-icon button-selected-combobox svg-next-icon-size-12" width="12" height="12"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><path d="m.3,14c-0.2-0.2-0.3-0.5-0.3-0.7s0.1-0.5 0.3-0.7l1.4-1.4c0.4-0.4 1-0.4 1.4,0l.1,.1 5.5,5.9c0.2,0.2 0.5,0.2 0.7,0l13.4-13.9h0.1v-8.88178e-16c0.4-0.4 1-0.4 1.4,0l1.4,1.4c0.4,0.4 0.4,1 0,1.4l0,0-16,16.6c-0.2,0.2-0.4,0.3-0.7,0.3-0.3,0-0.5-0.1-0.7-0.3l-7.8-8.4-.2-.3z"></path></svg></svg>'
-    }
 
     HT.addProduct = () => {
-        $(document).on('click', '.ajax-search-item', function (e) {
+        $(document).on('click', '.ajax-pd', function (e) {
             e.preventDefault()
             let _this = $(this)
             let data = _this.data()
@@ -1173,7 +809,7 @@ window.HT = window.HT || {}; var HT = window.HT;
     }
 
     HT.getPaginationMenu = () => {
-        $(document).on('click', '.page-link', function (e) {
+        $(document).on('click', '.search-list .page-link', function (e) {
             e.preventDefault()
             let _this = $(this)
             let option = {

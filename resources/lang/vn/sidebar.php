@@ -126,7 +126,7 @@ return [
             'subModule' => [
                 [
                     'title' => 'QL Liên Hệ',
-                    'route' => 'visit_request/index'
+                    'route' => 'contact_request/index'
                 ]
             ]
         ],

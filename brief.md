@@ -512,7 +512,7 @@ Schema::create('project_items', function (Blueprint $table) {
 
 ---
 
-### MODULE 6 — `contact_requests` _(rename visit_requests)_
+### MODULE 6 — `contact_requests`
 
 ```php
 // Thực tế: Schema::rename('visit_requests', 'contact_requests') + addColumn

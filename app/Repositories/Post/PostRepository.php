@@ -22,7 +22,6 @@ class PostRepository extends BaseRepository
     }
 
     
-
     public function getPostById(int $id = 0, $language_id = 0){
         return $this->model->select([
                 'posts.id',
@@ -57,6 +56,16 @@ class PostRepository extends BaseRepository
         ->with('post_catalogues')
         ->where('tb2.language_id', '=', $language_id)
         ->find($id);
+    }
+
+    public function getAllPosts($language_id){
+        return $this->model->select([
+            'posts.id',
+            'tb2.name'
+        ])
+        ->join('post_language as tb2', 'tb2.post_id', '=', 'posts.id')
+        ->where('tb2.language_id', '=', $language_id)
+        ->get();
     }
 
 }

@@ -9,8 +9,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Traits\HasQuery;
 
-class VisitRequest extends Model
+class ContactRequest extends Model
 {
+    protected $table = 'contact_requests';
+
     use HasFactory, Notifiable, SoftDeletes, HasQuery;
 
     protected $fillable = [

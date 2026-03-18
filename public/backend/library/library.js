@@ -16,6 +16,39 @@ HT.select2 = () => {
     }
 }
 
+HT.ajaxSearch = () => {
+    if ($('.ajaxSearch').length) {
+        $('.ajaxSearch').each(function () {
+            let _this = $(this)
+            let model = _this.attr('data-model')
+            _this.select2({
+                minimumInputLength: 2,
+                placeholder: _this.attr('data-placeholder'),
+                ajax: {
+                    url: 'ajax/dashboard/findPromotionObject',
+                    type: 'GET',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            search: params.term,
+                            option: {
+                                model: model
+                            },
+                        }
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.items
+                        }
+                    },
+                    cache: true
+                }
+            });
+        })
+    }
+}
+
 HT.sortui = () => {
     $("#sortable").sortable();
     $("#sortable").disableSelection();
@@ -318,6 +351,7 @@ $(document).ready(function () {
     HT.approve()
     HT.switchery()
     HT.select2()
+    HT.ajaxSearch()
     HT.changeStatus()
     HT.checkAll()
     HT.checkBoxItem()

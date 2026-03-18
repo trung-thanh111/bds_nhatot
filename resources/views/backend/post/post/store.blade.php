@@ -29,6 +29,7 @@
             </div>
             <div class="col-lg-3">
                 @include('backend.post.post.component.aside')
+                @include('backend.post.post.component.related_post')
             </div>
         </div>
         <div class="text-right mb15 fixed-bottom">

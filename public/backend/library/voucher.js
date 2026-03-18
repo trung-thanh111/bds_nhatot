@@ -516,7 +516,7 @@ window.HT = window.HT || {}; var HT = window.HT;
     }
 
     HT.getPaginationMenu = () => {
-        $(document).on('click', '.page-link', function (e) {
+        $(document).on('click', '.search-list .page-link', function (e) {
             e.preventDefault()
             let _this = $(this)
             let option = {
@@ -790,6 +790,7 @@ window.HT = window.HT || {}; var HT = window.HT;
         HT.confirmProductPromotion()
         HT.deleteGoodsItem()
         HT.changePromotionMethod()
+        HT.confirmProductPromotion()
         HT.checkConditionItemSet()
     });
 

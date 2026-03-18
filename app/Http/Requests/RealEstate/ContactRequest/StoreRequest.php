@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\RealEstate\VisitRequest;
+namespace App\Http\Requests\RealEstate\ContactRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateRequest extends FormRequest
+class StoreRequest extends FormRequest
 {
     public function authorize(): bool
     {

@@ -33,22 +33,20 @@
                         <div class="row mb15">
                             <div class="col-lg-6">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Tên Nhóm BĐS <span class="text-danger">(*)</span></label>
+                                    <label for="" class="control-label text-left">Tên Nhóm BĐS <span
+                                            class="text-danger">(*)</span></label>
                                     <input type="text" name="name"
-                                        value="{{ old('name', $projectCatalogue->name ?? '') }}" class="form-control"
-                                        placeholder="" autocomplete="off">
+                                        value="{{ old('name', $projectCatalogue->name ?? '') }}"
+                                        class="form-control title" placeholder="" autocomplete="off">
+                                    <div class="mt5">
+                                        <span class="text-primary font-bold">Đường dẫn: </span>
+                                        <span class="slug-preview text-primary">{{ config('app.url') }}/<span
+                                                id="slug-text">{{ old('slug', $projectCatalogue->slug ?? '') }}</span>{{ config('apps.general.suffix') }}</span>
+                                        <input type="hidden" name="slug" class="slug"
+                                            value="{{ old('slug', $projectCatalogue->slug ?? '') }}">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
-                                <div class="form-row">
-                                    <label for="" class="control-label text-left">Đường dẫn <span class="text-danger">(*)</span></label>
-                                    <input type="text" name="slug"
-                                        value="{{ old('slug', $projectCatalogue->slug ?? '') }}" class="form-control"
-                                        placeholder="" autocomplete="off">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mb15">
                             <div class="col-lg-6">
                                 <div class="form-row">
                                     <label for="" class="control-label text-left">Nhóm cha</label>
@@ -61,24 +59,28 @@
                                     </select>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row mb15">
                             <div class="col-lg-6">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Loại hình BĐS</label>
+                                    <label for="" class="control-label text-left">Loại hình chi tiết</label>
                                     <select name="type_code" class="form-control setupSelect2" id="type_code_catalogue">
-                                        <option value="">[Chọn Loại hình BĐS]</option>
+                                        <option value="">[Chọn Loại hình]</option>
                                         @foreach ($projectTypes as $type)
                                             <option
                                                 {{ $type->code == old('type_code', $projectCatalogue->type_code ?? '') ? 'selected' : '' }}
-                                                value="{{ $type->code }}" data-group="{{ $type->group_id }}">{{ $type->name }}</option>
+                                                value="{{ $type->code }}" data-group="{{ $type->group_id }}">
+                                                {{ $type->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Phân loại BĐS (Tự động)</label>
-                                    <select name="property_group_id" class="form-control setupSelect2" id="property_group_id_catalogue">
-                                        <option value="">[Chọn Phân loại BĐS]</option>
+                                    <label for="" class="control-label text-left">Nhóm BĐS chính</label>
+                                    <select name="property_group_id" class="form-control setupSelect2"
+                                        id="property_group_id_catalogue">
+                                        <option value="">[Tự động xác định]</option>
                                         @foreach ($propertyGroups as $group)
                                             <option
                                                 {{ $group->id == old('property_group_id', $projectCatalogue->property_group_id ?? '') ? 'selected' : '' }}
@@ -125,13 +127,10 @@
                         <div class="row mb15">
                             <div class="col-lg-12">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Icon URL</label>
-                                    <div class="input-group">
-                                        <input type="text" name="icon_url"
-                                            value="{{ old('icon_url', $projectCatalogue->icon_url ?? '') }}"
-                                            class="form-control upload-image" placeholder="" autocomplete="off" data-type="Images">
-                                        <span class="input-group-addon cursor">Chọn ảnh</span>
-                                    </div>
+                                    <label for="" class="control-label text-left">Icon Class</label>
+                                    <input type="text" name="icon_url"
+                                        value="{{ old('icon_url', $projectCatalogue->icon_url ?? '') }}"
+                                        class="form-control" placeholder="Font Awesome class..." autocomplete="off">
                                 </div>
                             </div>
                         </div>

@@ -205,7 +205,7 @@ window.HT = window.HT || {}; var HT = window.HT;
     }
 
     HT.getPaginationMenu = () => {
-        $(document).on('click', '.page-link', function (e) {
+        $(document).on('click', '.menu-list .page-link', function (e) {
             e.preventDefault()
             let _this = $(this)
             let option = {

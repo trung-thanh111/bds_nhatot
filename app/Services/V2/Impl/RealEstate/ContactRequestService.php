@@ -3,10 +3,10 @@
 namespace App\Services\V2\Impl\RealEstate;
 
 use App\Services\V2\BaseService;
-use App\Repositories\RealEstate\VisitRequestRepo;
+use App\Repositories\RealEstate\ContactRequestRepo;
 use Illuminate\Support\Facades\Auth;
 
-class VisitRequestService extends BaseService
+class ContactRequestService extends BaseService
 {
 
     protected $repository;
@@ -16,8 +16,9 @@ class VisitRequestService extends BaseService
     protected $with = ['users', 'project', 'agents'];
 
     public function __construct(
-        VisitRequestRepo $repository,
+        ContactRequestRepo $repository,
     ) {
+
         $this->repository = $repository;
     }
 

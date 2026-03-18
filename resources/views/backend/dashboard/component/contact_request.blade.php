@@ -13,8 +13,8 @@
                 </tr>
             </thead>
             <tbody>
-                @if(isset($recentVisitRequests) && is_object($recentVisitRequests))
-                @foreach($recentVisitRequests as $vr)
+                @if(isset($recentContactRequests) && is_object($recentContactRequests))
+                @foreach($recentContactRequests as $vr)
                 <tr>
                     <td>
                         <b>{{ $vr->full_name }}</b><br>

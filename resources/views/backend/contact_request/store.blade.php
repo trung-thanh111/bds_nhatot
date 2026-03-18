@@ -9,7 +9,7 @@
     </div>
 @endif
 @php
-    $url = $config['method'] == 'create' ? route('visit_request.store') : route('visit_request.update', $record->id);
+    $url = $config['method'] == 'create' ? route('contact_request.store') : route('contact_request.update', $record->id);
 @endphp
 <form action="{{ $url }}" method="post" class="box">
     @csrf

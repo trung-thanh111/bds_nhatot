@@ -4,15 +4,15 @@ namespace App\Http\Controllers\Backend\V2\RealEstate;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\RealEstate\VisitRequest\StoreRequest;
-use App\Http\Requests\RealEstate\VisitRequest\UpdateRequest;
-use App\Services\V2\Impl\RealEstate\VisitRequestService;
+use App\Http\Requests\RealEstate\ContactRequest\StoreRequest;
+use App\Http\Requests\RealEstate\ContactRequest\UpdateRequest;
+use App\Services\V2\Impl\RealEstate\ContactRequestService;
 use App\Services\V1\RealEstate\ProjectService;
 use App\Services\V2\Impl\RealEstate\AgentService;
 use App\Models\Language;
 use App\Models\Project;
 
-class VisitRequestController extends Controller
+class ContactRequestController extends Controller
 {
 
     private $service;
@@ -21,7 +21,8 @@ class VisitRequestController extends Controller
     protected $language;
 
     public function __construct(
-        VisitRequestService $service,
+        ContactRequestService $service,
+
         ProjectService $projectService,
         AgentService $agentService
     ) {
@@ -38,13 +39,13 @@ class VisitRequestController extends Controller
 
     public function index(Request $request)
     {
-        $this->authorize('modules', 'visit_request.index');
+        $this->authorize('modules', 'realestate.contact_request.index');
         $records = $this->service->pagination($request);
         $config = [
             ...$this->config(),
             'extendJs' => true
         ];
-        $template = 'backend.visit_request.index';
+        $template = 'backend.contact_request.index';
         return view('backend.dashboard.layout', compact(
             'template',
             'config',
@@ -54,7 +55,7 @@ class VisitRequestController extends Controller
 
     public function create()
     {
-        $this->authorize('modules', 'visit_request.create');
+        $this->authorize('modules', 'realestate.contact_request.create');
         $config = [
             ...$this->config(),
             'method' => 'create',
@@ -62,7 +63,7 @@ class VisitRequestController extends Controller
         ];
         $projects = Project::all();
         $agents = $this->agentService->all();
-        $template = 'backend.visit_request.store';
+        $template = 'backend.contact_request.store';
         return view('backend.dashboard.layout', compact(
             'template',
             'config',
@@ -73,9 +74,9 @@ class VisitRequestController extends Controller
 
     public function edit($id)
     {
-        $this->authorize('modules', 'visit_request.update');
+        $this->authorize('modules', 'realestate.contact_request.update');
         if (!$record = $this->service->findById($id)) {
-            return redirect()->route('visit_request.index')->with('error', 'Bản ghi không tồn tại');
+            return redirect()->route('contact_request.index')->with('error', 'Bản ghi không tồn tại');
         }
         $config = [
             ...$this->config(),
@@ -84,7 +85,7 @@ class VisitRequestController extends Controller
         ];
         $projects = Project::all();
         $agents = $this->agentService->all();
-        $template = 'backend.visit_request.store';
+        $template = 'backend.contact_request.store';
         return view('backend.dashboard.layout', compact(
             'template',
             'config',
@@ -96,29 +97,29 @@ class VisitRequestController extends Controller
 
     public function store(StoreRequest $request)
     {
-        $this->authorize('modules', 'visit_request.create');
+        $this->authorize('modules', 'realestate.contact_request.create');
         $response = $this->service->save($request, 'store');
-        return $this->handleActionResponse($response, $request, redirectRoute: 'visit_request.index');
+        return $this->handleActionResponse($response, $request, redirectRoute: 'contact_request.index');
     }
 
 
     public function update($id, UpdateRequest $request)
     {
-        $this->authorize('modules', 'visit_request.update');
+        $this->authorize('modules', 'realestate.contact_request.update');
         $response = $this->service->save($request, 'update', $id);
-        return $this->handleActionResponse($response, $request, redirectRoute: 'visit_request.index');
+        return $this->handleActionResponse($response, $request, redirectRoute: 'contact_request.index');
     }
 
     public function delete($id)
     {
-        $this->authorize('modules', 'visit_request.destroy');
+        $this->authorize('modules', 'realestate.contact_request.destroy');
         $record = $this->service->findById($id);
         $this->checkExists($record);
         $config = [
             ...$this->config(),
             'method' => 'delete'
         ];
-        $template = 'backend.visit_request.delete';
+        $template = 'backend.contact_request.delete';
         return view('backend.dashboard.layout', compact(
             'template',
             'config',
@@ -128,15 +129,16 @@ class VisitRequestController extends Controller
 
     public function destroy($id, Request $request)
     {
-        $this->authorize('modules', 'visit_request.destroy');
+        $this->authorize('modules', 'realestate.contact_request.destroy');
         $response = $this->service->destroy($id);
-        return $this->handleActionResponse($response, $request, message: 'Xóa bản ghi thành công', redirectRoute: 'visit_request.index');
+        return $this->handleActionResponse($response, $request, message: 'Xóa bản ghi thành công', redirectRoute: 'contact_request.index');
     }
 
     private function config(): array
     {
         return $config = [
-            'model' => 'VisitRequest',
+            'model' => 'ContactRequest',
+
             'seo' => $this->seo()
         ];
     }

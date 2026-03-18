@@ -103,6 +103,7 @@ class PostService extends BaseService
                 $this->updateLanguageForPost($post, $request, $languageId);
                 $this->updateCatalogueForPost($post, $request);
                 $this->createRouter($post, $request, $this->controllerName, $languageId);
+                $post->related_posts()->sync($request->input('related_posts'));
             }
             DB::commit();
             return true;
@@ -124,6 +125,7 @@ class PostService extends BaseService
                 $this->updateRouter(
                     $post, $request, $this->controllerName, $languageId
                 );
+                $post->related_posts()->sync($request->input('related_posts'));
             }
             DB::commit();
             return true;
@@ -205,7 +207,6 @@ class PostService extends BaseService
         return $temp;
     }
     
-
     private function paginateSelect(){
         return [
             'posts.id', 
@@ -255,6 +256,5 @@ class PostService extends BaseService
             'canonical',
         ];
     }
-
 
 }

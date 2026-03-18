@@ -56,9 +56,8 @@ class Post extends Model
         return $this->belongsToMany(PostCatalogue::class, 'post_catalogue_post' , 'post_id', 'post_catalogue_id');
     }
 
-    protected $casts = [
-        'released_at' => 'datetime:Y-m-d H:i:s',
-    ];
-
+    public function related_posts(){
+        return $this->belongsToMany(Post::class, 'post_related_post', 'post_id', 'related_post_id');
+    }
 
 }

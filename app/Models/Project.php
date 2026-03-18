@@ -132,9 +132,9 @@ class Project extends Model
         return $this->belongsTo(ProjectType::class, 'type_code', 'code');
     }
 
-    public function visitRequests()
+    public function contactRequests()
     {
-        return $this->hasMany(VisitRequest::class, 'project_id');
+        return $this->hasMany(ContactRequest::class, 'project_id');
     }
 
     // public function items()

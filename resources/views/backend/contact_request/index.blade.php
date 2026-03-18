@@ -7,7 +7,7 @@
                 @include('backend.dashboard.component.toolbox', ['model' => $config['model']])
             </div>
             <div class="ibox-content">
-                <x-backend.filter createRoute="visit_request.create" submitRoute="visit_request.index" />
+                <x-backend.filter createRoute="contact_request.create" submitRoute="contact_request.index" />
                 @php
                     $columns = [
                         'customer' => [
@@ -37,8 +37,8 @@
                     ];
                 @endphp
                 <x-backend.customtable :records="$records->getCollection()" :columns="$columns" :actions="[
-                    ['route' => 'visit_request.edit', 'class' => 'btn-success', 'icon' => 'fa-edit'],
-                    ['route' => 'visit_request.delete', 'class' => 'btn-danger', 'icon' => 'fa-trash'],
+                    ['route' => 'contact_request.edit', 'class' => 'btn-success', 'icon' => 'fa-edit'],
+                    ['route' => 'contact_request.delete', 'class' => 'btn-danger', 'icon' => 'fa-trash'],
                 ]" :model="$config['model']" />
                 {{ $records->links('pagination::bootstrap-4') }}
             </div>
