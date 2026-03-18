@@ -19,7 +19,7 @@ class VisitRequestController extends FrontendController
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'property_id' => 'required|exists:properties,id',
+            'project_id' => 'required|exists:projects,id',
             'full_name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'email' => 'nullable|email|max:255',

@@ -93,6 +93,6 @@ class RealEstateStatisticService
 
     public function getRecentVisitRequests($limit = 10)
     {
-        return $this->visitRequestRepo->findByCondition([], true, ['properties'], ['id', 'DESC'])->take($limit);
+        return $this->visitRequestRepo->findByCondition([], true, ['project'], ['id', 'DESC'])->take($limit);
     }
 }

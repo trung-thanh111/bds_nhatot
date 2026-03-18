@@ -72,7 +72,7 @@
             <div class="hp-visit-box">
                 <form action="{{ route('visit-request.store') }}" method="POST" class="hp-visit-form">
                     @csrf
-                    <input type="hidden" name="property_id" value="{{ $property->id ?? '' }}">
+                    <input type="hidden" name="project_id" value="{{ $property->id ?? '' }}">
 
                     <div class="uk-grid uk-grid-medium">
                         <div class="uk-width-large-1-3">

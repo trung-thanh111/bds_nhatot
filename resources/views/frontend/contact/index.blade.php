@@ -77,7 +77,7 @@
                         <div class="hp-contact-form-wrap" data-reveal="right">
                             <form id="visit-request-form" method="post" action="{{ route('visit-request.store') }}">
                                 @csrf
-                                <input type="hidden" name="property_id" value="{{ $property->id ?? '' }}">
+                                <input type="hidden" name="project_id" value="{{ $property->id ?? '' }}">
 
                                 <div class="hp-form-group">
                                     <label>Họ và tên (bắt buộc)</label>

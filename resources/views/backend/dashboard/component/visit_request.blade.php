@@ -7,7 +7,7 @@
             <thead>
                 <tr>
                     <th>Khách hàng</th>
-                    <th>Bất động sản</th>
+                    <th>Dự án</th>
                     <th class="text-center">Ngày hẹn</th>
                     <th class="text-center">Trạng thái</th>
                 </tr>
@@ -21,7 +21,7 @@
                         <small>{{ $vr->phone }}</small>
                     </td>
                     <td>
-                        {{ $vr->properties?->title ?? 'N/A' }}
+                        {{ $vr->project?->name ?? 'N/A' }}
                     </td>
                     <td class="text-center">
                         {{ $vr->preferred_date }}

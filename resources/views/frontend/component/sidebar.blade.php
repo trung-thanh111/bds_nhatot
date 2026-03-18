@@ -8,7 +8,7 @@
             }
         }
     } elseif ($offcanvasProperty) {
-        $galleryRecord = \App\Models\Gallery::where('property_id', $offcanvasProperty->id)->first();
+        $galleryRecord = \App\Models\Gallery::where('project_id', $offcanvasProperty->id)->first();
         if ($galleryRecord && !empty($galleryRecord->album) && is_array($galleryRecord->album)) {
             $offcanvasGalleryImages = $galleryRecord->album;
         } else {
