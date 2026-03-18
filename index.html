@@ -1,0 +1,3540 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BĐSPro – Mua Bán & Cho Thuê Bất Động Sản TP.HCM</title>
+    <meta name="description"
+        content="Chuyên mua bán, cho thuê bất động sản tại TP.HCM. Tư vấn miễn phí 0909 999 888." />
+
+    <!-- UIkit v2 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/2.27.5/css/uikit.min.css" />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!-- Custom CSS -->
+    <style>
+        /* ============================================================
+   style.css – BĐSPro
+   Design tokens + styles (không override UIkit khi có class sẵn)
+   ============================================================ */
+
+        /* ─── CSS CUSTOM PROPERTIES ─────────────────────────────────── */
+        :root {
+            /* ── BRAND COLOR ── */
+            --c-primary: #f26522;
+            --c-primary-dark: #d4551a;
+            --c-primary-light: #fff3ee;
+            --c-primary-mid: #ffe0cc;
+
+            /* ── NEUTRAL ── */
+            --c-white: #ffffff;
+            --c-gray-50: #fafafa;
+            --c-gray-100: #f5f5f5;
+            --c-gray-200: #eeeeee;
+            --c-gray-300: #e0e0e0;
+            --c-gray-400: #bdbdbd;
+            --c-gray-500: #9e9e9e;
+            --c-gray-600: #757575;
+            --c-gray-700: #555555;
+            --c-gray-800: #333333;
+            --c-gray-900: #1a1a1a;
+
+            /* ── STATUS ── */
+            --c-red: #e53935;
+            --c-green: #43a047;
+            --c-gold: #f9a825;
+            --c-blue: #1e88e5;
+
+            /* ─── TYPOGRAPHY ─── */
+            --font: 'Be Vietnam Pro', 'Helvetica Neue', Arial, sans-serif;
+            --fs-10: 10px;
+            --fs-11: 11px;
+            --fs-12: 12px;
+            --fs-13: 13px;
+            --fs-14: 14px;
+            --fs-15: 15px;
+            --fs-16: 16px;
+            --fs-18: 18px;
+            --fs-20: 20px;
+            --fs-22: 22px;
+
+            --fw-4: 400;
+            --fw-5: 500;
+            --fw-6: 600;
+            --fw-7: 700;
+
+            /* ─── LAYOUT ─── */
+            --navbar-h: 56px;
+            --topbar-h: 34px;
+            --subnav-h: 42px;
+            --sidebar-w: 296px;
+
+            /* ─── COMPONENT ─── */
+            --radius-s: 4px;
+            --radius-m: 8px;
+            --radius-l: 12px;
+            --radius-pill: 999px;
+
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, .06);
+            --shadow-sm: 0 1px 4px rgba(0, 0, 0, .08);
+            --shadow-md: 0 3px 10px rgba(0, 0, 0, .10);
+
+            --border: 1px solid var(--c-gray-200);
+            --transition: 0.18s ease;
+
+            /* ─── BUTTON ─── */
+            --btn-h: 38px;
+            --btn-h-sm: 30px;
+            --btn-h-lg: 44px;
+            --btn-r: 6px;
+
+            /* ─── INPUT ─── */
+            --input-h: 38px;
+            --input-r: 6px;
+        }
+
+        /* ============================================================
+   RESET BASE
+   ============================================================ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 14px;
+        }
+
+        body {
+            font-family: var(--font);
+            font-size: var(--fs-13);
+            color: var(--c-gray-800);
+            background: var(--c-gray-100);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        a:hover {
+            color: var(--c-primary);
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        button {
+            font-family: var(--font);
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        input,
+        select,
+        textarea {
+            font-family: var(--font);
+        }
+
+        /* ============================================================
+   LAYOUT WRAPPERS
+   ============================================================ */
+
+        /* ─── Topbar ─── */
+        .topbar {
+            background: var(--c-primary);
+            height: var(--topbar-h);
+            font-size: var(--fs-11);
+            color: rgba(255, 255, 255, .9);
+        }
+
+        .topbar a {
+            color: rgba(255, 255, 255, .9);
+        }
+
+        .topbar a:hover {
+            color: #fff;
+        }
+
+        /* ─── Sticky Header ─── */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--c-white);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ─── Navbar ─── */
+        .navbar {
+            height: var(--navbar-h);
+            border-bottom: var(--border);
+        }
+
+        .logo-icon {
+            width: 34px;
+            height: 34px;
+            background: var(--c-primary);
+            border-radius: var(--radius-s);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: var(--fs-16);
+            font-weight: var(--fw-7);
+            flex-shrink: 0;
+        }
+
+        .logo-name {
+            font-size: 19px;
+            font-weight: var(--fw-7);
+            color: var(--c-primary);
+            letter-spacing: -.5px;
+        }
+
+        .logo-name em {
+            font-style: normal;
+            color: var(--c-gray-900);
+        }
+
+        /* Search in navbar */
+        .navbar-search {
+            flex: 1;
+            max-width: 520px;
+            display: flex;
+            border: 1.5px solid var(--c-gray-300);
+            border-radius: var(--radius-pill);
+            overflow: hidden;
+            transition: border-color var(--transition), box-shadow var(--transition);
+            background: var(--c-white);
+        }
+
+        .navbar-search:focus-within {
+            border-color: var(--c-primary);
+            box-shadow: 0 0 0 3px rgba(242, 101, 34, .1);
+        }
+
+        .navbar-search input {
+            flex: 1;
+            height: 36px;
+            padding: 0 12px;
+            border: none;
+            outline: none;
+            font-size: var(--fs-13);
+            color: var(--c-gray-800);
+            background: transparent;
+        }
+
+        .navbar-search input::placeholder {
+            color: var(--c-gray-500);
+        }
+
+        .navbar-search-btn {
+            width: 40px;
+            height: 36px;
+            background: var(--c-primary);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--fs-14);
+            flex-shrink: 0;
+            transition: background var(--transition);
+        }
+
+        .navbar-search-btn:hover {
+            background: var(--c-primary-dark);
+        }
+
+        .navbar-phone {
+            font-size: var(--fs-13);
+            font-weight: var(--fw-7);
+            color: var(--c-primary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Mobile toggle */
+        .navbar-toggle {
+            display: none;
+            padding: 8px;
+            font-size: 18px;
+            color: var(--c-gray-700);
+        }
+
+        /* ─── Subnav ─── */
+        .subnav {
+            height: var(--subnav-h);
+            background: var(--c-white);
+            border-bottom: var(--border);
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .subnav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .subnav-list {
+            height: 100%;
+            white-space: nowrap;
+        }
+
+        .subnav-item {
+            display: inline-flex;
+            height: 100%;
+        }
+
+        .subnav-item a {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            height: 100%;
+            padding: 0 16px;
+            font-size: var(--fs-12);
+            font-weight: var(--fw-5);
+            color: var(--c-gray-600);
+            border-bottom: 2px solid transparent;
+            transition: color var(--transition), border-color var(--transition);
+        }
+
+        .subnav-item a i {
+            font-size: 12px;
+            color: var(--c-gray-400);
+        }
+
+        .subnav-item a:hover {
+            color: var(--c-gray-900);
+            border-bottom-color: var(--c-gray-300);
+        }
+
+        .subnav-item.is-active a {
+            color: var(--c-primary);
+            border-bottom-color: var(--c-primary);
+            font-weight: var(--fw-6);
+        }
+
+        .subnav-item.is-active a i {
+            color: var(--c-primary);
+        }
+
+        /* ============================================================
+   PAGE STRUCTURE – 1 container bọc toàn bộ nội dung chính
+   ============================================================ */
+        .page-wrap {
+            padding: 24px 0 48px;
+        }
+
+        .page-layout {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .page-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .page-sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+        }
+
+        /* ============================================================
+   SEARCH SECTION
+   ============================================================ */
+        .search-section {
+            background: var(--c-white);
+            padding: 16px 0 12px;
+            border-bottom: var(--border);
+        }
+
+        .search-tabs {
+            border-bottom: var(--border);
+            margin-bottom: 14px;
+        }
+
+        .search-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            height: 36px;
+            padding: 0 18px;
+            font-size: var(--fs-13);
+            font-weight: var(--fw-6);
+            color: var(--c-gray-500);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: color var(--transition), border-color var(--transition);
+        }
+
+        .search-tab:hover {
+            color: var(--c-gray-800);
+        }
+
+        .search-tab.is-active {
+            color: var(--c-primary);
+            border-bottom-color: var(--c-primary);
+        }
+
+        .search-form-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .search-field {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .search-field-main {
+            flex: 2;
+            min-width: 200px;
+        }
+
+        .search-advanced {
+            text-align: right;
+            margin-top: 6px;
+            font-size: var(--fs-11);
+            color: var(--c-primary);
+        }
+
+        .search-advanced a {
+            color: var(--c-primary);
+        }
+
+        /* ============================================================
+   FORM CONTROLS
+   ============================================================ */
+        .f-input,
+        .f-select {
+            width: 100%;
+            height: var(--input-h);
+            padding: 0 12px;
+            border: 1.5px solid var(--c-gray-300);
+            border-radius: var(--input-r);
+            font-size: var(--fs-13);
+            font-family: var(--font);
+            color: var(--c-gray-800);
+            background: var(--c-white);
+            transition: border-color var(--transition), box-shadow var(--transition);
+            outline: none;
+        }
+
+        .f-input:focus,
+        .f-select:focus {
+            border-color: var(--c-primary);
+            box-shadow: 0 0 0 3px rgba(242, 101, 34, .1);
+        }
+
+        .f-input::placeholder {
+            color: var(--c-gray-400);
+            font-size: var(--fs-12);
+        }
+
+        .f-select {
+            appearance: none;
+            cursor: pointer;
+            padding-right: 32px;
+        }
+
+        /* Input wrapper (icon trái) */
+        .f-wrap {
+            position: relative;
+        }
+
+        .f-icon-left {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--c-gray-400);
+            font-size: 13px;
+            pointer-events: none;
+        }
+
+        .f-icon-right {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--c-gray-400);
+            font-size: 11px;
+            pointer-events: none;
+        }
+
+        .f-wrap .f-input {
+            padding-left: 30px;
+        }
+
+        .f-wrap .f-select {
+            padding-left: 30px;
+        }
+
+        /* Form group */
+        .f-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .f-label {
+            font-size: var(--fs-11);
+            font-weight: var(--fw-6);
+            color: var(--c-gray-500);
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        .f-input.is-textarea {
+            height: auto;
+            padding-top: 10px;
+            resize: vertical;
+        }
+
+        /* ============================================================
+   BUTTONS
+   ============================================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            height: var(--btn-h);
+            padding: 0 16px;
+            border-radius: var(--btn-r);
+            font-size: var(--fs-13);
+            font-weight: var(--fw-6);
+            font-family: var(--font);
+            cursor: pointer;
+            border: none;
+            transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+            white-space: nowrap;
+            line-height: 1;
+        }
+
+        .btn:active {
+            transform: scale(.97);
+        }
+
+        .btn-primary {
+            background: var(--c-primary);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--c-primary-dark);
+            color: #fff;
+            box-shadow: 0 3px 10px rgba(242, 101, 34, .3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--c-primary);
+            color: var(--c-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--c-primary);
+            color: #fff;
+        }
+
+        .btn-ghost {
+            background: var(--c-gray-100);
+            border: 1px solid var(--c-gray-300);
+            color: var(--c-gray-700);
+        }
+
+        .btn-ghost:hover {
+            background: var(--c-gray-200);
+            color: var(--c-gray-900);
+            border-color: var(--c-gray-400);
+        }
+
+        .btn-white {
+            background: #fff;
+            border: 1.5px solid #fff;
+            color: var(--c-primary);
+        }
+
+        .btn-white:hover {
+            background: var(--c-primary-light);
+        }
+
+        .btn-sm {
+            height: var(--btn-h-sm);
+            padding: 0 10px;
+            font-size: var(--fs-11);
+        }
+
+        .btn-lg {
+            height: var(--btn-h-lg);
+            padding: 0 24px;
+            font-size: var(--fs-14);
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* ============================================================
+   BADGES – 3 loại chính: hot, urgent, featured
+   ============================================================ */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 0 8px;
+            height: 20px;
+            border-radius: var(--radius-s);
+            font-size: var(--fs-10);
+            font-weight: var(--fw-7);
+            letter-spacing: .3px;
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
+
+        /* HOT – cam đỏ gradient, nổi bật nhất */
+        .badge-hot {
+            background: linear-gradient(135deg, #ff6b35, #e53935);
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(229, 57, 53, .35);
+        }
+
+        /* URGENT – đỏ thuần, khẩn cấp */
+        .badge-urgent {
+            background: var(--c-red);
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(229, 57, 53, .25);
+            animation: pulse-urgent 2s ease infinite;
+        }
+
+        @keyframes pulse-urgent {
+
+            0%,
+            100% {
+                box-shadow: 0 2px 6px rgba(229, 57, 53, .25);
+            }
+
+            50% {
+                box-shadow: 0 2px 10px rgba(229, 57, 53, .5);
+            }
+        }
+
+        /* FEATURED – vàng gold, cao cấp */
+        .badge-featured {
+            background: linear-gradient(135deg, #f9a825, #f57f17);
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(249, 168, 37, .35);
+        }
+
+        /* Badge loại BĐS (phụ, nhỏ hơn, dùng muted) */
+        .badge-type {
+            background: rgba(0, 0, 0, .45);
+            color: #fff;
+            font-size: var(--fs-10);
+            backdrop-filter: blur(2px);
+            font-weight: var(--fw-5);
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        /* ============================================================
+   TAG PILL (filter)
+   ============================================================ */
+        .tag-pill {
+            display: inline-flex;
+            align-items: center;
+            height: 28px;
+            padding: 0 12px;
+            border-radius: var(--radius-pill);
+            font-size: var(--fs-12);
+            font-weight: var(--fw-5);
+            border: 1px solid var(--c-gray-300);
+            background: var(--c-white);
+            color: var(--c-gray-600);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .tag-pill:hover {
+            border-color: var(--c-gray-500);
+            color: var(--c-gray-900);
+            background: var(--c-gray-100);
+        }
+
+        .tag-pill.is-active {
+            border-color: var(--c-primary);
+            color: var(--c-primary);
+            background: var(--c-primary-light);
+            font-weight: var(--fw-6);
+        }
+
+        /* ============================================================
+   CATEGORY ICON GRID
+   ============================================================ */
+        .cat-section {
+            background: var(--c-white);
+            padding: 16px 0;
+            border-bottom: var(--border);
+        }
+
+        .cat-grid {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .cat-grid::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 14px;
+            border-radius: var(--radius-m);
+            cursor: pointer;
+            flex-shrink: 0;
+            min-width: 72px;
+            text-align: center;
+            border: 1.5px solid transparent;
+            transition: all var(--transition);
+        }
+
+        .cat-item:hover {
+            background: var(--c-gray-100);
+            border-color: var(--c-gray-300);
+        }
+
+        .cat-item.is-active {
+            background: var(--c-primary-light);
+            border-color: var(--c-primary);
+        }
+
+        .cat-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: var(--radius-m);
+            background: var(--c-gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--c-gray-600);
+            transition: all var(--transition);
+        }
+
+        .cat-item:hover .cat-icon {
+            background: var(--c-gray-200);
+            color: var(--c-gray-800);
+        }
+
+        .cat-item.is-active .cat-icon {
+            background: var(--c-primary);
+            color: #fff;
+        }
+
+        .cat-label {
+            font-size: 11px;
+            font-weight: var(--fw-5);
+            color: var(--c-gray-600);
+            line-height: 1.3;
+        }
+
+        .cat-item:hover .cat-label {
+            color: var(--c-gray-800);
+        }
+
+        .cat-item.is-active .cat-label {
+            color: var(--c-primary);
+            font-weight: var(--fw-6);
+        }
+
+        /* ============================================================
+   SECTION HEADING
+   ============================================================ */
+        .sec-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .sec-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: var(--fs-18);
+            font-weight: var(--fw-7);
+            color: var(--c-gray-900);
+        }
+
+        .sec-title-bar {
+            display: inline-block;
+            width: 3px;
+            height: 18px;
+            background: var(--c-primary);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .sec-link {
+            font-size: var(--fs-12);
+            font-weight: var(--fw-5);
+            color: var(--c-gray-500);
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            transition: color var(--transition);
+        }
+
+        .sec-link:hover {
+            color: var(--c-primary);
+        }
+
+        /* ============================================================
+   SORT / FILTER BAR
+   ============================================================ */
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding-bottom: 12px;
+            border-bottom: var(--border);
+            margin-bottom: 12px;
+        }
+
+        .filter-label {
+            font-size: var(--fs-11);
+            color: var(--c-gray-500);
+            flex-shrink: 0;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .list-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .list-count {
+            font-size: var(--fs-12);
+            color: var(--c-gray-500);
+        }
+
+        .list-count strong {
+            color: var(--c-gray-900);
+            font-weight: var(--fw-6);
+        }
+
+        .sort-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sort-label {
+            font-size: var(--fs-11);
+            color: var(--c-gray-400);
+        }
+
+        .sort-btn {
+            height: 26px;
+            padding: 0 10px;
+            border-radius: var(--radius-s);
+            font-size: var(--fs-11);
+            font-weight: var(--fw-5);
+            border: 1px solid var(--c-gray-300);
+            background: var(--c-white);
+            color: var(--c-gray-600);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .sort-btn:hover,
+        .sort-btn.is-active {
+            border-color: var(--c-gray-700);
+            color: var(--c-gray-900);
+            background: var(--c-gray-100);
+        }
+
+        /* ============================================================
+   PROPERTY CARD
+   ============================================================ */
+        /* UIkit grid match helper */
+        [data-uk-grid-match]>* {
+            display: flex;
+        }
+
+        .prop-card {
+            background: var(--c-white);
+            border-radius: var(--radius-m);
+            border: var(--border);
+            box-shadow: var(--shadow-xs);
+            overflow: hidden;
+            cursor: pointer;
+            transition: box-shadow var(--transition), transform var(--transition);
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .prop-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        /* Ảnh */
+        .card-img {
+            position: relative;
+            padding-bottom: 62%;
+            overflow: hidden;
+            background: var(--c-gray-200);
+            flex-shrink: 0;
+        }
+
+        .img-ph {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--c-gray-400);
+        }
+
+        .img-ph i {
+            font-size: 1.8rem;
+            opacity: .2;
+        }
+
+        .img-ph img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .3s ease;
+        }
+
+        .prop-card:hover .img-ph img {
+            transform: scale(1.04);
+        }
+
+        .card-badges {
+            position: absolute;
+            top: 7px;
+            left: 7px;
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            z-index: 1;
+        }
+
+        .card-photo-count {
+            position: absolute;
+            bottom: 7px;
+            right: 7px;
+            background: rgba(0, 0, 0, .45);
+            color: #fff;
+            font-size: var(--fs-10);
+            padding: 2px 7px;
+            border-radius: var(--radius-s);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Body */
+        .card-body {
+            padding: 10px 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .card-price {
+            font-size: var(--fs-15);
+            font-weight: var(--fw-7);
+            color: var(--c-primary);
+        }
+
+        .card-price-note {
+            font-size: var(--fs-11);
+            font-weight: var(--fw-4);
+            color: var(--c-gray-500);
+        }
+
+        .card-title {
+            font-size: var(--fs-13);
+            font-weight: var(--fw-6);
+            color: var(--c-gray-900);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-location {
+            font-size: var(--fs-11);
+            color: var(--c-gray-500);
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .card-location i {
+            font-size: 10px;
+            color: var(--c-gray-400);
+        }
+
+        .card-specs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding-top: 7px;
+            border-top: 1px solid var(--c-gray-200);
+            margin-top: auto;
+        }
+
+        .spec-item {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: var(--fs-11);
+            color: var(--c-gray-600);
+        }
+
+        .spec-item i {
+            color: var(--c-gray-400);
+            font-size: 10px;
+        }
+
+        .spec-item strong {
+            font-weight: var(--fw-6);
+            color: var(--c-gray-700);
+        }
+
+        /* Broker strip */
+        .card-broker {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-top: 1px solid var(--c-gray-200);
+            background: var(--c-gray-50);
+        }
+
+        .broker-ava {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--c-gray-200);
+            border: 1.5px solid var(--c-gray-300);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: var(--fw-7);
+            color: var(--c-gray-600);
+            flex-shrink: 0;
+        }
+
+        .broker-name-sm {
+            font-size: var(--fs-11);
+            font-weight: var(--fw-6);
+            color: var(--c-gray-700);
+        }
+
+        .broker-phone-sm {
+            margin-left: auto;
+            font-size: var(--fs-11);
+            font-weight: var(--fw-7);
+            color: var(--c-primary);
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        /* Footer */
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 12px;
+            border-top: 1px solid var(--c-gray-200);
+        }
+
+        .card-date {
+            font-size: var(--fs-10);
+            color: var(--c-gray-400);
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .card-cta {
+            font-size: var(--fs-11);
+            font-weight: var(--fw-6);
+            color: var(--c-gray-600);
+            background: var(--c-gray-100);
+            padding: 3px 10px;
+            border-radius: var(--radius-s);
+            transition: all var(--transition);
+        }
+
+        .card-cta:hover {
+            background: var(--c-primary);
+            color: #fff;
+        }
+
+        /* ============================================================
+   VIP CARD (horizontal)
+   ============================================================ */
+        .vip-card {
+            background: var(--c-white);
+            border-radius: var(--radius-m);
+            border: 1.5px solid var(--c-gold);
+            overflow: hidden;
+            display: flex;
+            cursor: pointer;
+            box-shadow: var(--shadow-xs);
+            transition: box-shadow var(--transition), transform var(--transition);
+            position: relative;
+        }
+
+        .vip-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .vip-ribbon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: var(--c-gold);
+            color: #fff;
+            font-size: 9px;
+            font-weight: var(--fw-7);
+            padding: 2px 8px;
+            border-bottom-right-radius: var(--radius-s);
+            letter-spacing: .5px;
+            z-index: 1;
+        }
+
+        .vip-img {
+            width: 150px;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+            background: var(--c-gray-200);
+            min-height: 120px;
+        }
+
+        .vip-img .img-ph {
+            position: absolute;
+            inset: 0;
+        }
+
+        .vip-body {
+            padding: 12px 14px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .vip-price {
+            font-size: var(--fs-15);
+            font-weight: var(--fw-7);
+            color: var(--c-primary);
+        }
+
+        .vip-title {
+            font-size: var(--fs-13);
+            font-weight: var(--fw-6);
+            color: var(--c-gray-900);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .vip-meta {
+            font-size: var(--fs-11);
+            color: var(--c-gray-500);
+        }
+
+        .vip-meta i {
+            color: var(--c-gray-400);
+        }
+
+        .vip-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: auto;
+            padding-top: 8px;
+        }
+
+        /* ============================================================
+   SIDEBAR
+   ============================================================ */
+        .sidebar-box {
+            background: var(--c-white);
+            border-radius: var(--radius-m);
+            border: var(--border);
+            box-shadow: var(--shadow-xs);
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-box-head {
+            padding: 11px 16px;
+            border-bottom: var(--border);
+            font-size: var(--fs-13);
+            font-weight: var(--fw-7);
+            color: var(--c-gray-800);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-box-head i {
+            color: var(--c-gray-500);
+            font-size: 13px;
+        }
+
+        .sidebar-box-body {
+            padding: 16px;
+        }
+
+        /* Broker profile */
+        .broker-profile {
+            text-align: center;
+        }
+
+        .broker-ava-lg {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: 2px solid var(--c-gray-300);
+            margin: 0 auto 10px;
+            background: var(--c-gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: var(--fw-7);
+            color: var(--c-gray-600);
+            overflow: hidden;
+        }
+
+        .broker-name {
+            font-size: var(--fs-16);
+            font-weight: var(--fw-7);
+            margin-bottom: 3px;
+            color: var(--c-gray-900);
+        }
+
+        .broker-role {
+            font-size: var(--fs-11);
+            color: var(--c-gray-500);
+            margin-bottom: 12px;
+        }
+
+        .broker-stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 12px 0;
+            border-top: var(--border);
+            border-bottom: var(--border);
+            margin-bottom: 12px;
+        }
+
+        .bs-num {
+            font-size: var(--fs-20);
+            font-weight: var(--fw-7);
+            color: var(--c-primary);
+            line-height: 1;
+        }
+
+        .bs-lbl {
+            font-size: var(--fs-10);
+            color: var(--c-gray-400);
+            margin-top: 3px;
+        }
+
+        .broker-info {
+            text-align: left;
+            margin-bottom: 12px;
+        }
+
+        .broker-info-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--c-gray-200);
+            font-size: var(--fs-12);
+            color: var(--c-gray-600);
+        }
+
+        .broker-info-row:last-child {
+            border-bottom: none;
+        }
+
+        .broker-info-row i {
+            color: var(--c-gray-400);
+            width: 14px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .broker-info-row a {
+            color: var(--c-primary);
+            font-weight: var(--fw-7);
+        }
+
+        .contact-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .contact-btns .btn {
+            flex: 1;
+        }
+
+        /* Sidebar filter */
+        .sf-group {
+            margin-bottom: 12px;
+        }
+
+        .sf-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .sf-label {
+            font-size: var(--fs-10);
+            font-weight: var(--fw-6);
+            color: var(--c-gray-500);
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            margin-bottom: 6px;
+        }
+
+        .range-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .range-row span {
+            font-size: var(--fs-11);
+            color: var(--c-gray-400);
+            flex-shrink: 0;
+        }
+
+        .range-row .f-select {
+            flex: 1;
+        }
+
+        .hours-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .hours-table td {
+            padding: 8px 16px;
+            font-size: var(--fs-12);
+            border-bottom: 1px solid var(--c-gray-200);
+        }
+
+        .hours-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .hours-table .h-day {
+            color: var(--c-gray-600);
+        }
+
+        .hours-table .h-time {
+            text-align: right;
+            font-weight: var(--fw-6);
+            color: var(--c-gray-800);
+        }
+
+        /* ============================================================
+   NEWS CARD
+   ============================================================ */
+        .news-card {
+            background: var(--c-white);
+            border-radius: var(--radius-m);
+            border: var(--border);
+            box-shadow: var(--shadow-xs);
+            overflow: hidden;
+            cursor: pointer;
+            transition: box-shadow var(--transition), transform var(--transition);
+        }
+
+        .news-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .news-img {
+            position: relative;
+            padding-bottom: 55%;
+            overflow: hidden;
+            background: var(--c-gray-200);
+        }
+
+        .news-img .img-ph {
+            position: absolute;
+            inset: 0;
+        }
+
+        .news-img .img-ph img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .news-card:hover .img-ph img {
+            transform: scale(1.04);
+        }
+
+        .news-body {
+            padding: 12px;
+        }
+
+        .news-cat {
+            font-size: var(--fs-10);
+            font-weight: var(--fw-7);
+            color: var(--c-gray-500);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 5px;
+        }
+
+        .news-title {
+            font-size: var(--fs-13);
+            font-weight: var(--fw-6);
+            color: var(--c-gray-900);
+            line-height: 1.4;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-meta {
+            font-size: var(--fs-11);
+            color: var(--c-gray-400);
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ============================================================
+   WHY US
+   ============================================================ */
+        .why-section {
+            background: var(--c-white);
+            padding: 28px 0;
+            border-top: var(--border);
+            border-bottom: var(--border);
+        }
+
+        .why-card {
+            text-align: center;
+            padding: 20px 16px;
+        }
+
+        .why-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-l);
+            background: var(--c-gray-100);
+            border: 1px solid var(--c-gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: var(--c-primary);
+            margin: 0 auto 12px;
+        }
+
+        .why-title {
+            font-size: var(--fs-14);
+            font-weight: var(--fw-7);
+            color: var(--c-gray-900);
+            margin-bottom: 6px;
+        }
+
+        .why-desc {
+            font-size: var(--fs-12);
+            color: var(--c-gray-500);
+            line-height: 1.7;
+        }
+
+        /* ============================================================
+   CONTACT SECTION
+   ============================================================ */
+        .contact-section {
+            background: var(--c-gray-100);
+            padding: 28px 0;
+        }
+
+        .contact-form-box {
+            background: var(--c-white);
+            border-radius: var(--radius-m);
+            border: var(--border);
+            padding: 24px;
+            box-shadow: var(--shadow-xs);
+        }
+
+        .contact-form-title {
+            font-size: var(--fs-18);
+            font-weight: var(--fw-7);
+            color: var(--c-gray-900);
+            margin-bottom: 5px;
+        }
+
+        .contact-form-sub {
+            font-size: var(--fs-12);
+            color: var(--c-gray-500);
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .form-row .f-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        /* Map placeholder */
+        .map-ph {
+            height: 180px;
+            background: var(--c-gray-100);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .map-ph i {
+            font-size: 2rem;
+            color: var(--c-gray-400);
+            opacity: .5;
+        }
+
+        .map-ph span {
+            font-size: var(--fs-12);
+            color: var(--c-gray-500);
+        }
+
+        /* ============================================================
+   CTA BANNER
+   ============================================================ */
+        .cta-banner {
+            background: linear-gradient(135deg, var(--c-primary), var(--c-primary-dark));
+            padding: 40px 0;
+            text-align: center;
+            color: #fff;
+        }
+
+        .cta-title {
+            font-size: var(--fs-22);
+            font-weight: var(--fw-7);
+            margin-bottom: 8px;
+        }
+
+        .cta-sub {
+            font-size: var(--fs-14);
+            opacity: .85;
+            margin-bottom: 24px;
+        }
+
+        .cta-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* ============================================================
+   PAGINATION
+   ============================================================ */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            padding-top: 24px;
+        }
+
+        .page-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-s);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--fs-12);
+            font-weight: var(--fw-5);
+            border: 1px solid var(--c-gray-300);
+            background: var(--c-white);
+            cursor: pointer;
+            color: var(--c-gray-600);
+            transition: all var(--transition);
+        }
+
+        .page-btn:hover {
+            background: var(--c-gray-100);
+            border-color: var(--c-gray-400);
+            color: var(--c-gray-900);
+        }
+
+        .page-btn.is-active {
+            background: var(--c-primary);
+            border-color: var(--c-primary);
+            color: #fff;
+        }
+
+        .page-btn.is-disabled {
+            opacity: .4;
+            pointer-events: none;
+        }
+
+        /* ============================================================
+   FOOTER
+   ============================================================ */
+        .site-footer {
+            background: #222;
+            color: rgba(255, 255, 255, .65);
+            padding: 40px 0 0;
+        }
+
+        .footer-brand-name {
+            font-size: 18px;
+            font-weight: var(--fw-7);
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .footer-brand-name em {
+            font-style: normal;
+            color: var(--c-primary);
+        }
+
+        .footer-desc {
+            font-size: var(--fs-12);
+            line-height: 1.7;
+            opacity: .65;
+            margin-bottom: 16px;
+        }
+
+        .footer-head {
+            font-size: var(--fs-13);
+            font-weight: var(--fw-7);
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer-links a {
+            font-size: var(--fs-12);
+            color: rgba(255, 255, 255, .55);
+            transition: color var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--c-primary);
+        }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: var(--fs-12);
+            color: rgba(255, 255, 255, .55);
+        }
+
+        .footer-contact-item i {
+            color: var(--c-gray-400);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .social-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-s);
+            background: rgba(255, 255, 255, .1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: rgba(255, 255, 255, .6);
+            transition: all var(--transition);
+        }
+
+        .social-btn:hover {
+            background: var(--c-primary);
+            color: #fff;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, .1);
+            margin-top: 32px;
+            padding: 14px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: var(--fs-11);
+            color: rgba(255, 255, 255, .3);
+        }
+
+        .footer-bottom a {
+            color: rgba(255, 255, 255, .3);
+        }
+
+        .footer-bottom a:hover {
+            color: var(--c-primary);
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        /* ============================================================
+   STICKY MOBILE CONTACT BAR
+   ============================================================ */
+        .sticky-contact {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 900;
+            background: var(--c-white);
+            border-top: var(--border);
+            padding: 8px 12px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, .08);
+        }
+
+        .sticky-contact-inner {
+            display: flex;
+            gap: 8px;
+        }
+
+        .sticky-contact-inner .btn {
+            flex: 1;
+        }
+
+        /* ============================================================
+   BACK TO TOP
+   ============================================================ */
+        .back-top {
+            position: fixed;
+            bottom: 24px;
+            right: 16px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--c-gray-700);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition);
+            border: none;
+            z-index: 800;
+        }
+
+        .back-top.is-visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-top:hover {
+            background: var(--c-primary);
+            transform: translateY(-2px);
+        }
+
+        /* ============================================================
+   MOBILE DRAWER
+   ============================================================ */
+        .mobile-drawer {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+        }
+
+        .mobile-drawer.is-open {
+            display: flex;
+        }
+
+        .drawer-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+        }
+
+        .drawer-panel {
+            position: relative;
+            width: 280px;
+            height: 100%;
+            background: var(--c-white);
+            overflow-y: auto;
+            animation: slideIn .25s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        .drawer-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border-bottom: var(--border);
+        }
+
+        .drawer-close {
+            font-size: 18px;
+            color: var(--c-gray-500);
+        }
+
+        .drawer-search {
+            padding: 12px 16px;
+            border-bottom: var(--border);
+        }
+
+        .drawer-nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            font-size: var(--fs-14);
+            font-weight: var(--fw-5);
+            color: var(--c-gray-700);
+            border-bottom: 1px solid var(--c-gray-200);
+        }
+
+        .drawer-nav a i {
+            width: 18px;
+            color: var(--c-gray-400);
+        }
+
+        .drawer-nav a:hover {
+            color: var(--c-gray-900);
+            background: var(--c-gray-50);
+        }
+
+        .drawer-cta {
+            padding: 16px;
+        }
+
+        /* ============================================================
+   RESPONSIVE
+   ============================================================ */
+        @media (max-width: 960px) {
+            .page-sidebar {
+                display: none;
+            }
+
+            .subnav-item:nth-child(n+8) {
+                display: none;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .topbar {
+                display: none;
+            }
+
+            .navbar-search {
+                display: none;
+            }
+
+            .navbar-toggle {
+                display: flex;
+            }
+
+            .navbar-phone {
+                display: none;
+            }
+
+            .subnav {
+                display: none;
+            }
+
+            .sticky-contact {
+                display: block;
+            }
+
+            .search-form-row {
+                flex-direction: column;
+            }
+
+            .search-field,
+            .search-field-main {
+                min-width: 100%;
+            }
+
+            .cta-title {
+                font-size: var(--fs-18);
+            }
+
+            .back-top {
+                bottom: 70px;
+            }
+
+            .contact-btns {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cat-item {
+                min-width: 62px;
+                padding: 8px 10px;
+            }
+
+            .cat-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+
+            .vip-img {
+                width: 110px;
+            }
+
+            .form-row .f-group {
+                min-width: 100%;
+            }
+        }
+
+        /* ============================================================
+   FIX: Container bên trong header cần height 100%
+   để uk-flex uk-flex-middle (align-items:center) hoạt động đúng
+   ============================================================ */
+        .topbar .uk-container,
+        .navbar .uk-container,
+        .subnav .uk-container {
+            height: 100%;
+            width: 100%;
+        }
+
+
+        /* ============================================================
+   MISC CLASSES bổ sung (không inline HTML)
+   ============================================================ */
+
+        /* Topbar spacing */
+        .topbar-inner {
+            height: 100%;
+        }
+
+        .topbar-left {
+            gap: 20px;
+        }
+
+        .topbar-right {
+            gap: 20px;
+        }
+
+        .topbar-item {
+            gap: 5px;
+        }
+
+        /* Navbar spacing */
+        .navbar-inner {
+            gap: 16px;
+        }
+
+        .navbar-logo {
+            gap: 8px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .navbar-actions {
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Search submit button */
+        .search-submit-btn {
+            height: 38px;
+            padding: 0 20px;
+            flex-shrink: 0;
+        }
+
+        /* Prop grid row-gap */
+        .prop-grid {
+            row-gap: 14px;
+        }
+
+        /* Sidebar pills */
+        .sf-pills {
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        /* Contact page */
+        .contact-sub-label {
+            font-size: var(--fs-11);
+            color: var(--c-gray-500);
+        }
+
+        .contact-hotline {
+            font-size: 18px;
+            font-weight: var(--fw-7);
+            color: var(--c-primary);
+        }
+
+        /* Zalo button */
+        .btn-zalo {
+            background: #0180c7;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-zalo:hover {
+            background: #0166a0;
+            color: #fff;
+        }
+
+        /* CTA ghost button */
+        .btn-cta-ghost {
+            background: rgba(255, 255, 255, .15);
+            color: #fff;
+            border: 1.5px solid rgba(255, 255, 255, .5);
+        }
+
+        .btn-cta-ghost:hover {
+            background: rgba(255, 255, 255, .25);
+            color: #fff;
+        }
+
+        /* News section padding */
+        .news-section {
+            padding: 28px 0;
+        }
+
+        /* Footer */
+        .footer-tel {
+            color: rgba(255, 255, 255, .55);
+        }
+
+        .footer-tel:hover {
+            color: var(--c-primary);
+        }
+
+        .footer-zalo {
+            font-size: 11px;
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            gap: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ============================================================
+     HEADER STICKY
+     ============================================================ -->
+    <header class="site-header" id="site-header">
+
+        <!-- Topbar cam -->
+        <div class="topbar">
+            <div class="uk-container uk-container-center">
+                <div class="uk-flex uk-flex-middle uk-flex-between topbar-inner">
+                    <div class="uk-flex uk-flex-middle topbar-left">
+                        <span class="uk-flex uk-flex-middle topbar-item">
+                            <i class="fas fa-phone-alt"></i>
+                            Hotline: <a href="tel:0909999888"><strong>0909 999 888</strong></a>
+                        </span>
+                        <span class="uk-flex uk-flex-middle topbar-item">
+                            <i class="fas fa-clock"></i>
+                            Thứ 2 – CN: 8:00 – 20:00
+                        </span>
+                    </div>
+                    <div class="uk-flex uk-flex-middle topbar-right">
+                        <span class="uk-flex uk-flex-middle topbar-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Phục vụ TP.HCM &amp; vùng lân cận
+                        </span>
+                        <span class="uk-flex uk-flex-middle topbar-item">
+                            <i class="fas fa-certificate"></i>
+                            Chứng chỉ hành nghề số: 01/HN-BĐS
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navbar chính -->
+        <nav class="navbar">
+            <div class="uk-container uk-container-center">
+                <div class="uk-flex uk-flex-middle navbar-inner">
+
+                    <!-- Logo -->
+                    <a href="index.html" class="uk-flex uk-flex-middle navbar-logo">
+                        <div class="logo-icon">B</div>
+                        <span class="logo-name">BĐS<em>Pro</em></span>
+                    </a>
+
+                    <!-- Search bar -->
+                    <div class="navbar-search">
+                        <input type="text" placeholder="Tìm kiếm nhà, đất, căn hộ, dự án..." />
+                        <button class="navbar-search-btn" aria-label="Tìm kiếm">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="uk-flex uk-flex-middle uk-margin-auto-left navbar-actions">
+                        <a href="tel:0909999888" class="navbar-phone">
+                            <i class="fas fa-phone-alt"></i>
+                            <span data-broker-phone>0909 999 888</span>
+                        </a>
+                        <a href="#lien-he" class="btn btn-primary btn-sm">
+                            <i class="fas fa-comments"></i> Tư vấn ngay
+                        </a>
+                    </div>
+
+                    <!-- Mobile hamburger -->
+                    <button class="navbar-toggle" id="nav-toggle" aria-label="Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+
+                </div>
+            </div>
+        </nav>
+
+        <!-- Subnav – category tabs -->
+        <div class="subnav">
+            <div class="uk-container uk-container-center">
+                <ul class="subnav-list uk-flex uk-flex-middle">
+                    <li class="subnav-item is-active"><a href="#"><i class="fas fa-th-large"></i> Tất cả</a></li>
+                    <li class="subnav-item"><a href="#"><i class="fas fa-building"></i> Căn hộ chung cư</a></li>
+                    <li class="subnav-item"><a href="#"><i class="fas fa-home"></i> Nhà riêng</a></li>
+                    <li class="subnav-item"><a href="#"><i class="fas fa-warehouse"></i> Nhà mặt phố</a></li>
+                    <li class="subnav-item"><a href="#"><i class="fas fa-map"></i> Đất nền</a></li>
+                    <li class="subnav-item"><a href="#"><i class="fas fa-swimming-pool"></i> Biệt thự</a></li>
+                    <li class="subnav-item"><a href="#"><i class="fas fa-key"></i> Cho thuê</a></li>
+                    <li class="subnav-item"><a href="#"><i class="fas fa-store"></i> Mặt bằng</a></li>
+                    <li class="subnav-item"><a href="#"><i class="fas fa-city"></i> Dự án</a></li>
+                    <li class="subnav-item"><a href="#lien-he"><i class="fas fa-phone"></i> Liên hệ</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </header>
+
+
+    <!-- Mobile Drawer -->
+    <div class="mobile-drawer" id="mobile-drawer">
+        <div class="drawer-overlay" id="drawer-overlay"></div>
+        <div class="drawer-panel">
+            <div class="drawer-head">
+                <span class="logo-name">BĐS<em>Pro</em></span>
+                <button class="drawer-close" id="drawer-close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="drawer-search">
+                <div class="f-wrap">
+                    <i class="fas fa-search f-icon-left"></i>
+                    <input type="text" class="f-input" placeholder="Tìm kiếm BĐS..." />
+                </div>
+            </div>
+            <nav class="drawer-nav">
+                <a href="#"><i class="fas fa-th-large"></i> Tất cả BĐS</a>
+                <a href="#"><i class="fas fa-tags"></i> Mua bán BĐS</a>
+                <a href="#"><i class="fas fa-key"></i> Cho thuê BĐS</a>
+                <a href="#"><i class="fas fa-building"></i> Căn hộ chung cư</a>
+                <a href="#"><i class="fas fa-home"></i> Nhà riêng</a>
+                <a href="#"><i class="fas fa-map"></i> Đất nền</a>
+                <a href="#"><i class="fas fa-swimming-pool"></i> Biệt thự</a>
+                <a href="#"><i class="fas fa-store"></i> Mặt bằng</a>
+                <a href="#"><i class="fas fa-city"></i> Dự án mới</a>
+                <a href="#"><i class="fas fa-newspaper"></i> Tin tức</a>
+                <a href="#lien-he"><i class="fas fa-phone-alt"></i> Liên hệ tư vấn</a>
+            </nav>
+            <div class="drawer-cta">
+                <a href="tel:0909999888" class="btn btn-primary btn-block btn-lg">
+                    <i class="fas fa-phone-alt"></i> Gọi ngay: 0909 999 888
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+     SEARCH SECTION (full-width)
+     ============================================================ -->
+    <div class="search-section">
+        <div class="uk-container uk-container-center">
+
+            <div class="search-tabs">
+                <button class="search-tab is-active" data-tab="buy">🏠 Mua bán</button>
+                <button class="search-tab" data-tab="rent">🔑 Cho thuê</button>
+                <button class="search-tab" data-tab="project">🏗️ Dự án</button>
+            </div>
+
+            <div class="search-form-row">
+                <div class="search-field search-field-main">
+                    <div class="f-wrap">
+                        <i class="fas fa-search f-icon-left"></i>
+                        <input type="text" class="f-input" placeholder="Nhập tên đường, quận, dự án hoặc từ khóa..." />
+                    </div>
+                </div>
+                <div class="search-field">
+                    <div class="f-wrap">
+                        <i class="fas fa-map-marker-alt f-icon-left"></i>
+                        <select class="f-select">
+                            <option value="">Khu vực</option>
+                            <option>Quận 1</option>
+                            <option>Quận 2</option>
+                            <option>Quận 3</option>
+                            <option>Quận 4</option>
+                            <option>Quận 5</option>
+                            <option>Quận 6</option>
+                            <option>Quận 7</option>
+                            <option>Quận 8</option>
+                            <option>Quận 9 (Thủ Đức)</option>
+                            <option>Quận 10</option>
+                            <option>Quận 11</option>
+                            <option>Quận 12</option>
+                            <option>Bình Thạnh</option>
+                            <option>Gò Vấp</option>
+                            <option>Tân Bình</option>
+                            <option>Tân Phú</option>
+                            <option>Phú Nhuận</option>
+                            <option>Bình Chánh</option>
+                            <option>Hóc Môn</option>
+                            <option>Bình Dương</option>
+                            <option>Đồng Nai</option>
+                        </select>
+                        <i class="fas fa-chevron-down f-icon-right"></i>
+                    </div>
+                </div>
+                <div class="search-field">
+                    <div class="f-wrap">
+                        <i class="fas fa-home f-icon-left"></i>
+                        <select class="f-select">
+                            <option value="">Loại BĐS</option>
+                            <option>Căn hộ chung cư</option>
+                            <option>Nhà riêng</option>
+                            <option>Nhà mặt phố</option>
+                            <option>Đất nền</option>
+                            <option>Biệt thự, villa</option>
+                            <option>Mặt bằng kinh doanh</option>
+                            <option>Văn phòng</option>
+                        </select>
+                        <i class="fas fa-chevron-down f-icon-right"></i>
+                    </div>
+                </div>
+                <div class="search-field">
+                    <div class="f-wrap">
+                        <i class="fas fa-tag f-icon-left"></i>
+                        <select class="f-select">
+                            <option value="">Mức giá</option>
+                            <option>Dưới 1 tỷ</option>
+                            <option>1 – 2 tỷ</option>
+                            <option>2 – 3 tỷ</option>
+                            <option>3 – 5 tỷ</option>
+                            <option>5 – 10 tỷ</option>
+                            <option>Trên 10 tỷ</option>
+                        </select>
+                        <i class="fas fa-chevron-down f-icon-right"></i>
+                    </div>
+                </div>
+                <button class="btn btn-primary search-submit-btn">
+                    <i class="fas fa-search"></i> Tìm kiếm
+                </button>
+            </div>
+
+            <div class="search-advanced">
+                <a href="#"><i class="fas fa-sliders-h"></i> Tìm kiếm nâng cao</a>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+     CATEGORY ICON GRID (full-width)
+     ============================================================ -->
+    <div class="cat-section">
+        <div class="uk-container uk-container-center">
+            <div class="cat-grid">
+                <a href="#" class="cat-item is-active">
+                    <div class="cat-icon"><i class="fas fa-th-large"></i></div>
+                    <span class="cat-label">Tất cả</span>
+                </a>
+                <a href="#" class="cat-item">
+                    <div class="cat-icon"><i class="fas fa-building"></i></div>
+                    <span class="cat-label">Chung cư</span>
+                </a>
+                <a href="#" class="cat-item">
+                    <div class="cat-icon"><i class="fas fa-home"></i></div>
+                    <span class="cat-label">Nhà riêng</span>
+                </a>
+                <a href="#" class="cat-item">
+                    <div class="cat-icon"><i class="fas fa-warehouse"></i></div>
+                    <span class="cat-label">Mặt phố</span>
+                </a>
+                <a href="#" class="cat-item">
+                    <div class="cat-icon"><i class="fas fa-map"></i></div>
+                    <span class="cat-label">Đất nền</span>
+                </a>
+                <a href="#" class="cat-item">
+                    <div class="cat-icon"><i class="fas fa-swimming-pool"></i></div>
+                    <span class="cat-label">Biệt thự</span>
+                </a>
+                <a href="#" class="cat-item">
+                    <div class="cat-icon"><i class="fas fa-key"></i></div>
+                    <span class="cat-label">Cho thuê</span>
+                </a>
+                <a href="#" class="cat-item">
+                    <div class="cat-icon"><i class="fas fa-store"></i></div>
+                    <span class="cat-label">Mặt bằng</span>
+                </a>
+                <a href="#" class="cat-item">
+                    <div class="cat-icon"><i class="fas fa-city"></i></div>
+                    <span class="cat-label">Dự án</span>
+                </a>
+                <a href="#" class="cat-item">
+                    <div class="cat-icon"><i class="fas fa-industry"></i></div>
+                    <span class="cat-label">Kho xưởng</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+     MAIN CONTENT – 1 container duy nhất bọc toàn bộ nội dung
+     ============================================================ -->
+    <div class="page-wrap">
+        <div class="uk-container uk-container-center">
+            <div class="page-layout">
+
+                <!-- ── MAIN ── -->
+                <main class="page-main">
+
+                    <!-- VIP -->
+                    <section class="uk-margin-medium-bottom">
+                        <div class="sec-head">
+                            <h2 class="sec-title">
+                                <span class="sec-title-bar"></span>
+                                <i class="fas fa-star uk-text-warning"></i>
+                                Tin VIP – Nổi bật
+                            </h2>
+                            <a href="#" class="sec-link">Xem tất cả <i class="fas fa-chevron-right"></i></a>
+                        </div>
+                        <div class="uk-grid uk-grid-small" data-uk-grid id="vip-grid"></div>
+                    </section>
+
+                    <!-- Mua bán -->
+                    <section class="uk-margin-medium-bottom" id="mua-ban">
+                        <div class="sec-head">
+                            <h2 class="sec-title">
+                                <span class="sec-title-bar"></span>
+                                BĐS Mua Bán Mới Nhất
+                            </h2>
+                            <a href="#" class="sec-link">Xem tất cả <i class="fas fa-chevron-right"></i></a>
+                        </div>
+
+                        <div class="filter-row">
+                            <span class="filter-label">Lọc:</span>
+                            <div class="filter-tags" data-filter-group="buy">
+                                <button class="tag-pill is-active" data-filter="all" data-target="buy-grid">Tất
+                                    cả</button>
+                                <button class="tag-pill" data-filter="can-ho" data-target="buy-grid">Căn hộ</button>
+                                <button class="tag-pill" data-filter="nha-rieng" data-target="buy-grid">Nhà
+                                    riêng</button>
+                                <button class="tag-pill" data-filter="dat-nen" data-target="buy-grid">Đất nền</button>
+                                <button class="tag-pill" data-filter="biet-thu" data-target="buy-grid">Biệt thự</button>
+                            </div>
+                        </div>
+
+                        <div class="list-meta">
+                            <span class="list-count">Có <strong>350+</strong> tin đăng mua bán</span>
+                            <div class="sort-row">
+                                <span class="sort-label">Sắp xếp:</span>
+                                <button class="sort-btn is-active">Mới nhất</button>
+                                <button class="sort-btn">Giá tăng</button>
+                                <button class="sort-btn">Giá giảm</button>
+                            </div>
+                        </div>
+
+                        <!-- 4 cột lg / 3 md / 2 sm -->
+                        <div class="uk-grid uk-grid-small prop-grid" data-uk-grid-match id="buy-grid"></div>
+
+                        <div class="uk-text-center uk-margin-medium-top">
+                            <button class="btn btn-ghost" id="load-more-btn">
+                                <i class="fas fa-chevron-down"></i> Xem thêm tin đăng
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Cho thuê -->
+                    <section class="uk-margin-medium-bottom" id="cho-thue">
+                        <div class="sec-head">
+                            <h2 class="sec-title">
+                                <span class="sec-title-bar"></span>
+                                BĐS Cho Thuê Mới Nhất
+                            </h2>
+                            <a href="#" class="sec-link">Xem tất cả <i class="fas fa-chevron-right"></i></a>
+                        </div>
+
+                        <div class="filter-row">
+                            <span class="filter-label">Lọc:</span>
+                            <div class="filter-tags" data-filter-group="rent">
+                                <button class="tag-pill is-active" data-filter="all" data-target="rent-grid">Tất
+                                    cả</button>
+                                <button class="tag-pill" data-filter="can-ho" data-target="rent-grid">Căn hộ</button>
+                                <button class="tag-pill" data-filter="nha-rieng" data-target="rent-grid">Nhà
+                                    riêng</button>
+                                <button class="tag-pill" data-filter="mat-bang" data-target="rent-grid">Mặt
+                                    bằng</button>
+                                <button class="tag-pill" data-filter="van-phong" data-target="rent-grid">Văn
+                                    phòng</button>
+                            </div>
+                        </div>
+
+                        <div class="list-meta">
+                            <span class="list-count">Có <strong>120+</strong> tin đăng cho thuê</span>
+                            <div class="sort-row">
+                                <span class="sort-label">Sắp xếp:</span>
+                                <button class="sort-btn is-active">Mới nhất</button>
+                                <button class="sort-btn">Giá tăng</button>
+                                <button class="sort-btn">Giá giảm</button>
+                            </div>
+                        </div>
+
+                        <div class="uk-grid uk-grid-small prop-grid" data-uk-grid-match id="rent-grid"></div>
+                    </section>
+
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <button class="page-btn is-disabled"><i class="fas fa-chevron-left"></i></button>
+                        <button class="page-btn is-active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn">4</button>
+                        <button class="page-btn">5</button>
+                        <span class="uk-text-muted uk-padding-small">...</span>
+                        <button class="page-btn">18</button>
+                        <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+
+                </main><!-- /page-main -->
+
+
+                <!-- ── SIDEBAR ── -->
+                <aside class="page-sidebar">
+
+                    <!-- Broker Profile -->
+                    <div class="sidebar-box">
+                        <div class="sidebar-box-head">
+                            <i class="fas fa-user-tie"></i> Thông tin môi giới
+                        </div>
+                        <div class="sidebar-box-body">
+                            <div class="broker-profile uk-text-center">
+                                <div class="broker-ava-lg">
+                                    <span data-broker-initials>NT</span>
+                                </div>
+                                <div class="broker-name" data-broker-name>Nguyễn Thị Thanh</div>
+                                <div class="broker-role">
+                                    <span class="badge badge-featured">VIP</span>
+                                    Chuyên viên BĐS cao cấp
+                                </div>
+
+                                <div class="broker-stats-row">
+                                    <div class="uk-text-center">
+                                        <div class="bs-num" data-broker-stat-listings>350+</div>
+                                        <div class="bs-lbl">Tin đăng</div>
+                                    </div>
+                                    <div class="uk-text-center">
+                                        <div class="bs-num" data-broker-stat-deals>1.2k+</div>
+                                        <div class="bs-lbl">Giao dịch</div>
+                                    </div>
+                                    <div class="uk-text-center">
+                                        <div class="bs-num" data-broker-stat-years>10+</div>
+                                        <div class="bs-lbl">Năm KN</div>
+                                    </div>
+                                </div>
+
+                                <div class="broker-info uk-text-left">
+                                    <div class="broker-info-row">
+                                        <i class="fas fa-phone-alt"></i>
+                                        <a href="tel:0909999888" data-broker-phone>0909 999 888</a>
+                                    </div>
+                                    <div class="broker-info-row">
+                                        <i class="fas fa-envelope"></i>
+                                        <span>thanh.bds@gmail.com</span>
+                                    </div>
+                                    <div class="broker-info-row">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>123 Nguyễn Đình Chiểu, Q.3, TP.HCM</span>
+                                    </div>
+                                    <div class="broker-info-row">
+                                        <i class="fas fa-certificate"></i>
+                                        <span>Chứng chỉ HN: 01/HN-BĐS</span>
+                                    </div>
+                                </div>
+
+                                <div class="contact-btns">
+                                    <a href="tel:0909999888" class="btn btn-primary btn-block">
+                                        <i class="fas fa-phone-alt"></i> Gọi ngay
+                                    </a>
+                                    <a href="#lien-he" class="btn btn-outline btn-block">
+                                        <i class="fas fa-comments"></i> Nhắn tin
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bộ lọc nhanh -->
+                    <div class="sidebar-box">
+                        <div class="sidebar-box-head">
+                            <i class="fas fa-sliders-h"></i> Lọc BĐS nhanh
+                        </div>
+                        <div class="sidebar-box-body">
+                            <div class="sf-group">
+                                <div class="sf-label">Loại giao dịch</div>
+                                <div class="f-wrap">
+                                    <select class="f-select">
+                                        <option>Tất cả</option>
+                                        <option>Mua bán</option>
+                                        <option>Cho thuê</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down f-icon-right"></i>
+                                </div>
+                            </div>
+                            <div class="sf-group">
+                                <div class="sf-label">Loại BĐS</div>
+                                <div class="f-wrap">
+                                    <select class="f-select">
+                                        <option>Tất cả loại</option>
+                                        <option>Căn hộ chung cư</option>
+                                        <option>Nhà riêng</option>
+                                        <option>Nhà mặt phố</option>
+                                        <option>Đất nền</option>
+                                        <option>Biệt thự</option>
+                                        <option>Mặt bằng</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down f-icon-right"></i>
+                                </div>
+                            </div>
+                            <div class="sf-group">
+                                <div class="sf-label">Khu vực</div>
+                                <div class="f-wrap">
+                                    <select class="f-select">
+                                        <option>Toàn TP.HCM</option>
+                                        <option>Quận 1</option>
+                                        <option>Quận 2</option>
+                                        <option>Quận 3</option>
+                                        <option>Quận 7</option>
+                                        <option>Bình Thạnh</option>
+                                        <option>Thủ Đức</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down f-icon-right"></i>
+                                </div>
+                            </div>
+                            <div class="sf-group">
+                                <div class="sf-label">Khoảng giá</div>
+                                <div class="range-row">
+                                    <select class="f-select">
+                                        <option>Từ</option>
+                                        <option>500 triệu</option>
+                                        <option>1 tỷ</option>
+                                        <option>2 tỷ</option>
+                                    </select>
+                                    <span>–</span>
+                                    <select class="f-select">
+                                        <option>Đến</option>
+                                        <option>1 tỷ</option>
+                                        <option>2 tỷ</option>
+                                        <option>5 tỷ</option>
+                                        <option>10 tỷ+</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="sf-group">
+                                <div class="sf-label">Diện tích (m²)</div>
+                                <div class="range-row">
+                                    <select class="f-select">
+                                        <option>Từ</option>
+                                        <option>20</option>
+                                        <option>30</option>
+                                        <option>50</option>
+                                        <option>80</option>
+                                    </select>
+                                    <span>–</span>
+                                    <select class="f-select">
+                                        <option>Đến</option>
+                                        <option>50</option>
+                                        <option>80</option>
+                                        <option>100</option>
+                                        <option>200</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="sf-group">
+                                <div class="sf-label">Số phòng ngủ</div>
+                                <div class="uk-flex sf-pills">
+                                    <button class="tag-pill is-active">Tất cả</button>
+                                    <button class="tag-pill">1 PN</button>
+                                    <button class="tag-pill">2 PN</button>
+                                    <button class="tag-pill">3 PN</button>
+                                    <button class="tag-pill">4+</button>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary btn-block uk-margin-small-top">
+                                <i class="fas fa-search"></i> Áp dụng lọc
+                            </button>
+                            <button class="btn btn-ghost btn-block uk-margin-small-top uk-text-small">
+                                Xóa bộ lọc
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Giờ làm việc -->
+                    <div class="sidebar-box">
+                        <div class="sidebar-box-head">
+                            <i class="fas fa-clock"></i> Giờ làm việc
+                        </div>
+                        <table class="hours-table">
+                            <tr>
+                                <td class="h-day">Thứ 2 – Thứ 6</td>
+                                <td class="h-time">8:00 – 20:00</td>
+                            </tr>
+                            <tr>
+                                <td class="h-day">Thứ 7</td>
+                                <td class="h-time">8:00 – 18:00</td>
+                            </tr>
+                            <tr>
+                                <td class="h-day">Chủ nhật</td>
+                                <td class="h-time">9:00 – 15:00</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </aside>
+
+            </div><!-- /page-layout -->
+        </div><!-- /uk-container  ← container duy nhất bọc main content -->
+    </div><!-- /page-wrap -->
+
+
+    <!-- ============================================================
+     WHY US (full-width, nền trắng)
+     ============================================================ -->
+    <div class="why-section">
+        <div class="uk-container uk-container-center">
+            <div class="sec-head uk-margin-medium-bottom">
+                <h2 class="sec-title">
+                    <span class="sec-title-bar"></span>
+                    Tại Sao Chọn Chúng Tôi
+                </h2>
+            </div>
+            <div class="uk-grid uk-grid-medium" data-uk-grid-match>
+                <div class="uk-width-1-2 uk-width-1-4@m">
+                    <div class="why-card">
+                        <div class="why-icon"><i class="fas fa-shield-alt"></i></div>
+                        <div class="why-title">Thông tin xác thực</div>
+                        <p class="why-desc">Mỗi BĐS được kiểm tra pháp lý kỹ càng trước khi đăng tải.</p>
+                    </div>
+                </div>
+                <div class="uk-width-1-2 uk-width-1-4@m">
+                    <div class="why-card">
+                        <div class="why-icon"><i class="fas fa-headset"></i></div>
+                        <div class="why-title">Tư vấn 24/7</div>
+                        <p class="why-desc">Đội ngũ chuyên gia sẵn sàng hỗ trợ bất kể thời điểm nào.</p>
+                    </div>
+                </div>
+                <div class="uk-width-1-2 uk-width-1-4@m">
+                    <div class="why-card">
+                        <div class="why-icon"><i class="fas fa-handshake"></i></div>
+                        <div class="why-title">Hỗ trợ pháp lý</div>
+                        <p class="why-desc">Hỗ trợ toàn bộ thủ tục công chứng, sang tên từ A đến Z.</p>
+                    </div>
+                </div>
+                <div class="uk-width-1-2 uk-width-1-4@m">
+                    <div class="why-card">
+                        <div class="why-icon"><i class="fas fa-percent"></i></div>
+                        <div class="why-title">Phí minh bạch</div>
+                        <p class="why-desc">Cam kết phí hoa hồng rõ ràng, không phát sinh chi phí ẩn.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+     LIÊN HỆ
+     ============================================================ -->
+    <section class="contact-section" id="lien-he">
+        <div class="uk-container uk-container-center">
+            <div class="sec-head uk-margin-medium-bottom">
+                <h2 class="sec-title">
+                    <span class="sec-title-bar"></span>
+                    Gửi Yêu Cầu Tư Vấn
+                </h2>
+            </div>
+            <div class="uk-grid uk-grid-large" data-uk-grid>
+
+                <div class="uk-width-1-1 uk-width-2-3@m">
+                    <div class="contact-form-box">
+                        <div class="contact-form-title">📋 Thông tin liên hệ</div>
+                        <p class="contact-form-sub">
+                            Điền thông tin bên dưới – chúng tôi phản hồi trong vòng
+                            <strong>15 phút</strong> (trong giờ làm việc).
+                        </p>
+                        <div class="form-row uk-margin-small-bottom">
+                            <div class="f-group">
+                                <label class="f-label">Họ và tên *</label>
+                                <input type="text" class="f-input" placeholder="VD: Nguyễn Văn A" />
+                            </div>
+                            <div class="f-group">
+                                <label class="f-label">Số điện thoại *</label>
+                                <input type="tel" class="f-input" placeholder="VD: 0901 234 567" />
+                            </div>
+                        </div>
+                        <div class="form-row uk-margin-small-bottom">
+                            <div class="f-group">
+                                <label class="f-label">Email</label>
+                                <input type="email" class="f-input" placeholder="email@example.com" />
+                            </div>
+                            <div class="f-group">
+                                <label class="f-label">Nhu cầu</label>
+                                <div class="f-wrap">
+                                    <select class="f-select">
+                                        <option>Mua bất động sản</option>
+                                        <option>Thuê bất động sản</option>
+                                        <option>Tư vấn đầu tư</option>
+                                        <option>Định giá BĐS</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down f-icon-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row uk-margin-small-bottom">
+                            <div class="f-group">
+                                <label class="f-label">Loại BĐS</label>
+                                <div class="f-wrap">
+                                    <select class="f-select">
+                                        <option>Căn hộ chung cư</option>
+                                        <option>Nhà riêng</option>
+                                        <option>Đất nền</option>
+                                        <option>Biệt thự</option>
+                                        <option>Mặt bằng</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down f-icon-right"></i>
+                                </div>
+                            </div>
+                            <div class="f-group">
+                                <label class="f-label">Ngân sách</label>
+                                <div class="f-wrap">
+                                    <select class="f-select">
+                                        <option>Dưới 1 tỷ</option>
+                                        <option>1 – 3 tỷ</option>
+                                        <option>3 – 5 tỷ</option>
+                                        <option>5 – 10 tỷ</option>
+                                        <option>Trên 10 tỷ</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down f-icon-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="f-group uk-margin-small-bottom">
+                            <label class="f-label">Khu vực quan tâm</label>
+                            <input type="text" class="f-input" placeholder="VD: Quận 7, Bình Chánh, Thủ Đức..." />
+                        </div>
+                        <div class="f-group uk-margin-small-bottom">
+                            <label class="f-label">Nội dung thêm</label>
+                            <textarea class="f-input is-textarea" rows="4"
+                                placeholder="Mô tả thêm yêu cầu của bạn..."></textarea>
+                        </div>
+                        <button class="btn btn-primary btn-lg btn-block" id="form-submit-btn">
+                            <i class="fas fa-paper-plane"></i> Gửi yêu cầu tư vấn
+                        </button>
+                    </div>
+                </div>
+
+                <div class="uk-width-1-1 uk-width-1-3@m">
+                    <div class="sidebar-box">
+                        <div class="sidebar-box-head">
+                            <i class="fas fa-address-card"></i> Thông tin liên hệ
+                        </div>
+                        <div class="sidebar-box-body">
+                            <div class="broker-info">
+                                <div class="broker-info-row">
+                                    <i class="fas fa-phone-alt"></i>
+                                    <div>
+                                        <div class="uk-text-small contact-sub-label">Hotline tư vấn</div>
+                                        <a href="tel:0909999888" class="contact-hotline">0909 999 888</a>
+                                    </div>
+                                </div>
+                                <div class="broker-info-row">
+                                    <i class="fas fa-envelope"></i>
+                                    <div>
+                                        <div class="uk-text-small contact-sub-label">Email</div>
+                                        <span>thanh.bds@gmail.com</span>
+                                    </div>
+                                </div>
+                                <div class="broker-info-row">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <div>
+                                        <div class="uk-text-small contact-sub-label">Địa chỉ văn phòng</div>
+                                        <span>123 Nguyễn Đình Chiểu, P.5, Q.3, TP.HCM</span>
+                                    </div>
+                                </div>
+                                <div class="broker-info-row">
+                                    <i class="fas fa-clock"></i>
+                                    <div>
+                                        <div class="uk-text-small contact-sub-label">Giờ làm việc</div>
+                                        <span>T2 – T7: 8:00 – 20:00<br>CN: 9:00 – 15:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="tel:0909999888" class="btn btn-primary btn-block uk-margin-small-bottom">
+                                <i class="fas fa-phone-alt"></i> Gọi điện thoại
+                            </a>
+                            <a href="https://zalo.me/0909999888" class="btn btn-zalo btn-block">
+                                <span class="uk-text-bold">Z</span> Chat Zalo
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-box">
+                        <div class="sidebar-box-head">
+                            <i class="fas fa-map-marked-alt"></i> Bản đồ
+                        </div>
+                        <div class="map-ph">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>123 Nguyễn Đình Chiểu, Q.3</span>
+                            <a href="https://maps.google.com" target="_blank" class="btn btn-ghost btn-sm">
+                                <i class="fas fa-external-link-alt"></i> Google Maps
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+     TIN TỨC
+     ============================================================ -->
+    <div class="uk-background-default news-section">
+        <div class="uk-container uk-container-center">
+            <div class="sec-head uk-margin-bottom">
+                <h2 class="sec-title">
+                    <span class="sec-title-bar"></span>
+                    Tin Tức &amp; Kiến Thức BĐS
+                </h2>
+                <a href="#" class="sec-link">Xem tất cả <i class="fas fa-chevron-right"></i></a>
+            </div>
+            <div class="uk-grid uk-grid-small" data-uk-grid-match id="news-grid"></div>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+     CTA BANNER
+     ============================================================ -->
+    <div class="cta-banner">
+        <div class="uk-container uk-container-center">
+            <div class="cta-title">Bạn đang tìm kiếm BĐS phù hợp?</div>
+            <p class="cta-sub">Liên hệ ngay để được tư vấn miễn phí – Chuyên gia sẵn sàng hỗ trợ 24/7</p>
+            <div class="cta-actions">
+                <a href="tel:0909999888" class="btn btn-white btn-lg">
+                    <i class="fas fa-phone-alt"></i> Gọi: 0909 999 888
+                </a>
+                <a href="#lien-he" class="btn btn-cta-ghost btn-lg">
+                    <i class="fas fa-comments"></i> Nhắn tin tư vấn
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+     FOOTER
+     ============================================================ -->
+    <footer class="site-footer">
+        <div class="uk-container uk-container-center">
+            <div class="uk-grid uk-grid-large" data-uk-grid>
+
+                <div class="uk-width-1-1 uk-width-1-4@m">
+                    <div class="footer-brand-name">BĐS<em>Pro</em></div>
+                    <p class="footer-desc">Chuyên tư vấn mua bán, cho thuê BĐS tại TP.HCM và vùng lân cận. Hơn 10 năm
+                        kinh nghiệm, 1.200+ giao dịch thành công.</p>
+                    <div class="footer-socials">
+                        <a href="#" class="social-btn" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-btn" title="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-btn" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="social-btn" title="Zalo"><span class="uk-text-bold footer-zalo">Z</span></a>
+                    </div>
+                </div>
+
+                <div class="uk-width-1-2 uk-width-1-8@m">
+                    <div class="footer-head">Mua Bán</div>
+                    <ul class="footer-links">
+                        <li><a href="#">Căn hộ chung cư</a></li>
+                        <li><a href="#">Nhà riêng</a></li>
+                        <li><a href="#">Nhà mặt phố</a></li>
+                        <li><a href="#">Đất nền</a></li>
+                        <li><a href="#">Biệt thự villa</a></li>
+                        <li><a href="#">Dự án mới</a></li>
+                    </ul>
+                </div>
+
+                <div class="uk-width-1-2 uk-width-1-8@m">
+                    <div class="footer-head">Cho Thuê</div>
+                    <ul class="footer-links">
+                        <li><a href="#">Thuê căn hộ</a></li>
+                        <li><a href="#">Thuê nhà riêng</a></li>
+                        <li><a href="#">Thuê mặt bằng</a></li>
+                        <li><a href="#">Thuê văn phòng</a></li>
+                        <li><a href="#">Thuê kho xưởng</a></li>
+                    </ul>
+                </div>
+
+                <div class="uk-width-1-2 uk-width-1-8@m">
+                    <div class="footer-head">Khu Vực</div>
+                    <ul class="footer-links">
+                        <li><a href="#">BĐS Quận 1</a></li>
+                        <li><a href="#">BĐS Quận 7</a></li>
+                        <li><a href="#">BĐS Thủ Đức</a></li>
+                        <li><a href="#">BĐS Bình Thạnh</a></li>
+                        <li><a href="#">BĐS Bình Chánh</a></li>
+                        <li><a href="#">BĐS Bình Dương</a></li>
+                    </ul>
+                </div>
+
+                <div class="uk-width-1-2 uk-width-1-4@m">
+                    <div class="footer-head">Liên Hệ</div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>123 Nguyễn Đình Chiểu, P.5, Q.3, TP.HCM</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <a href="tel:0909999888" class="footer-tel">0909 999 888</a>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:info@bdspro.vn" class="footer-tel">info@bdspro.vn</a>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-certificate"></i>
+                        <span>Chứng chỉ HN: 01/HN-BĐS – Sở Xây dựng TP.HCM</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="uk-container uk-container-center">
+            <div class="footer-bottom">
+                <span>© 2024 BĐSPro. Bảo lưu mọi quyền.</span>
+                <div class="footer-bottom-links">
+                    <a href="#">Chính sách bảo mật</a>
+                    <a href="#">Điều khoản sử dụng</a>
+                    <a href="#">Quy chế hoạt động</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- Sticky mobile contact bar -->
+    <div class="sticky-contact">
+        <div class="sticky-contact-inner">
+            <a href="tel:0909999888" class="btn btn-primary"><i class="fas fa-phone-alt"></i> Gọi ngay</a>
+            <a href="#lien-he" class="btn btn-outline"><i class="fas fa-comments"></i> Nhắn tin</a>
+            <a href="https://zalo.me/0909999888" class="btn btn-zalo"><span class="uk-text-bold">Z</span> Zalo</a>
+        </div>
+    </div>
+
+    <!-- Back to top -->
+    <button class="back-top" id="back-top" title="Về đầu trang">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/2.27.5/js/uikit.min.js"></script>
+    <script>
+        /**
+         * main.js – BĐSPro
+         * Data + render + event handlers
+         */
+
+        /* ── BROKER ─────────────────────────────────────────────────── */
+        const BROKER = {
+            name: 'Nguyễn Thị Thanh',
+            initials: 'NT',
+            phone: '0909 999 888',
+            phoneRaw: '0909999888',
+        };
+
+        /* ── GRADIENT PALETTE cho placeholder ảnh ───────────────────── */
+        const GRAD = [
+            ['#fde8d8', '#f4b896'],
+            ['#dbeafe', '#bfdbfe'],
+            ['#dcfce7', '#bbf7d0'],
+            ['#fef9c3', '#fde68a'],
+            ['#fce7f3', '#fbcfe8'],
+            ['#ede9fe', '#ddd6fe'],
+            ['#e0f2fe', '#bae6fd'],
+            ['#fff7ed', '#fed7aa'],
+        ];
+
+        /** Placeholder ảnh – không bao giờ broken */
+        function imgPh(idx, icon = 'fas fa-building') {
+            const [a, b] = GRAD[idx % GRAD.length];
+            return `<div class="img-ph" style="background:linear-gradient(135deg,${a},${b})">
+    <i class="${icon}"></i>
+  </div>`;
+        }
+
+        /* ── 3 BADGE TYPES: hot / urgent / featured ─────────────────── */
+        const BADGE = {
+            hot: '<span class="badge badge-hot">🔥 Hot</span>',
+            urgent: '<span class="badge badge-urgent">⚡ Gấp</span>',
+            featured: '<span class="badge badge-featured">⭐ Nổi bật</span>',
+        };
+
+        /* ── DATA MẪU – MUA BÁN ──────────────────────────────────────── */
+        const SELL = [
+            {
+                type: 'can-ho', badge: 'featured',
+                price: '3,2 tỷ', note: '~52 tr/m²',
+                title: 'Căn hộ 2PN The Vista An Phú – View sông, nội thất cao cấp, sổ hồng chính chủ',
+                district: 'Quận 2', area: '62', beds: '2', baths: '2', floors: '', photos: 8, date: '15/12/2024',
+            },
+            {
+                type: 'nha-rieng', badge: 'hot',
+                price: '5,8 tỷ', note: '',
+                title: 'Nhà riêng 3 tầng hẻm 8m Bình Thạnh – Ô tô vào nhà, gần chợ, tiện kinh doanh',
+                district: 'Bình Thạnh', area: '67', beds: '4', baths: '3', floors: '3', photos: 12, date: '14/12/2024',
+            },
+            {
+                type: 'dat-nen', badge: null,
+                price: '1,8 tỷ', note: '',
+                title: 'Đất nền khu dân cư Bình Chánh – Hạ tầng hoàn thiện, sổ riêng, thổ cư 100%',
+                district: 'Bình Chánh', area: '80', beds: '', baths: '', floors: '', photos: 5, date: '13/12/2024',
+            },
+            {
+                type: 'can-ho', badge: null,
+                price: '2,1 tỷ', note: '~45 tr/m²',
+                title: 'Căn hộ 1PN+1 Vinhomes Grand Park – Full nội thất, tầng cao, hướng Đông Nam',
+                district: 'Thủ Đức', area: '47', beds: '2', baths: '1', floors: '', photos: 9, date: '12/12/2024',
+            },
+            {
+                type: 'biet-thu', badge: 'hot',
+                price: '18,5 tỷ', note: '',
+                title: 'Biệt thự đơn lập Thảo Điền – Hồ bơi riêng, an ninh 24/7, 500m² sân vườn',
+                district: 'Quận 2', area: '320', beds: '5', baths: '5', floors: '3', photos: 20, date: '11/12/2024',
+            },
+            {
+                type: 'nha-rieng', badge: 'urgent',
+                price: '4,5 tỷ', note: '',
+                title: 'Nhà phố 4 tầng Tân Phú – Mặt tiền đường 12m, kinh doanh tốt, SHR',
+                district: 'Tân Phú', area: '55', beds: '5', baths: '4', floors: '4', photos: 10, date: '10/12/2024',
+            },
+            {
+                type: 'dat-nen', badge: 'urgent',
+                price: '980 tr', note: '',
+                title: 'Đất thổ cư Hóc Môn – Đường xe hơi, điện nước đầy đủ, giá đầu tư sinh lời cao',
+                district: 'Hóc Môn', area: '90', beds: '', baths: '', floors: '', photos: 4, date: '09/12/2024',
+            },
+            {
+                type: 'can-ho', badge: 'featured',
+                price: '4,9 tỷ', note: '~59 tr/m²',
+                title: 'Căn hộ 3PN Masteri Millennium Q4 – Nội thất cao cấp, view trực diện sông Sài Gòn',
+                district: 'Quận 4', area: '83', beds: '3', baths: '2', floors: '', photos: 15, date: '08/12/2024',
+            },
+        ];
+
+        /* ── DATA MẪU – CHO THUÊ ─────────────────────────────────────── */
+        const RENT = [
+            {
+                type: 'can-ho', badge: 'featured',
+                price: '12 tr/tháng', note: '',
+                title: 'Căn hộ 2PN Sunrise City Q7 – Full nội thất, tầng cao, hồ bơi & gym',
+                district: 'Quận 7', area: '68', beds: '2', baths: '2', floors: '', photos: 7, date: '15/12/2024',
+            },
+            {
+                type: 'nha-rieng', badge: null,
+                price: '8 tr/tháng', note: '',
+                title: 'Nhà nguyên căn 3PN Bình Thạnh – Ô tô trước nhà, gần trường quốc tế',
+                district: 'Bình Thạnh', area: '75', beds: '3', baths: '2', floors: '', photos: 6, date: '14/12/2024',
+            },
+            {
+                type: 'mat-bang', badge: 'hot',
+                price: '25 tr/tháng', note: '',
+                title: 'Mặt bằng kinh doanh Quận 1 – Mặt tiền 6m, vị trí đắc địa, 2 mặt tiền',
+                district: 'Quận 1', area: '120', beds: '', baths: '1', floors: '', photos: 9, date: '13/12/2024',
+            },
+            {
+                type: 'can-ho', badge: null,
+                price: '5,5 tr/tháng', note: '',
+                title: 'Studio Phú Nhuận – Ban công rộng, cửa sổ thoáng, gần chợ Bà Chiểu',
+                district: 'Phú Nhuận', area: '28', beds: '1', baths: '1', floors: '', photos: 5, date: '12/12/2024',
+            },
+            {
+                type: 'can-ho', badge: 'urgent',
+                price: '18 tr/tháng', note: '',
+                title: 'Penthouse 3PN Gò Vấp – Tầng thượng, view thành phố cực đẹp, nội thất sang',
+                district: 'Gò Vấp', area: '110', beds: '3', baths: '3', floors: '', photos: 11, date: '11/12/2024',
+            },
+            {
+                type: 'nha-rieng', badge: null,
+                price: '15 tr/tháng', note: '',
+                title: 'Nhà phố 3 tầng Quận 10 – Thích hợp văn phòng hoặc ở, đường rộng 8m',
+                district: 'Quận 10', area: '85', beds: '4', baths: '3', floors: '3', photos: 8, date: '10/12/2024',
+            },
+            {
+                type: 'can-ho', badge: null,
+                price: '9 tr/tháng', note: '',
+                title: 'Căn hộ 2PN Vinhomes Central Park – Tiện ích cao cấp, view sông Sài Gòn',
+                district: 'Bình Thạnh', area: '70', beds: '2', baths: '2', floors: '', photos: 14, date: '09/12/2024',
+            },
+            {
+                type: 'van-phong', badge: null,
+                price: '22 tr/tháng', note: '',
+                title: 'Văn phòng 80m² Quận 3 – Sảnh đẹp, thang máy tốc độ cao, bảo vệ 24/7',
+                district: 'Quận 3', area: '80', beds: '', baths: '1', floors: '', photos: 6, date: '08/12/2024',
+            },
+        ];
+
+        /* ── DATA MẪU – VIP ──────────────────────────────────────────── */
+        const VIP = [
+            { price: '6,5 tỷ', title: 'Nhà mặt tiền Lê Văn Sỹ Q3 – 4 tầng 5×20m, kinh doanh sầm uất', meta: 'Quận 3 · 100 m² · 5 PN · 4 tầng' },
+            { price: '3,8 tỷ', title: 'Căn hộ penthouse Sky Garden Phú Mỹ Hưng – View toàn cảnh công viên', meta: 'Quận 7 · 150 m² · 3 PN' },
+            { price: '22 tỷ', title: 'Biệt thự compound Thảo Điền An Phú – Bể bơi, hầm xe, an ninh 24/7', meta: 'Quận 2 · 450 m² · 5 PN' },
+            { price: '2,95 tỷ', title: 'Căn hộ 2PN Landmark 81 – Tầng 30+, nội thất Châu Âu, sổ hồng riêng', meta: 'Bình Thạnh · 72 m² · 2 PN' },
+        ];
+
+        /* ── DATA – TIN TỨC ──────────────────────────────────────────── */
+        const NEWS = [
+            { cat: 'Thị trường', title: 'Giá căn hộ TP.HCM tăng mạnh quý 4/2024 – Cơ hội hay thách thức cho người mua?', date: '15/12/2024', views: '2.4k' },
+            { cat: 'Pháp lý', title: 'Luật Đất đai 2024 có hiệu lực – Những điểm mới quan trọng nhất người mua cần biết', date: '14/12/2024', views: '5.1k' },
+            { cat: 'Đầu tư', title: 'Top 5 khu vực BĐS tiềm năng nhất TP.HCM nửa đầu 2025 theo nhận định chuyên gia', date: '13/12/2024', views: '3.8k' },
+            { cat: 'Kiến thức', title: 'Hướng dẫn kiểm tra pháp lý nhà đất trước khi xuống tiền để tránh rủi ro', date: '12/12/2024', views: '1.9k' },
+        ];
+
+        /* ── RENDER: Property Card ────────────────────────────────────── */
+        function renderCard(d, idx) {
+            /* Specs */
+            const specs = [];
+            if (d.area) specs.push(`<span class="spec-item"><i class="fas fa-vector-square"></i><strong>${d.area}</strong> m²</span>`);
+            if (d.beds) specs.push(`<span class="spec-item"><i class="fas fa-bed"></i><strong>${d.beds}</strong> PN</span>`);
+            if (d.baths) specs.push(`<span class="spec-item"><i class="fas fa-bath"></i><strong>${d.baths}</strong> WC</span>`);
+            if (d.floors) specs.push(`<span class="spec-item"><i class="fas fa-layer-group"></i><strong>${d.floors}</strong> tầng</span>`);
+
+            /* Badge html */
+            const badgeHtml = d.badge ? BADGE[d.badge] || '' : '';
+
+            /* UIkit responsive columns: 4@l 3@m 2@s 1 mobile */
+            return `
+  <div class="uk-width-1-2 uk-width-1-3@s uk-width-1-4@m">
+    <div class="prop-card" onclick="goDetail()">
+      <div class="card-img">
+        ${imgPh(idx)}
+        <div class="card-badges">${badgeHtml}</div>
+        <div class="card-photo-count"><i class="fas fa-camera"></i>${d.photos}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-price">
+          ${d.price}
+          ${d.note ? `<span class="card-price-note">${d.note}</span>` : ''}
+        </div>
+        <div class="card-title">${d.title}</div>
+        <div class="card-location">
+          <i class="fas fa-map-marker-alt"></i>${d.district}, TP.HCM
+        </div>
+        ${specs.length ? `<div class="card-specs">${specs.join('')}</div>` : ''}
+      </div>
+      <div class="card-broker">
+        <div class="broker-ava">${BROKER.initials}</div>
+        <div class="broker-name-sm">${BROKER.name}</div>
+        <a href="tel:${BROKER.phoneRaw}" class="broker-phone-sm"
+           onclick="event.stopPropagation()">
+          <i class="fas fa-phone-alt"></i>${BROKER.phone}
+        </a>
+      </div>
+      <div class="card-footer">
+        <span class="card-date"><i class="fas fa-clock"></i> ${d.date}</span>
+        <a href="tel:${BROKER.phoneRaw}" class="card-cta"
+           onclick="event.stopPropagation()">Liên hệ</a>
+      </div>
+    </div>
+  </div>`;
+        }
+
+        /* ── RENDER: VIP Card (horizontal) ──────────────────────────── */
+        function renderVip(d, idx) {
+            return `
+  <div class="uk-width-1-1 uk-width-1-2@m" style="margin-bottom:12px">
+    <div class="vip-card" onclick="goDetail()">
+      <div class="vip-ribbon">VIP</div>
+      <div class="vip-img">${imgPh(idx + 4, 'fas fa-star')}</div>
+      <div class="vip-body">
+        <div class="vip-price">${d.price}</div>
+        <div class="vip-title">${d.title}</div>
+        <div class="vip-meta"><i class="fas fa-map-marker-alt"></i> ${d.meta}</div>
+        <div class="vip-actions">
+          <a href="tel:${BROKER.phoneRaw}" class="btn btn-primary btn-sm"
+             onclick="event.stopPropagation()">
+            <i class="fas fa-phone-alt"></i> Gọi ngay
+          </a>
+          <a href="#" class="btn btn-ghost btn-sm" onclick="event.stopPropagation()">
+            Xem chi tiết
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>`;
+        }
+
+        /* ── RENDER: News Card ───────────────────────────────────────── */
+        const NEWS_GRAD = [
+            ['#dbeafe', '#3b82f6'], ['#dcfce7', '#16a34a'],
+            ['#fef9c3', '#ca8a04'], ['#fce7f3', '#db2777'],
+        ];
+        function renderNews(d, idx) {
+            const [bg, ic] = NEWS_GRAD[idx % NEWS_GRAD.length];
+            return `
+  <div class="uk-width-1-2 uk-width-1-4@m">
+    <div class="news-card" onclick="window.location.href='#'">
+      <div class="news-img">
+        <div class="img-ph" style="background:${bg}">
+          <i class="fas fa-newspaper" style="color:${ic};font-size:2rem;opacity:.3"></i>
+        </div>
+      </div>
+      <div class="news-body">
+        <div class="news-cat">${d.cat}</div>
+        <div class="news-title">${d.title}</div>
+        <div class="news-meta">
+          <span><i class="fas fa-clock"></i> ${d.date}</span>
+          <span><i class="fas fa-eye"></i> ${d.views}</span>
+        </div>
+      </div>
+    </div>
+  </div>`;
+        }
+
+        /* ── RENDER ALL ──────────────────────────────────────────────── */
+        function renderAll() {
+            const get = id => document.getElementById(id);
+
+            const vipEl = get('vip-grid');
+            if (vipEl) vipEl.innerHTML = VIP.map((d, i) => renderVip(d, i)).join('');
+
+            const buyEl = get('buy-grid');
+            if (buyEl) buyEl.innerHTML = SELL.map((d, i) => renderCard(d, i)).join('');
+
+            const rentEl = get('rent-grid');
+            if (rentEl) rentEl.innerHTML = RENT.map((d, i) => renderCard(d, i)).join('');
+
+            const newsEl = get('news-grid');
+            if (newsEl) newsEl.innerHTML = NEWS.map((d, i) => renderNews(d, i)).join('');
+        }
+
+        /* ── FILTER PILLS ────────────────────────────────────────────── */
+        function initFilter() {
+            document.querySelectorAll('[data-filter-group]').forEach(group => {
+                group.querySelectorAll('[data-filter]').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        group.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('is-active'));
+                        this.classList.add('is-active');
+
+                        const filter = this.dataset.filter;
+                        const targetId = this.dataset.target;
+                        const grid = document.getElementById(targetId);
+                        if (!grid) return;
+
+                        const src = targetId === 'rent-grid' ? RENT : SELL;
+                        const filtered = filter === 'all' ? src : src.filter(d => d.type === filter);
+
+                        grid.innerHTML = filtered.length
+                            ? filtered.map((d, i) => renderCard(d, i)).join('')
+                            : `<div class="uk-width-1-1 uk-text-center uk-padding">
+               <i class="fas fa-search" style="font-size:2rem;opacity:.2;display:block;margin-bottom:8px"></i>
+               <span class="uk-text-muted">Không có tin phù hợp</span>
+             </div>`;
+                    });
+                });
+            });
+        }
+
+        /* ── SORT BUTTONS ────────────────────────────────────────────── */
+        function initSort() {
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const row = this.closest('.sort-row');
+                    row.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('is-active'));
+                    this.classList.add('is-active');
+                });
+            });
+        }
+
+        /* ── SUBNAV ──────────────────────────────────────────────────── */
+        function initSubnav() {
+            document.querySelectorAll('.subnav-item a').forEach(a => {
+                a.addEventListener('click', e => {
+                    e.preventDefault();
+                    document.querySelectorAll('.subnav-item').forEach(li => li.classList.remove('is-active'));
+                    a.parentElement.classList.add('is-active');
+                });
+            });
+        }
+
+        /* ── SEARCH TABS ─────────────────────────────────────────────── */
+        function initSearchTabs() {
+            document.querySelectorAll('.search-tab').forEach(tab => {
+                tab.addEventListener('click', function () {
+                    document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('is-active'));
+                    this.classList.add('is-active');
+                });
+            });
+        }
+
+        /* ── CATEGORY GRID ───────────────────────────────────────────── */
+        function initCatGrid() {
+            document.querySelectorAll('.cat-item').forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('is-active'));
+                    this.classList.add('is-active');
+                });
+            });
+        }
+
+        /* ── MOBILE DRAWER ───────────────────────────────────────────── */
+        function initDrawer() {
+            const toggle = document.getElementById('nav-toggle');
+            const drawer = document.getElementById('mobile-drawer');
+            const overlay = document.getElementById('drawer-overlay');
+            const closeBtn = document.getElementById('drawer-close');
+            if (!toggle || !drawer) return;
+
+            const open = () => { drawer.classList.add('is-open'); document.body.style.overflow = 'hidden'; };
+            const close = () => { drawer.classList.remove('is-open'); document.body.style.overflow = ''; };
+
+            toggle.addEventListener('click', open);
+            closeBtn.addEventListener('click', close);
+            overlay.addEventListener('click', close);
+        }
+
+        /* ── BACK TO TOP ─────────────────────────────────────────────── */
+        function initBackTop() {
+            const btn = document.getElementById('back-top');
+            if (!btn) return;
+            window.addEventListener('scroll', () => {
+                btn.classList.toggle('is-visible', window.scrollY > 400);
+            }, { passive: true });
+            btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        }
+
+        /* ── SMOOTH SCROLL cho anchor links ─────────────────────────── */
+        function initSmoothScroll() {
+            document.querySelectorAll('a[href^="#"]').forEach(a => {
+                a.addEventListener('click', function (e) {
+                    const id = this.getAttribute('href').slice(1);
+                    const target = document.getElementById(id);
+                    if (!target) return;
+                    e.preventDefault();
+                    const offset = 70; /* chiều cao header sticky */
+                    const top = target.getBoundingClientRect().top + window.scrollY - offset;
+                    window.scrollTo({ top, behavior: 'smooth' });
+                });
+            });
+        }
+
+        /* ── NAVBAR SHADOW on scroll ─────────────────────────────────── */
+        function initNavbarScroll() {
+            const header = document.getElementById('site-header');
+            if (!header) return;
+            window.addEventListener('scroll', () => {
+                header.style.boxShadow = window.scrollY > 4
+                    ? '0 4px 16px rgba(0,0,0,0.12)'
+                    : '';
+            }, { passive: true });
+        }
+
+        /* ── CONTACT FORM demo ───────────────────────────────────────── */
+        function initContactForm() {
+            const btn = document.getElementById('form-submit-btn');
+            if (!btn) return;
+            btn.addEventListener('click', function () {
+                const orig = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+                this.disabled = true;
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-check"></i> Đã gửi thành công!';
+                    this.style.background = '#43a047';
+                    setTimeout(() => {
+                        this.innerHTML = orig;
+                        this.style.background = '';
+                        this.disabled = false;
+                    }, 3000);
+                }, 1500);
+            });
+        }
+
+        /* ── LOAD MORE demo ──────────────────────────────────────────── */
+        function initLoadMore() {
+            const btn = document.getElementById('load-more-btn');
+            if (!btn) return;
+            let loaded = false;
+            btn.addEventListener('click', function () {
+                if (loaded) return;
+                const orig = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải...';
+                this.disabled = true;
+                setTimeout(() => {
+                    const grid = document.getElementById('buy-grid');
+                    const extra = SELL.slice(0, 4).map((d, i) =>
+                        renderCard({ ...d, date: '01/12/2024' }, i + 20)
+                    ).join('');
+                    grid.insertAdjacentHTML('beforeend', extra);
+                    this.innerHTML = orig;
+                    this.disabled = false;
+                    loaded = true;
+                    this.textContent = 'Đã hiển thị tất cả';
+                }, 1000);
+            });
+        }
+
+        /* ── POPULATE broker data-attrs ──────────────────────────────── */
+        function populateBroker() {
+            document.querySelectorAll('[data-broker-name]').forEach(el => el.textContent = BROKER.name);
+            document.querySelectorAll('[data-broker-initials]').forEach(el => el.textContent = BROKER.initials);
+            document.querySelectorAll('[data-broker-phone]').forEach(el => {
+                el.textContent = BROKER.phone;
+                if (el.tagName === 'A') el.href = `tel:${BROKER.phoneRaw}`;
+            });
+        }
+
+        /* ── DETAIL navigate placeholder ────────────────────────────── */
+        function goDetail() { /* TODO: window.location.href = 'detail.html'; */ }
+
+        /* ── INIT ────────────────────────────────────────────────────── */
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAll();
+            populateBroker();
+            initFilter();
+            initSort();
+            initSubnav();
+            initSearchTabs();
+            initCatGrid();
+            initDrawer();
+            initBackTop();
+            initSmoothScroll();
+            initNavbarScroll();
+            initContactForm();
+            initLoadMore();
+        });
+    </script>
+</body>
+
+</html>
