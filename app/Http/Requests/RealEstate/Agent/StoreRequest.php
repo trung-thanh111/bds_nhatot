@@ -16,7 +16,13 @@ class StoreRequest extends FormRequest
         return [
             'full_name' => 'required|max:150',
             'phone' => 'required',
-            'email' => 'required|email|unique:agents,email',
+            'email' => 'required|email|unique:agents,email,' . $this->id,
+            'address' => 'nullable|string|max:255',
+            'cchn' => 'nullable|string|max:255',
+            'experience_years' => 'nullable|numeric',
+            'transaction_count' => 'nullable|numeric',
+            'listing_count' => 'nullable|numeric',
+            'property_stats' => 'nullable',
         ];
     }
 

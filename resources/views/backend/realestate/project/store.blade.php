@@ -581,11 +581,13 @@
                                         @endforeach
                                     </select>
                                     <div class="mt5">
-                                        <small class="text-navy">(*) Chọn nhân viên môi giới chịu trách nhiệm cho dự án này. Có thể để trống nếu chưa xác định.</small>
+                                        <small class="text-navy">(*) Chọn nhân viên môi giới chịu trách nhiệm cho dự án
+                                            này. Có thể để trống nếu chưa xác định.</small>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <div class="row mb15">
                             <div class="col-lg-12">
                                 <div class="form-row">
@@ -680,6 +682,32 @@
                                     <input type="text" name="virtual_tour_url"
                                         value="{{ old('virtual_tour_url', $project->virtual_tour_url ?? '') }}"
                                         class="form-control" placeholder="Link 360 độ...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5>Dự án liên quan</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row mb15">
+                            <div class="col-lg-12">
+                                <div class="form-row">
+                                    <label class="control-label">Danh sách dự án</label>
+                                    <select name="related_project_id[]" class="form-control setupSelect2" multiple>
+                                        @foreach ($projectsRelated as $p)
+                                            @if (isset($project) && $project->id == $p->id)
+                                                @continue
+                                            @endif
+                                            <option
+                                                {{ in_array($p->id, old('related_project_id', isset($project) ? $project->related_projects->pluck('id')->toArray() : [])) ? 'selected' : '' }}
+                                                value="{{ $p->id }}">
+                                                {{ $p->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         </div>

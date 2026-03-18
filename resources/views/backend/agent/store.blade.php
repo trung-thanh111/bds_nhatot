@@ -1,15 +1,15 @@
 @include('backend.dashboard.component.breadcrumb', ['title' => $config['seo'][$config['method']]['title']])
 @if ($errors->any())
-<div class="alert alert-danger">
-    <ul>
-        @foreach ($errors->all() as $error)
-        <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
 @endif
 @php
-$url = ($config['method'] == 'create') ? route('agent.store') : route('agent.update', $record->id);
+    $url = $config['method'] == 'create' ? route('agent.store') : route('agent.update', $record->id);
 @endphp
 <form action="{{ $url }}" method="post" class="box">
     @csrf
@@ -24,57 +24,100 @@ $url = ($config['method'] == 'create') ? route('agent.store') : route('agent.upd
                         <div class="row mb15">
                             <div class="col-lg-6">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Họ và tên <span class="text-danger">(*)</span></label>
-                                    <input
-                                        type="text"
-                                        name="full_name"
-                                        value="{{ old('full_name', ($record->full_name) ?? '' ) }}"
-                                        class="form-control"
-                                        placeholder=""
-                                        autocomplete="off">
+                                    <label for="" class="control-label text-left">Họ và tên <span
+                                            class="text-danger">(*)</span></label>
+                                    <input type="text" name="full_name"
+                                        value="{{ old('full_name', $record->full_name ?? '') }}" class="form-control"
+                                        placeholder="" autocomplete="off">
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-row">
                                     <label for="" class="control-label text-left">Chức danh</label>
-                                    <input
-                                        type="text"
-                                        name="title"
-                                        value="{{ old('title', ($record->title) ?? '' ) }}"
-                                        class="form-control"
+                                    <input type="text" name="title"
+                                        value="{{ old('title', $record->title ?? '') }}" class="form-control"
                                         placeholder="Ví dụ: Chuyên viên tư vấn cấp cao">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb15">
+                            <div class="col-lg-6">
+                                <div class="form-row">
+                                    <label for="" class="control-label text-left">Số điện thoại <span
+                                            class="text-danger">(*)</span></label>
+                                    <input type="text" name="phone"
+                                        value="{{ old('phone', $record->phone ?? '') }}" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-row">
+                                    <label for="" class="control-label text-left">Email <span
+                                            class="text-danger">(*)</span></label>
+                                    <input type="email" name="email"
+                                        value="{{ old('email', $record->email ?? '') }}" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb15">
+                            <div class="col-lg-6">
+                                <div class="form-row">
+                                    <label for="" class="control-label text-left">Zalo</label>
+                                    <input type="text" name="zalo" value="{{ old('zalo', $record->zalo ?? '') }}"
+                                        class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-row">
+                                    <label for="" class="control-label text-left">Chứng chỉ hành nghề
+                                        (CCHN)</label>
+                                    <input type="text" name="cchn" value="{{ old('cchn', $record->cchn ?? '') }}"
+                                        class="form-control" placeholder="Ví dụ: 01/HN-BĐS">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb15">
+                            <div class="col-lg-12">
+                                <div class="form-row">
+                                    <label for="" class="control-label text-left">Địa chỉ liên hệ</label>
+                                    <input type="text" name="address"
+                                        value="{{ old('address', $record->address ?? '') }}" class="form-control"
+                                        placeholder="Ví dụ: 123 Nguyễn Đình Chiểu, Q.3, TP.HCM">
                                 </div>
                             </div>
                         </div>
                         <div class="row mb15">
                             <div class="col-lg-4">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Số điện thoại <span class="text-danger">(*)</span></label>
-                                    <input
-                                        type="text"
-                                        name="phone"
-                                        value="{{ old('phone', ($record->phone) ?? '' ) }}"
+                                    <label for="" class="control-label text-left">Năm kinh nghiệm</label>
+                                    <input type="number" name="experience_years"
+                                        value="{{ old('experience_years', $record->experience_years ?? 0) }}"
                                         class="form-control">
                                 </div>
                             </div>
                             <div class="col-lg-4">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Email <span class="text-danger">(*)</span></label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value="{{ old('email', ($record->email) ?? '' ) }}"
+                                    <label for="" class="control-label text-left">Số giao dịch</label>
+                                    <input type="number" name="transaction_count"
+                                        value="{{ old('transaction_count', $record->transaction_count ?? 0) }}"
                                         class="form-control">
                                 </div>
                             </div>
                             <div class="col-lg-4">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Zalo</label>
-                                    <input
-                                        type="text"
-                                        name="zalo"
-                                        value="{{ old('zalo', ($record->zalo) ?? '' ) }}"
+                                    <label for="" class="control-label text-left">Số tin đăng</label>
+                                    <input type="number" name="listing_count"
+                                        value="{{ old('listing_count', $record->listing_count ?? 0) }}"
                                         class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb15">
+                            <div class="col-lg-12">
+                                <div class="form-row">
+                                    <label for="" class="control-label text-left">Thông số bất động sản (Tóm
+                                        tắt)</label>
+                                    <textarea name="property_stats" class="form-control" style="height: 100px"
+                                        placeholder="Ví dụ: 350+ Tin đăng, 1.2k+ Giao dịch...">{{ old('property_stats', $record->property_stats ?? '') }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -96,7 +139,9 @@ $url = ($config['method'] == 'create') ? route('agent.store') : route('agent.upd
                     </div>
                     <div class="ibox-content text-center">
                         <div class="form-row">
-                            <span class="image img-cover image-target"><img src="{{ old('avatar', ($record->avatar) ?? '' ) ? old('avatar', ($record->avatar) ?? '') :  'backend/img/not-found.jpg' }}" alt=""></span>
+                            <span class="image img-cover image-target"><img
+                                    src="{{ old('avatar', $record->avatar ?? '') ? old('avatar', $record->avatar ?? '') : 'backend/img/not-found.jpg' }}"
+                                    alt=""></span>
                             <input type="hidden" name="avatar" value="{{ old('avatar', $record->avatar ?? '') }}">
                         </div>
                         <small class="text-muted mt10 block">Click để chọn ảnh</small>
@@ -112,8 +157,10 @@ $url = ($config['method'] == 'create') ? route('agent.store') : route('agent.upd
                                 <div class="form-row">
                                     <label for="" class="control-label text-left">Trạng thái</label>
                                     <select name="publish" class="form-control setupSelect2">
-                                        @foreach(__('messages.publish') as $key => $val)
-                                        <option {{ $key == old('publish', (isset($record->publish)) ? $record->publish : '2') ? 'selected' : '' }} value="{{ $key }}">{{ $val }}</option>
+                                        @foreach (__('messages.publish') as $key => $val)
+                                            <option
+                                                {{ $key == old('publish', isset($record->publish) ? $record->publish : '2') ? 'selected' : '' }}
+                                                value="{{ $key }}">{{ $val }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -122,9 +169,14 @@ $url = ($config['method'] == 'create') ? route('agent.store') : route('agent.upd
                         <div class="row mb15">
                             <div class="col-lg-12">
                                 <div class="form-row">
-                                    <div class="checkbox checkbox-primary">
-                                        <input id="is_primary" type="checkbox" name="is_primary" value="1" {{ old('is_primary', $record->is_primary ?? 0) ? 'checked' : '' }}>
-                                        <label for="is_primary">Nhân viên chính (Hotline)</label>
+                                    <div class="checkbox checkbox-primary"
+                                        style="display: flex; align-items: center;">
+                                        <input id="is_primary" type="checkbox" name="is_primary" value="1"
+                                            {{ old('is_primary', $record->is_primary ?? 0) ? 'checked' : '' }}
+                                            style="margin: 0;">
+                                        <label for="is_primary"
+                                            style="margin-bottom: 0; padding-left: 20px; cursor: pointer;">Môi Giới
+                                            Chính</label>
                                     </div>
                                 </div>
                             </div>

@@ -137,6 +137,11 @@ class Project extends Model
         return $this->hasMany(ContactRequest::class, 'project_id');
     }
 
+    public function related_projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_related_project', 'project_id', 'related_project_id');
+    }
+
     // public function items()
     // {
     //     return $this->hasMany(ProjectItem::class, 'project_id');

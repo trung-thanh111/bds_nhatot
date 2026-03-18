@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Căn hộ 2PN The Vista An Phú – 3,2 tỷ | BĐSPro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/2.27.5/css/uikit.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        .detail-wrap {
+            padding: 20px 0 48px;
+        }
+
+        .detail-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: var(--fs-12);
+            color: var(--c-gray-500);
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .detail-breadcrumb a {
+            color: var(--c-gray-500);
+        }
+
+        .detail-breadcrumb a:hover {
+            color: var(--c-primary);
+        }
+
+        .detail-breadcrumb i {
+            font-size: 9px;
+        }
+
+        .detail-breadcrumb span {
+            color: var(--c-gray-800);
+            font-weight: var(--fw-5);
+        }
+
+        .detail-col-main {
+            min-width: 0;
+        }
+
+        .detail-col-side {}
+
+        /* Sticky sidebar – offset bằng navbar + subnav */
+        .sticky-side {
+            position: sticky;
+            top: calc(var(--navbar-h) + var(--subnav-h) + 12px);
+        }
+
+        /* ── Gallery ── */
+        .gallery-wrap {
+            background: var(--c-gray-900);
+            border-radius: var(--radius-m);
+            overflow: hidden;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .gallery-main {
+            position: relative;
+            padding-bottom: 58%;
+            background: var(--c-gray-800);
+            cursor: zoom-in;
+        }
+
+        .gallery-main-ph {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .gallery-main-ph i {
+            font-size: 3rem;
+            color: rgba(255, 255, 255, .15);
+        }
+
+        .gallery-main-ph span {
+            font-size: var(--fs-12);
+            color: rgba(255, 255, 255, .3);
+        }
+
+        .gallery-main-ph img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-count {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, .55);
+            color: #fff;
+            font-size: var(--fs-11);
+            padding: 4px 10px;
+            border-radius: var(--radius-s);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            backdrop-filter: blur(2px);
+        }
+
+        .gallery-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .85);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: var(--c-gray-800);
+            cursor: pointer;
+            transition: background var(--transition);
+            z-index: 2;
+        }
+
+        .gallery-nav:hover {
+            background: #fff;
+        }
+
+        .gallery-nav-prev {
+            left: 10px;
+        }
+
+        .gallery-nav-next {
+            right: 10px;
+        }
+
+        .gallery-thumbs {
+            display: flex;
+            gap: 4px;
+            padding: 6px;
+            background: var(--c-gray-900);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .gallery-thumbs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .gallery-thumb {
+            width: 72px;
+            height: 52px;
+            border-radius: 4px;
+            overflow: hidden;
+            flex-shrink: 0;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color var(--transition);
+            position: relative;
+            background: var(--c-gray-700);
+        }
+
+        .gallery-thumb.is-active {
+            border-color: var(--c-primary);
+        }
+
+        .gallery-thumb-ph {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-thumb-ph i {
+            font-size: 14px;
+            color: rgba(255, 255, 255, .25);
+        }
+
+        /* ── Detail box ── */
+        .detail-box {
+            background: var(--c-white);
+            border-radius: var(--radius-m);
+            border: 1px solid var(--c-gray-200);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-xs);
+        }
+
+        .detail-type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            height: 22px;
+            padding: 0 10px;
+            border-radius: var(--radius-s);
+            font-size: var(--fs-11);
+            font-weight: var(--fw-6);
+            background: var(--c-primary-light);
+            color: var(--c-primary);
+            margin-bottom: 10px;
+        }
+
+        .detail-title {
+            font-size: var(--fs-20);
+            font-weight: var(--fw-7);
+            color: var(--c-gray-900);
+            line-height: 1.35;
+            margin-bottom: 10px;
+        }
+
+        .detail-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: var(--fs-12);
+            color: var(--c-gray-500);
+            margin-bottom: 14px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--c-gray-200);
+        }
+
+        .detail-meta-row i {
+            font-size: 11px;
+        }
+
+        .detail-price-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--c-gray-200);
+        }
+
+        .detail-price {
+            font-size: 28px;
+            font-weight: var(--fw-7);
+            color: var(--c-primary);
+            line-height: 1;
+        }
+
+        .detail-price-per {
+            font-size: var(--fs-14);
+            color: var(--c-gray-500);
+            margin-bottom: 2px;
+        }
+
+        .detail-price-deposit {
+            font-size: var(--fs-12);
+            color: var(--c-gray-500);
+            background: var(--c-gray-100);
+            padding: 3px 10px;
+            border-radius: var(--radius-s);
+        }
+
+        .detail-specs-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 0;
+        }
+
+        .detail-spec-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 12px;
+            background: var(--c-gray-50);
+            border-radius: var(--radius-s);
+            border: 1px solid var(--c-gray-200);
+        }
+
+        .detail-spec-icon {
+            font-size: 16px;
+            color: var(--c-gray-400);
+        }
+
+        .detail-spec-label {
+            font-size: var(--fs-10);
+            color: var(--c-gray-500);
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+
+        .detail-spec-value {
+            font-size: var(--fs-14);
+            font-weight: var(--fw-7);
+            color: var(--c-gray-900);
+        }
+
+        /* ── Description ── */
+        .detail-desc {
+            font-size: var(--fs-14);
+            color: var(--c-gray-700);
+            line-height: 1.75;
+        }
+
+        .detail-desc p {
+            margin-bottom: 12px;
+        }
+
+        .detail-desc p:last-child {
+            margin-bottom: 0;
+        }
+
+        .desc-toggle {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: var(--fs-13);
+            font-weight: var(--fw-6);
+            color: var(--c-primary);
+            margin-top: 10px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        /* ── Property info table ── */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .info-table tr {
+            border-bottom: 1px solid var(--c-gray-200);
+        }
+
+        .info-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .info-table td {
+            padding: 10px 0;
+            font-size: var(--fs-13);
+            vertical-align: top;
+        }
+
+        .info-table .info-key {
+            color: var(--c-gray-500);
+            width: 40%;
+        }
+
+        .info-table .info-val {
+            font-weight: var(--fw-6);
+            color: var(--c-gray-900);
+        }
+
+        .info-tag {
+            display: inline-flex;
+            align-items: center;
+            height: 24px;
+            padding: 0 10px;
+            border-radius: var(--radius-pill);
+            font-size: var(--fs-11);
+            background: var(--c-gray-100);
+            border: 1px solid var(--c-gray-300);
+            color: var(--c-gray-700);
+            margin: 2px 2px 2px 0;
+        }
+
+        /* ── Map placeholder ── */
+        .detail-map {
+            height: 240px;
+            background: var(--c-gray-100);
+            border-radius: var(--radius-s);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--c-gray-400);
+        }
+
+        .detail-map i {
+            font-size: 2.5rem;
+            opacity: .3;
+        }
+
+        .detail-map span {
+            font-size: var(--fs-12);
+        }
+
+        /* ── Nearby ── */
+        .nearby-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nearby-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: var(--c-gray-50);
+            border-radius: var(--radius-s);
+            border: 1px solid var(--c-gray-200);
+            font-size: var(--fs-13);
+        }
+
+        .nearby-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-s);
+            background: var(--c-primary-light);
+            color: var(--c-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .nearby-name {
+            font-weight: var(--fw-6);
+            color: var(--c-gray-900);
+        }
+
+        .nearby-dist {
+            font-size: var(--fs-11);
+            color: var(--c-gray-500);
+        }
+
+        .nearby-dist-badge {
+            margin-left: auto;
+            font-size: var(--fs-11);
+            font-weight: var(--fw-6);
+            color: var(--c-primary);
+            background: var(--c-primary-light);
+            padding: 2px 8px;
+            border-radius: var(--radius-pill);
+        }
+
+        /* ── Related cards ── */
+        .related-grid {
+            row-gap: 14px;
+        }
+
+        /* ── SIDEBAR ── */
+        .sticky-side {
+            position: sticky;
+            top: calc(var(--navbar-h) + var(--subnav-h) + 16px);
+        }
+
+        .side-contact-box {
+            background: var(--c-white);
+            border-radius: var(--radius-m);
+            border: 1px solid var(--c-gray-200);
+            overflow: hidden;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-xs);
+        }
+
+        .side-contact-head {
+            background: var(--c-gray-50);
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--c-gray-200);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .side-broker-ava {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--c-primary-light);
+            border: 2px solid var(--c-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: var(--fw-7);
+            color: var(--c-primary);
+            flex-shrink: 0;
+        }
+
+        .side-broker-name {
+            font-size: var(--fs-14);
+            font-weight: var(--fw-7);
+            color: var(--c-gray-900);
+        }
+
+        .side-broker-tag {
+            font-size: var(--fs-11);
+            color: var(--c-gray-500);
+            margin-top: 2px;
+        }
+
+        .side-broker-verified {
+            font-size: var(--fs-10);
+            font-weight: var(--fw-6);
+            color: var(--c-green);
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            margin-top: 3px;
+        }
+
+        .side-contact-body {
+            padding: 16px;
+        }
+
+        .side-phone-btn {
+            width: 100%;
+            height: 44px;
+            border-radius: var(--radius-m);
+            background: var(--c-primary);
+            color: #fff;
+            font-size: var(--fs-16);
+            font-weight: var(--fw-7);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background var(--transition);
+            margin-bottom: 10px;
+            letter-spacing: .5px;
+        }
+
+        .side-phone-btn:hover {
+            background: var(--c-primary-dark);
+        }
+
+        .side-phone-blur {
+            filter: blur(4px);
+            transition: filter .2s;
+        }
+
+        .side-phone-btn:hover .side-phone-blur {
+            filter: none;
+        }
+
+        .side-action-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .side-action-row .btn {
+            flex: 1;
+        }
+
+        .side-form-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: var(--fs-13);
+            font-weight: var(--fw-6);
+            color: var(--c-gray-700);
+            cursor: pointer;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--c-gray-200);
+            margin-bottom: 12px;
+            user-select: none;
+        }
+
+        .side-form-toggle i {
+            font-size: 11px;
+            color: var(--c-gray-400);
+            transition: transform var(--transition);
+        }
+
+        .side-form-toggle.is-open i {
+            transform: rotate(180deg);
+        }
+
+        .side-form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .side-info-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .side-info-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+            font-size: var(--fs-12);
+            color: var(--c-gray-600);
+            border-bottom: 1px solid var(--c-gray-200);
+        }
+
+        .side-info-row:last-child {
+            border-bottom: none;
+        }
+
+        .side-info-row i {
+            color: var(--c-gray-400);
+            width: 14px;
+            flex-shrink: 0;
+        }
+
+        .side-stat-box {
+            background: var(--c-white);
+            border-radius: var(--radius-m);
+            border: 1px solid var(--c-gray-200);
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-xs);
+        }
+
+        .side-stat-row {
+            display: flex;
+            gap: 0;
+        }
+
+        .side-stat-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            border-right: 1px solid var(--c-gray-200);
+        }
+
+        .side-stat-item:last-child {
+            border-right: none;
+        }
+
+        .side-stat-num {
+            font-size: var(--fs-18);
+            font-weight: var(--fw-7);
+            color: var(--c-primary);
+        }
+
+        .side-stat-lbl {
+            font-size: 10px;
+            color: var(--c-gray-400);
+            margin-top: 2px;
+        }
+
+        .side-share {
+            background: var(--c-white);
+            border-radius: var(--radius-m);
+            border: 1px solid var(--c-gray-200);
+            padding: 14px 16px;
+            box-shadow: var(--shadow-xs);
+        }
+
+        .side-share-title {
+            font-size: var(--fs-13);
+            font-weight: var(--fw-6);
+            color: var(--c-gray-700);
+            margin-bottom: 10px;
+        }
+
+        .share-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .share-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-s);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            color: #fff;
+            transition: opacity var(--transition);
+        }
+
+        .share-btn:hover {
+            opacity: .85;
+        }
+
+        .share-fb {
+            background: #1877f2;
+        }
+
+        .share-zalo {
+            background: #0180c7;
+        }
+
+        .share-copy {
+            background: var(--c-gray-600);
+        }
+
+        .share-link {
+            background: var(--c-gray-400);
+            font-size: 12px;
+            font-weight: var(--fw-7);
+        }
+
+        /* detail-meta-row items */
+        .detail-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .detail-meta-pin {
+            color: var(--c-primary);
+        }
+
+        /* info-table icon spacing */
+        .info-table .info-key i {
+            margin-right: 6px;
+            color: var(--c-gray-400);
+        }
+
+        /* related grid */
+        .related-grid {
+            row-gap: 14px;
+        }
+
+        /* UIkit v2: ẩn sidebar trên tablet/mobile */
+        @media (max-width: 959px) {
+            .detail-col-side {
+                display: none;
+            }
+
+            .detail-specs-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sticky-side {
+                position: static;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .detail-title {
+                font-size: var(--fs-18);
+            }
+
+            .detail-price {
+                font-size: 22px;
+            }
+
+            .detail-specs-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .gallery-thumbs {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="site-header" id="site-header">
+        <div class="topbar">
+            <div class="uk-container uk-container-center">
+                <div class="uk-flex uk-flex-middle uk-flex-between topbar-inner">
+                    <div class="uk-flex uk-flex-middle topbar-left">
+                        <span class="uk-flex uk-flex-middle topbar-item">
+                            <i class="fas fa-phone-alt"></i>
+                            Hotline: <a href="tel:0909999888"><strong>0909 999 888</strong></a>
+                        </span>
+                        <span class="uk-flex uk-flex-middle topbar-item">
+                            <i class="fas fa-clock"></i> Thứ 2 – CN: 8:00 – 20:00
+                        </span>
+                    </div>
+                    <div class="uk-flex uk-flex-middle topbar-right">
+                        <span class="uk-flex uk-flex-middle topbar-item">
+                            <i class="fas fa-certificate"></i> Chứng chỉ hành nghề số: 01/HN-BĐS
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="navbar">
+            <div class="uk-container uk-container-center">
+                <div class="uk-flex uk-flex-middle navbar-inner">
+                    <a href="index.html" class="uk-flex uk-flex-middle navbar-logo">
+                        <div class="logo-icon">B</div>
+                        <span class="logo-name">BĐS<em>Pro</em></span>
+                    </a>
+                    <div class="navbar-search">
+                        <input type="text" placeholder="Tìm kiếm nhà, đất, căn hộ, dự án..." />
+                        <button class="navbar-search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="uk-flex uk-flex-middle uk-margin-auto-left navbar-actions">
+                        <a href="tel:0909999888" class="navbar-phone">
+                            <i class="fas fa-phone-alt"></i> <span>0909 999 888</span>
+                        </a>
+                        <a href="index.html#lien-he" class="btn btn-primary btn-sm">
+                            <i class="fas fa-comments"></i> Tư vấn ngay
+                        </a>
+                    </div>
+                    <button class="navbar-toggle" id="nav-toggle"><i class="fas fa-bars"></i></button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="subnav">
+            <div class="uk-container uk-container-center">
+                <ul class="subnav-list uk-flex uk-flex-middle">
+                    <li class="subnav-item"><a href="index.html"><i class="fas fa-home"></i> Trang chủ</a></li>
+                    <li class="subnav-item is-active"><a href="#"><i class="fas fa-building"></i> Căn hộ chung cư</a>
+                    </li>
+                    <li class="subnav-item"><a href="#"><i class="fas fa-home"></i> Nhà riêng</a></li>
+                    <li class="subnav-item"><a href="#"><i class="fas fa-map"></i> Đất nền</a></li>
+                    <li class="subnav-item"><a href="#"><i class="fas fa-swimming-pool"></i> Biệt thự</a></li>
+                    <li class="subnav-item"><a href="#"><i class="fas fa-key"></i> Cho thuê</a></li>
+                    <li class="subnav-item"><a href="index.html#lien-he"><i class="fas fa-phone"></i> Liên hệ</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE DRAWER -->
+    <div class="mobile-drawer" id="mobile-drawer">
+        <div class="drawer-overlay" id="drawer-overlay"></div>
+        <div class="drawer-panel">
+            <div class="drawer-head">
+                <span class="logo-name">BĐS<em>Pro</em></span>
+                <button class="drawer-close" id="drawer-close"><i class="fas fa-times"></i></button>
+            </div>
+            <nav class="drawer-nav">
+                <a href="index.html"><i class="fas fa-home"></i> Trang chủ</a>
+                <a href="#"><i class="fas fa-tags"></i> Mua bán BĐS</a>
+                <a href="#"><i class="fas fa-key"></i> Cho thuê BĐS</a>
+                <a href="index.html#lien-he"><i class="fas fa-phone-alt"></i> Liên hệ</a>
+            </nav>
+            <div class="drawer-cta">
+                <a href="tel:0909999888" class="btn btn-primary btn-block btn-lg">
+                    <i class="fas fa-phone-alt"></i> Gọi ngay: 0909 999 888
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="detail-wrap">
+        <div class="uk-container uk-container-center">
+
+            <!-- Breadcrumb -->
+            <nav class="detail-breadcrumb">
+                <a href="index.html">Trang chủ</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="#">Mua bán BĐS</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="#">Căn hộ chung cư</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="#">Quận 2, TP.HCM</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Căn hộ 2PN The Vista An Phú</span>
+            </nav>
+
+            <!--
+      2 CỘT 8/4 – UIkit v2 đúng cú pháp:
+      uk-width-medium-2-3 = 2/3 (~8 cột) trên màn medium+
+      uk-width-medium-1-3 = 1/3 (~4 cột) trên màn medium+
+      uk-width-1-1        = full width trên mobile
+    -->
+            <div class="uk-grid uk-grid-medium detail-grid">
+
+                <!-- CỘT MAIN (8 phần) -->
+                <div class="uk-width-1-1 uk-width-medium-2-3 detail-col-main">
+
+                    <!-- Gallery -->
+                    <div class="gallery-wrap">
+                        <div class="gallery-main" id="gallery-main">
+                            <div class="gallery-main-ph" id="gallery-ph">
+                                <i class="fas fa-building"></i>
+                                <span>Ảnh BĐS</span>
+                            </div>
+                            <div class="gallery-count">
+                                <i class="fas fa-camera"></i>
+                                <span id="gallery-cur">1</span> / <span id="gallery-total">8</span>
+                            </div>
+                            <button class="gallery-nav gallery-nav-prev" id="g-prev">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="gallery-nav gallery-nav-next" id="g-next">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <!-- Thumbnail strip -->
+                        <div class="gallery-thumbs" id="gallery-thumbs"></div>
+                    </div>
+
+                    <!-- Giá + thông tin cơ bản -->
+                    <div class="detail-box">
+                        <div class="detail-type-badge">
+                            <i class="fas fa-tag"></i> Bán căn hộ chung cư
+                        </div>
+                        <h1 class="detail-title">
+                            Căn hộ 2 phòng ngủ The Vista An Phú – View sông Sài Gòn, nội thất cao cấp, sổ hồng chính chủ
+                        </h1>
+                        <div class="detail-meta-row">
+                            <span class="detail-meta-item">
+                                <i class="fas fa-map-marker-alt detail-meta-pin"></i>
+                                218 Xa Lộ Hà Nội, An Phú, Quận 2, TP.HCM
+                            </span>
+                            <span class="detail-meta-item">
+                                <i class="fas fa-clock"></i> Đăng ngày 15/12/2024
+                            </span>
+                            <span class="detail-meta-item">
+                                <i class="fas fa-eye"></i> 1.247 lượt xem
+                            </span>
+                            <span class="detail-meta-item">
+                                <i class="fas fa-hashtag"></i> Mã tin: BDS127188
+                            </span>
+                        </div>
+                        <div class="detail-price-row">
+                            <div>
+                                <div class="detail-price">3,2 tỷ</div>
+                                <div class="detail-price-per">~51,6 triệu/m²</div>
+                            </div>
+                            <div class="detail-price-deposit">
+                                <i class="fas fa-info-circle"></i> Đặt cọc: 100 triệu
+                            </div>
+                        </div>
+                        <div class="detail-specs-grid">
+                            <div class="detail-spec-item">
+                                <div class="detail-spec-icon"><i class="fas fa-vector-square"></i></div>
+                                <div class="detail-spec-label">Diện tích</div>
+                                <div class="detail-spec-value">62 m²</div>
+                            </div>
+                            <div class="detail-spec-item">
+                                <div class="detail-spec-icon"><i class="fas fa-bed"></i></div>
+                                <div class="detail-spec-label">Phòng ngủ</div>
+                                <div class="detail-spec-value">2 PN</div>
+                            </div>
+                            <div class="detail-spec-item">
+                                <div class="detail-spec-icon"><i class="fas fa-bath"></i></div>
+                                <div class="detail-spec-label">Phòng tắm</div>
+                                <div class="detail-spec-value">2 WC</div>
+                            </div>
+                            <div class="detail-spec-item">
+                                <div class="detail-spec-icon"><i class="fas fa-layer-group"></i></div>
+                                <div class="detail-spec-label">Tầng số</div>
+                                <div class="detail-spec-value">Tầng 18</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mô tả -->
+                    <div class="detail-box">
+                        <div class="sec-title uk-margin-small-bottom">
+                            <span class="sec-title-bar"></span> Mô tả chi tiết
+                        </div>
+                        <div class="detail-desc" id="detail-desc">
+                            <p>Căn hộ 2 phòng ngủ tại dự án <strong>The Vista An Phú</strong> – một trong những khu căn
+                                hộ hạng sang tọa lạc ngay tại cửa ngõ phía Đông TP.HCM, mặt tiền Xa Lộ Hà Nội, An Phú,
+                                Quận 2.</p>
+                            <p>Căn hộ ở <strong>tầng 18</strong>, hướng ban công <strong>Đông Nam</strong>, đón gió tự
+                                nhiên, đặc biệt có <strong>view trực diện sông Sài Gòn</strong> cực kỳ thoáng đãng và
+                                thơ mộng.</p>
+                            <p><strong>Nội thất cao cấp toàn bộ:</strong> Tủ bếp gỗ Acrylic, thiết bị bếp Hafele, sàn gỗ
+                                Malaysia, máy lạnh âm trần Daikin 3 phòng, hệ thống rèm tự động, nóng lạnh trung tâm.
+                            </p>
+                            <p><strong>Tiện ích dự án:</strong> Hồ bơi Olympic tầng 5, gym &amp; spa cao cấp, sân
+                                tennis, khu BBQ ngoài trời, siêu thị Co.opMart nội khu, trường quốc tế ISPH liền kề.</p>
+                            <p><strong>Pháp lý:</strong> Sổ hồng chính chủ, đã hoàn công, không vướng quy hoạch, có thể
+                                vay ngân hàng lên đến 70% giá trị căn hộ.</p>
+                            <p><strong>Vị trí kết nối:</strong> 5 phút đến Landmark 81, 10 phút đến Phú Mỹ Hưng, 15 phút
+                                đến sân bay Tân Sơn Nhất qua đường vành đai.</p>
+                        </div>
+                        <button class="desc-toggle" id="desc-toggle">
+                            <i class="fas fa-chevron-down"></i> Xem thêm
+                        </button>
+                    </div>
+
+                    <!-- Thông tin chi tiết -->
+                    <div class="detail-box">
+                        <div class="sec-title uk-margin-small-bottom">
+                            <span class="sec-title-bar"></span> Thông tin chi tiết
+                        </div>
+                        <table class="info-table">
+                            <tr>
+                                <td class="info-key"><i class="fas fa-tag"></i> Loại hình</td>
+                                <td class="info-val">Căn hộ chung cư</td>
+                            </tr>
+                            <tr>
+                                <td class="info-key"><i class="fas fa-vector-square"></i> Diện tích sàn</td>
+                                <td class="info-val">62 m²</td>
+                            </tr>
+                            <tr>
+                                <td class="info-key"><i class="fas fa-expand-arrows-alt"></i> Diện tích thông thuỷ</td>
+                                <td class="info-val">58 m²</td>
+                            </tr>
+                            <tr>
+                                <td class="info-key"><i class="fas fa-bed"></i> Số phòng ngủ</td>
+                                <td class="info-val">2 phòng ngủ</td>
+                            </tr>
+                            <tr>
+                                <td class="info-key"><i class="fas fa-bath"></i> Số phòng tắm</td>
+                                <td class="info-val">2 phòng tắm</td>
+                            </tr>
+                            <tr>
+                                <td class="info-key"><i class="fas fa-layer-group"></i> Vị trí tầng</td>
+                                <td class="info-val">Tầng 18 / 23 tầng</td>
+                            </tr>
+                            <tr>
+                                <td class="info-key"><i class="fas fa-compass"></i> Hướng ban công</td>
+                                <td class="info-val">Đông Nam</td>
+                            </tr>
+                            <tr>
+                                <td class="info-key"><i class="fas fa-door-open"></i> Hướng cửa chính</td>
+                                <td class="info-val">Đông Bắc</td>
+                            </tr>
+                            <tr>
+                                <td class="info-key"><i class="fas fa-couch"></i> Nội thất</td>
+                                <td class="info-val">Đầy đủ cao cấp</td>
+                            </tr>
+                            <tr>
+                                <td class="info-key"><i class="fas fa-file-alt"></i> Pháp lý</td>
+                                <td class="info-val">Sổ hồng (đã có)</td>
+                            </tr>
+                            <tr>
+                                <td class="info-key"><i class="fas fa-car"></i> Chỗ để xe</td>
+                                <td class="info-val">1 hầm xe ô tô + xe máy</td>
+                            </tr>
+                            <tr>
+                                <td class="info-key"><i class="fas fa-building"></i> Dự án</td>
+                                <td class="info-val">The Vista An Phú</td>
+                            </tr>
+                            <tr>
+                                <td class="info-key"><i class="fas fa-tools"></i> Tiện ích</td>
+                                <td class="info-val">
+                                    <span class="info-tag">Hồ bơi</span>
+                                    <span class="info-tag">Gym &amp; Spa</span>
+                                    <span class="info-tag">Bảo vệ 24/7</span>
+                                    <span class="info-tag">Thang máy cao tốc</span>
+                                    <span class="info-tag">Sân tennis</span>
+                                    <span class="info-tag">Khu BBQ</span>
+                                    <span class="info-tag">Siêu thị</span>
+                                    <span class="info-tag">Trường học</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Bản đồ -->
+                    <div class="detail-box">
+                        <div class="sec-title uk-margin-small-bottom">
+                            <span class="sec-title-bar"></span> Vị trí trên bản đồ
+                        </div>
+                        <div class="detail-map">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>218 Xa Lộ Hà Nội, An Phú, Quận 2, TP.HCM</span>
+                            <a href="https://maps.google.com" target="_blank" class="btn btn-ghost btn-sm">
+                                <i class="fas fa-external-link-alt"></i> Xem Google Maps
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Tiện ích lân cận -->
+                    <div class="detail-box">
+                        <div class="sec-title uk-margin-small-bottom">
+                            <span class="sec-title-bar"></span> Tiện ích lân cận
+                        </div>
+                        <div class="nearby-list" id="nearby-list"></div>
+                    </div>
+
+                    <!-- BĐS tương tự -->
+                    <div class="uk-margin-medium-top">
+                        <div class="sec-head">
+                            <h2 class="sec-title">
+                                <span class="sec-title-bar"></span> BĐS tương tự
+                            </h2>
+                            <a href="index.html" class="sec-link">
+                                Xem tất cả <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </div>
+                        <div class="uk-grid uk-grid-small related-grid" id="related-grid"></div>
+                    </div>
+
+                </div><!-- /detail-col-main -->
+
+
+                <!-- CỘT SIDEBAR (4 phần) -->
+                <div class="uk-width-1-1 uk-width-medium-1-3 detail-col-side">
+                    <div class="sticky-side">
+
+                        <!-- Broker + contact -->
+                        <div class="side-contact-box">
+                            <div class="side-contact-head">
+                                <div class="side-broker-ava">NT</div>
+                                <div>
+                                    <div class="side-broker-name">Nguyễn Thị Thanh</div>
+                                    <div class="side-broker-tag">Chuyên viên BĐS cao cấp</div>
+                                    <div class="side-broker-verified">
+                                        <i class="fas fa-check-circle"></i> Đã xác minh danh tính
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="side-contact-body">
+                                <!-- Phone reveal -->
+                                <button class="side-phone-btn" id="phone-btn" onclick="revealPhone(this)">
+                                    <i class="fas fa-phone-alt"></i>
+                                    <span class="side-phone-blur" id="phone-text">0909 *** ***</span>
+                                    <span class="side-phone-hint">Nhấn để xem số</span>
+                                </button>
+
+                                <!-- Actions -->
+                                <div class="side-action-row">
+                                    <a href="https://zalo.me/0909999888" class="btn btn-zalo">
+                                        <span class="uk-text-bold">Z</span> Zalo
+                                    </a>
+                                    <button class="btn btn-ghost" onclick="toggleForm()">
+                                        <i class="fas fa-envelope"></i> Nhắn tin
+                                    </button>
+                                    <button class="btn btn-ghost" onclick="toggleSave(this)">
+                                        <i class="far fa-heart" id="save-icon"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Form toggle -->
+                                <div class="side-form-toggle is-open" id="form-toggle" onclick="toggleForm()">
+                                    <span>Gửi yêu cầu tư vấn</span>
+                                    <i class="fas fa-chevron-up"></i>
+                                </div>
+                                <div class="side-form" id="side-form">
+                                    <div class="f-group">
+                                        <label class="f-label">Họ và tên *</label>
+                                        <input type="text" class="f-input" placeholder="Nguyễn Văn A" />
+                                    </div>
+                                    <div class="f-group">
+                                        <label class="f-label">Số điện thoại *</label>
+                                        <input type="tel" class="f-input" placeholder="0901 234 567" />
+                                    </div>
+                                    <div class="f-group">
+                                        <label class="f-label">Nội dung</label>
+                                        <textarea class="f-input is-textarea" rows="3"
+                                            placeholder="Tôi muốn tìm hiểu thêm về căn hộ này..."></textarea>
+                                    </div>
+                                    <button class="btn btn-primary btn-block" onclick="handleSideSubmit(this)">
+                                        <i class="fas fa-paper-plane"></i> Gửi yêu cầu
+                                    </button>
+                                </div>
+
+                                <!-- Thông tin liên lạc -->
+                                <div class="side-info-list uk-margin-small-top">
+                                    <div class="side-info-row">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>123 Nguyễn Đình Chiểu, Q.3, TP.HCM</span>
+                                    </div>
+                                    <div class="side-info-row">
+                                        <i class="fas fa-clock"></i>
+                                        <span>T2 – T7: 8:00 – 20:00 &nbsp;|&nbsp; CN: 9:00 – 15:00</span>
+                                    </div>
+                                    <div class="side-info-row">
+                                        <i class="fas fa-certificate"></i>
+                                        <span>Chứng chỉ HN: 01/HN-BĐS</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="side-stat-box">
+                            <div class="side-stat-row">
+                                <div class="side-stat-item">
+                                    <div class="side-stat-num">350+</div>
+                                    <div class="side-stat-lbl">Tin đăng</div>
+                                </div>
+                                <div class="side-stat-item">
+                                    <div class="side-stat-num">1.2k+</div>
+                                    <div class="side-stat-lbl">Giao dịch</div>
+                                </div>
+                                <div class="side-stat-item">
+                                    <div class="side-stat-num">10+</div>
+                                    <div class="side-stat-lbl">Năm KN</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Share -->
+                        <div class="side-share">
+                            <div class="side-share-title">Chia sẻ tin đăng</div>
+                            <div class="share-btns">
+                                <button class="share-btn share-fb" title="Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </button>
+                                <button class="share-btn share-zalo" title="Zalo">
+                                    <span class="uk-text-bold" style="font-size:11px">Z</span>
+                                </button>
+                                <button class="share-btn share-copy" title="Sao chép link" onclick="copyLink(this)">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                                <button class="share-btn share-link" title="QR Code">
+                                    <i class="fas fa-qrcode"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div><!-- /detail-col-side -->
+
+            </div><!-- /uk-grid -->
+        </div><!-- /uk-container -->
+    </div><!-- /detail-wrap -->
+
+
+    <!-- CTA -->
+    <div class="cta-banner">
+        <div class="uk-container uk-container-center">
+            <div class="cta-title">Quan tâm BĐS này?</div>
+            <p class="cta-sub">Liên hệ ngay để được tư vấn &amp; đặt lịch xem nhà miễn phí</p>
+            <div class="cta-actions">
+                <a href="tel:0909999888" class="btn btn-white btn-lg">
+                    <i class="fas fa-phone-alt"></i> Gọi: 0909 999 888
+                </a>
+                <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="btn btn-cta-ghost btn-lg">
+                    <i class="fas fa-calendar-check"></i> Đặt lịch xem nhà
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="uk-container uk-container-center">
+            <div class="uk-grid uk-grid-large">
+                <div class="uk-width-1-1 uk-width-medium-1-4">
+                    <div class="footer-brand-name">BĐS<em>Pro</em></div>
+                    <p class="footer-desc">Chuyên tư vấn mua bán, cho thuê BĐS tại TP.HCM. Hơn 10 năm kinh nghiệm,
+                        1.200+ giao dịch thành công.</p>
+                    <div class="footer-socials">
+                        <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-btn"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-btn"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="social-btn"><span class="uk-text-bold footer-zalo">Z</span></a>
+                    </div>
+                </div>
+                <div class="uk-width-1-2 uk-width-medium-1-8">
+                    <div class="footer-head">Mua Bán</div>
+                    <ul class="footer-links">
+                        <li><a href="#">Căn hộ chung cư</a></li>
+                        <li><a href="#">Nhà riêng</a></li>
+                        <li><a href="#">Đất nền</a></li>
+                        <li><a href="#">Biệt thự</a></li>
+                    </ul>
+                </div>
+                <div class="uk-width-1-2 uk-width-medium-1-8">
+                    <div class="footer-head">Cho Thuê</div>
+                    <ul class="footer-links">
+                        <li><a href="#">Thuê căn hộ</a></li>
+                        <li><a href="#">Thuê nhà riêng</a></li>
+                        <li><a href="#">Thuê mặt bằng</a></li>
+                        <li><a href="#">Thuê văn phòng</a></li>
+                    </ul>
+                </div>
+                <div class="uk-width-1-1 uk-width-medium-1-4">
+                    <div class="footer-head">Liên Hệ</div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>123 Nguyễn Đình Chiểu, P.5, Q.3, TP.HCM</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <a href="tel:0909999888" class="footer-tel">0909 999 888</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="uk-container uk-container-center">
+            <div class="footer-bottom">
+                <span>© 2024 BĐSPro. Bảo lưu mọi quyền.</span>
+                <div class="footer-bottom-links">
+                    <a href="#">Chính sách bảo mật</a>
+                    <a href="#">Điều khoản sử dụng</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Sticky mobile bar -->
+    <div class="sticky-contact">
+        <div class="sticky-contact-inner">
+            <a href="tel:0909999888" class="btn btn-primary"><i class="fas fa-phone-alt"></i> Gọi ngay</a>
+            <button class="btn btn-outline" onclick="toggleForm()"><i class="fas fa-paper-plane"></i> Nhắn tin</button>
+            <a href="https://zalo.me/0909999888" class="btn btn-zalo"><span class="uk-text-bold">Z</span> Zalo</a>
+        </div>
+    </div>
+
+    <button class="back-top" id="back-top"><i class="fas fa-chevron-up"></i></button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/2.27.5/js/uikit.min.js"></script>
+    <script src="main.js"></script>
+    <script>
+        const GRAD = [
+            ['#fde8d8', '#f4b896'], ['#dbeafe', '#bfdbfe'], ['#dcfce7', '#bbf7d0'],
+            ['#fef9c3', '#fde68a'], ['#fce7f3', '#fbcfe8'], ['#ede9fe', '#ddd6fe'],
+            ['#e0f2fe', '#bae6fd'], ['#fff7ed', '#fed7aa'],
+        ];
+        function imgPh(idx, icon = 'fas fa-building') {
+            const [a, b] = GRAD[idx % GRAD.length];
+            return `<div class="img-ph" style="background:linear-gradient(135deg,${a},${b})"><i class="${icon}"></i></div>`;
+        }
+
+        const GALLERY_COUNT = 8;
+        let currentSlide = 0;
+
+        function buildGallery() {
+            const thumbsEl = document.getElementById('gallery-thumbs');
+            const phEl = document.getElementById('gallery-ph');
+            const totalEl = document.getElementById('gallery-total');
+            if (!thumbsEl) return;
+
+            totalEl.textContent = GALLERY_COUNT;
+
+            for (let i = 0; i < GALLERY_COUNT; i++) {
+                const [a, b] = GRAD[i % GRAD.length];
+                const div = document.createElement('div');
+                div.className = 'gallery-thumb' + (i === 0 ? ' is-active' : '');
+                div.innerHTML = `<div class="gallery-thumb-ph" style="background:linear-gradient(135deg,${a},${b})"><i class="fas fa-building" style="font-size:14px;color:rgba(255,255,255,.3)"></i></div>`;
+                div.addEventListener('click', () => goSlide(i));
+                thumbsEl.appendChild(div);
+            }
+            updateGalleryPh(0);
+        }
+
+        function updateGalleryPh(idx) {
+            const ph = document.getElementById('gallery-ph');
+            const cur = document.getElementById('gallery-cur');
+            const thumbs = document.querySelectorAll('.gallery-thumb');
+            const [a, b] = GRAD[idx % GRAD.length];
+            ph.style.background = `linear-gradient(135deg,${a},${b})`;
+            cur.textContent = idx + 1;
+            thumbs.forEach((t, i) => t.classList.toggle('is-active', i === idx));
+            currentSlide = idx;
+        }
+
+        function goSlide(idx) {
+            const n = ((idx % GALLERY_COUNT) + GALLERY_COUNT) % GALLERY_COUNT;
+            updateGalleryPh(n);
+        }
+
+        document.getElementById('g-prev')?.addEventListener('click', () => goSlide(currentSlide - 1));
+        document.getElementById('g-next')?.addEventListener('click', () => goSlide(currentSlide + 1));
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft') goSlide(currentSlide - 1);
+            if (e.key === 'ArrowRight') goSlide(currentSlide + 1);
+        });
+
+        const NEARBY = [
+            { icon: 'fas fa-shopping-cart', color: '#1e88e5', name: 'Siêu thị Co.opMart An Phú', type: 'Siêu thị', dist: '120m' },
+            { icon: 'fas fa-graduation-cap', color: '#43a047', name: 'Trường Quốc tế ISPH', type: 'Trường học', dist: '350m' },
+            { icon: 'fas fa-hospital', color: '#e53935', name: 'BV Quốc tế Hạnh Phúc', type: 'Bệnh viện', dist: '1.2 km' },
+            { icon: 'fas fa-subway', color: '#f9a825', name: 'Ga Metro An Phú (tương lai)', type: 'Giao thông', dist: '500m' },
+            { icon: 'fas fa-utensils', color: '#f26522', name: 'Khu ẩm thực Thảo Điền', type: 'Ẩm thực', dist: '800m' },
+            { icon: 'fas fa-dumbbell', color: '#7b1fa2', name: 'California Fitness & Yoga', type: 'Thể thao', dist: '600m' },
+        ];
+
+        function buildNearby() {
+            const el = document.getElementById('nearby-list');
+            if (!el) return;
+            el.innerHTML = NEARBY.map(n => `
+    <div class="nearby-item">
+      <div class="nearby-icon" style="background:${n.color}20;color:${n.color}">
+        <i class="${n.icon}"></i>
+      </div>
+      <div>
+        <div class="nearby-name">${n.name}</div>
+        <div class="nearby-dist">${n.type}</div>
+      </div>
+      <span class="nearby-dist-badge">${n.dist}</span>
+    </div>`).join('');
+        }
+
+        const RELATED = [
+            { badge: 'featured', price: '2,8 tỷ', note: '~47 tr/m²', title: 'Căn hộ 2PN Masteri An Phú – Nội thất đẹp, tầng cao, view thành phố', district: 'Quận 2', area: '60', beds: '2', baths: '2', photos: 7, date: '14/12/2024' },
+            { badge: 'hot', price: '3,5 tỷ', note: '~53 tr/m²', title: 'Căn hộ 2PN Gateway Thảo Điền – Thiết kế Singapore, full nội thất', district: 'Quận 2', area: '66', beds: '2', baths: '2', photos: 9, date: '13/12/2024' },
+            { badge: null, price: '1,9 tỷ', note: '', title: 'Căn hộ 1PN Vinhomes Grand Park – Tầng trung, view nội khu xanh mát', district: 'Thủ Đức', area: '45', beds: '1', baths: '1', photos: 6, date: '12/12/2024' },
+            { badge: 'urgent', price: '4,2 tỷ', note: '~58 tr/m²', title: 'Căn hộ 3PN Feliz En Vista – 2 ban công, nội thất nhập khẩu cao cấp', district: 'Quận 2', area: '72', beds: '3', baths: '2', photos: 11, date: '11/12/2024' },
+        ];
+
+        function buildRelated() {
+            const el = document.getElementById('related-grid');
+            if (!el || typeof renderCard !== 'function') return;
+            el.innerHTML = RELATED.map((d, i) => renderCard(d, i)).join('');
+        }
+
+        function revealPhone(btn) {
+            const textEl = document.getElementById('phone-text');
+            const hintEl = btn.querySelector('.side-phone-hint');
+            textEl.classList.remove('side-phone-blur');
+            textEl.textContent = '0909 999 888';
+            if (hintEl) hintEl.style.display = 'none';
+            btn.onclick = () => window.location.href = 'tel:0909999888';
+        }
+
+        function toggleForm() {
+            const form = document.getElementById('side-form');
+            const toggle = document.getElementById('form-toggle');
+            const isOpen = form.style.display !== 'none' && form.style.display !== '';
+            form.style.display = isOpen ? 'none' : 'flex';
+            toggle.classList.toggle('is-open', !isOpen);
+        }
+
+        function handleSideSubmit(btn) {
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+            btn.disabled = true;
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Đã gửi!';
+                btn.style.background = '#43a047';
+                setTimeout(() => {
+                    btn.innerHTML = orig;
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 3000);
+            }, 1500);
+        }
+
+        function toggleSave(btn) {
+            const icon = document.getElementById('save-icon');
+            const saved = icon.classList.contains('fas');
+            icon.className = saved ? 'far fa-heart' : 'fas fa-heart';
+            icon.style.color = saved ? '' : '#e53935';
+        }
+
+        function copyLink(btn) {
+            navigator.clipboard?.writeText(window.location.href).then(() => {
+                const orig = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                setTimeout(() => btn.innerHTML = orig, 2000);
+            });
+        }
+
+        let descExpanded = false;
+        function initDescToggle() {
+            const desc = document.getElementById('detail-desc');
+            const toggle = document.getElementById('desc-toggle');
+            if (!desc || !toggle) return;
+            desc.style.maxHeight = '160px';
+            desc.style.overflow = 'hidden';
+            toggle.addEventListener('click', () => {
+                descExpanded = !descExpanded;
+                desc.style.maxHeight = descExpanded ? 'none' : '160px';
+                desc.style.overflow = descExpanded ? 'visible' : 'hidden';
+                toggle.innerHTML = descExpanded
+                    ? '<i class="fas fa-chevron-up"></i> Thu gọn'
+                    : '<i class="fas fa-chevron-down"></i> Xem thêm';
+            });
+        }
+
+        function initDrawer() {
+            const toggle = document.getElementById('nav-toggle');
+            const drawer = document.getElementById('mobile-drawer');
+            const overlay = document.getElementById('drawer-overlay');
+            const closeBtn = document.getElementById('drawer-close');
+            if (!toggle || !drawer) return;
+            const open = () => { drawer.classList.add('is-open'); document.body.style.overflow = 'hidden'; };
+            const close = () => { drawer.classList.remove('is-open'); document.body.style.overflow = ''; };
+            toggle.addEventListener('click', open);
+            closeBtn?.addEventListener('click', close);
+            overlay?.addEventListener('click', close);
+        }
+
+        function initBackTop() {
+            const btn = document.getElementById('back-top');
+            if (!btn) return;
+            window.addEventListener('scroll', () => btn.classList.toggle('is-visible', window.scrollY > 400), { passive: true });
+            btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        }
+
+        function initNavbarScroll() {
+            const h = document.getElementById('site-header');
+            if (!h) return;
+            window.addEventListener('scroll', () => {
+                h.style.boxShadow = window.scrollY > 4 ? '0 4px 16px rgba(0,0,0,.12)' : '';
+            }, { passive: true });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            buildGallery();
+            buildNearby();
+            setTimeout(buildRelated, 50);
+            initDescToggle();
+            initDrawer();
+            initBackTop();
+            initNavbarScroll();
+        });
+    </script>
+</body>
+
+</html>

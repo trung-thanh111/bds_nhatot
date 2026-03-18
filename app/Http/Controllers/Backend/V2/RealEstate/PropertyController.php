@@ -67,7 +67,7 @@ class PropertyController extends Controller
         }
         $config = [
             ...$this->config(),
-            'method' => 'edit',
+            'method' => 'update',
             'extendJs' => true
         ];
         $template = 'backend.property.store';
@@ -100,7 +100,7 @@ class PropertyController extends Controller
         $this->checkExists($record);
         $config = [
             ...$this->config(),
-            'method' => 'edit'
+            'method' => 'delete'
         ];
         $template = 'backend.property.delete';
         return view('backend.dashboard.layout', compact(

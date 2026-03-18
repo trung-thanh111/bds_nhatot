@@ -72,7 +72,7 @@ class PropertyFacilityController extends Controller
         }
         $config = [
             ...$this->config(),
-            'method' => 'edit',
+            'method' => 'update',
             'extendJs' => true
         ];
         $properties = $this->propertyService->all();
@@ -107,7 +107,7 @@ class PropertyFacilityController extends Controller
         $this->checkExists($record);
         $config = [
             ...$this->config(),
-            'method' => 'edit'
+            'method' => 'delete'
         ];
         $template = 'backend.property_facility.delete';
         return view('backend.dashboard.layout', compact(

@@ -160,6 +160,7 @@ class ProjectController extends Controller
         $dropdown = $nestedset->Dropdown(['text' => '[Chọn Nhóm BĐS]']);
         $provinces = $this->provinceRepository->all();
         $agents = $this->agentRepo->all();
+        $projectsRelated = $this->projectRepository->all();
 
         $config = $this->configData('create');
         return view('backend.dashboard.layout', [
@@ -169,7 +170,8 @@ class ProjectController extends Controller
             'projectTypes' => $projectTypes,
             'dropdown' => $dropdown,
             'provinces' => $provinces,
-            'agents' => $agents
+            'agents' => $agents,
+            'projectsRelated' => $projectsRelated
         ]);
     }
 
@@ -195,6 +197,7 @@ class ProjectController extends Controller
         $dropdown = $nestedset->Dropdown(['text' => '[Chọn Nhóm BĐS]']);
         $provinces = $this->provinceRepository->all();
         $agents = $this->agentRepo->all();
+        $projectsRelated = $this->projectRepository->all();
 
         $config = $this->configData('edit');
         return view('backend.dashboard.layout', [
@@ -205,7 +208,8 @@ class ProjectController extends Controller
             'projectTypes' => $projectTypes,
             'dropdown' => $dropdown,
             'provinces' => $provinces,
-            'agents' => $agents
+            'agents' => $agents,
+            'projectsRelated' => $projectsRelated
         ]);
     }
 

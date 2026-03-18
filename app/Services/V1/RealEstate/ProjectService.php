@@ -198,7 +198,10 @@ class ProjectService extends BaseService
                 $payload['code'] = 'BDS-' . strtoupper(Str::random(8));
             }
 
-            $this->projectRepository->create($payload);
+            $project = $this->projectRepository->create($payload);
+            if ($project && $request->has('related_project_id')) {
+                $project->related_projects()->sync($request->input('related_project_id'));
+            }
 
             DB::commit();
             return true;
@@ -222,7 +225,10 @@ class ProjectService extends BaseService
                 $payload['slug'] = Str::slug($payload['name']);
             }
 
-            $this->projectRepository->update($id, $payload);
+            $project = $this->projectRepository->update($id, $payload);
+            if ($project && $request->has('related_project_id')) {
+                $project->related_projects()->sync($request->input('related_project_id'));
+            }
 
             DB::commit();
             return true;
